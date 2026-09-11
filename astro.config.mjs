@@ -7,8 +7,8 @@ const folder = (label, directory) => ({ label, items: [{ autogenerate: { directo
 
 // https://astro.build/config
 export default defineConfig({
-	// The public address (e.g. https://docs.example.com); set it and the build adds a sitemap.
-	site: process.env.SITE_URL || undefined,
+	// The public address; canonical links and the sitemap use it. SITE_URL overrides it (previews).
+	site: process.env.SITE_URL || 'https://docs.lunchp.ad',
 	integrations: [
 		starlight({
 			title: 'Lunchpad',
