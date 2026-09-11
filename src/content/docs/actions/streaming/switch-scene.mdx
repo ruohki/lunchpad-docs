@@ -1,0 +1,59 @@
+---
+title: Switch scene
+description: Make a scene live in OBS Studio or Streamlabs Desktop, optionally in another scene collection.
+actionTypes: [obsSwitchScene, slobsSwitchScene]
+sidebar:
+  order: 1
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+<ActionHeader types={['obsSwitchScene', 'slobsSwitchScene']} />
+
+<Tabs syncKey="streaming-app">
+  <TabItem label="OBS Studio"><ActionShot type="obsSwitchScene" alt="OBS: switch scene with Scene collection set to Current collection and Scene set to Be right back. Below the fields: OBS Studio connected." /></TabItem>
+  <TabItem label="Streamlabs Desktop"><ActionShot type="slobsSwitchScene" alt="Streamlabs: switch scene with Scene collection set to Current collection and Scene set to Be right back. Below the fields: Streamlabs Desktop connected." /></TabItem>
+</Tabs>
+
+Switch scene is the classic stream deck button: one pad per scene, and the live scene changes the moment you press it.
+
+<Aside type="note">
+Switch the integration on first, under Settings → **OBS Studio** or **Streamlabs Desktop**. Until then, its group does not appear in **Add action**. See [OBS Studio and Streamlabs](/guides/obs-and-streamlabs/).
+</Aside>
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Scene collection** | **Current collection**, or a collection to load first. |
+| **Scene** | The scene to make live. |
+
+While Lunchpad is connected, both fields list what the app has; **Reload lists** fetches them again. While it is not connected, the fields become text boxes and you type the names exactly as they are in the app. A saved name the app does not have shows as, for example, **Gameplay (not in OBS Studio)**.
+
+## How it runs
+
+- With a scene collection set, Lunchpad loads that collection first (if it is not the current one), gives the app a moment to load its scenes, then switches the scene.
+- `{{placeholders}}` work in both names, so a scene can come from a variable: `{{lastScene}}`.
+- Lunchpad waits for the app to answer before the next action starts.
+- If the app is not running or does not know the scene, the problem is noted in the log and the macro goes on.
+- In OBS, the action sets the program (live) scene directly, also while studio mode is on.
+
+<Aside type="tip">
+Give the button an active colour and set **Active while** to **Scene is live**. The pad then lights while its scene is live, even when you switch scenes in the app itself. See [buttons](/guides/buttons/).
+</Aside>
+
+## Example
+
+A "Be right back" button:
+
+1. **Switch scene** `Be right back`.
+2. [Set audio](/actions/streaming/set-audio/) `Mic/Aux`, **Mute**.
+3. [Play sound](/actions/media/play-sound/) with a short jingle.
+
+## Related
+
+- [Show or hide source](/actions/streaming/show-or-hide-source/)
+- [Studio mode](/actions/streaming/studio-mode/) — preview first, then transition
+- [Set variable](/actions/system/set-variable/) — remember the last scene

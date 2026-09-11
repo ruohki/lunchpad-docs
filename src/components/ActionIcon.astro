@@ -1,0 +1,14 @@
+---
+// An icon from the app's own set (copied into src/data/actions.json by actions:sync).
+import { icons } from '~/lib/actions';
+
+interface Props {
+	icon: string;
+	class?: string;
+}
+
+const { icon, class: className } = Astro.props;
+const svg = icons[icon];
+---
+
+{svg && <svg viewBox={svg.viewBox} class={className} aria-hidden="true" set:html={svg.body} />}

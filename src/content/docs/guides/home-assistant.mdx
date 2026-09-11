@@ -1,0 +1,79 @@
+---
+title: Home Assistant
+description: Connect Lunchpad to Home Assistant and control lights, covers, fans, speakers and anything else from your pads.
+sidebar:
+  order: 7.5
+---
+
+import AppShot from '~/components/AppShot.astro';
+import { Aside, CardGrid, LinkCard, Steps } from '@astrojs/starlight/components';
+
+With [Home Assistant](https://www.home-assistant.io) connected, a pad can switch the desk lamp, dim the key light from a fader, close the blind, turn the speaker down or call any service of your smart home. Lunchpad talks to Home Assistant over its web API with a long-lived access token; nothing needs to be installed in Home Assistant.
+
+## Connect
+
+<Steps>
+
+1. In Home Assistant, open your profile (your name at the bottom of the sidebar), go to the **Security** tab and, under **Long-lived access tokens**, click **Create token**. Give it a name like "Lunchpad" and copy the token. Home Assistant shows it only once.
+
+2. In Lunchpad, open **Settings** (the gear on the corner pad) and choose **Home Assistant** under **Integrations**.
+
+3. Switch on **Connect to Home Assistant**.
+
+4. Enter the **Home Assistant address**, for example `http://homeassistant.local:8123` or `https://home.example.com`, and paste the token into **Long-lived access token**.
+
+5. The status line shows **Connected to Home Assistant**, with its version, the name of your home and how many entities Lunchpad found.
+
+</Steps>
+
+<AppShot name="settings-home-assistant" alt="The Home Assistant tab of the settings: Connect to Home Assistant switched on, the address http://homeassistant.local:8123, a hidden access token, Accept a self-signed certificate off, and the status Connected to Home Assistant 2026.9.2 (Home), 11 entities" />
+
+| Setting | What it does |
+| --- | --- |
+| **Connect to Home Assistant** | Switches the integration on. Off, the Home Assistant actions are hidden from the **Add action** menu, and existing ones do nothing. |
+| **Home Assistant address** | Where Lunchpad reaches Home Assistant, with `http://` or `https://` and the port. |
+| **Long-lived access token** | The token from step 1. |
+| **Accept a self-signed certificate** | For an `https://` address with a certificate your computer does not trust, such as one Home Assistant created itself. |
+| **Reload entities** | Loads the list of entities again. |
+
+<Aside type="note" title="Where the token is kept">
+Lunchpad does not write the token into its settings file. Installed copies keep it in the system's credential store (the Keychain on macOS, the Credential Manager on Windows), like the OBS password and the Streamlabs token.
+</Aside>
+
+## How Lunchpad talks to Home Assistant
+
+There is no connection that stays open. Lunchpad loads the list of entities when it starts, when you change these settings and when you click **Reload entities** (or **Reload** next to an **Entity** field). Every action is one request to Home Assistant, which waits up to 8 seconds for an answer.
+
+The entity list is what the editors suggest when you type in an **Entity** field. Added a light in Home Assistant? Click **Reload** and it appears. You can always type an entity id by hand, also while Home Assistant is offline.
+
+## The actions
+
+<CardGrid>
+	<LinkCard title="Turn on or off" href="/actions/home-assistant/turn-on-or-off/" description="Switch any entity on, off, or toggle it." />
+	<LinkCard title="Set a value" href="/actions/home-assistant/set-a-value/" description="Brightness, colour temperature, cover position, fan speed, volume, a number or a temperature." />
+	<LinkCard title="Call a service" href="/actions/home-assistant/call-a-service/" description="Any service, with JSON data and placeholders." />
+</CardGrid>
+
+A few ideas:
+
+- **On air**: one pad starts the stream in OBS and turns on the "on air" sign with [Turn on or off](/actions/home-assistant/turn-on-or-off/).
+- **Dimmer**: a [fader](/guides/faders/) with [Set a value](/actions/home-assistant/set-a-value/) → **Brightness**, **From variable** `value`.
+- **Scene lighting**: the OBS scene buttons also [call](/actions/home-assistant/call-a-service/) `scene.turn_on` for a matching light scene.
+
+<Aside type="tip">
+**Active while**, which lights a pad while OBS or Streamlabs is in a state, does not follow Home Assistant entities. A [Flip flop](/actions/flow/flip-flop/) with a [Set colour](/actions/general/set-colour/) on each side makes a pad that shows what it last did.
+</Aside>
+
+## When it does not connect
+
+The status line shows why:
+
+| Message | What to do |
+| --- | --- |
+| **the access token was rejected** | The token is wrong, or it was deleted in Home Assistant. Create a new one. |
+| **could not connect** | Check the address and the port, and that this computer can reach Home Assistant (open the address in a browser). |
+| **timed out** | Home Assistant did not answer within 8 seconds. Check the address, or whether Home Assistant is busy restarting. |
+| a certificate error | For a self-signed certificate, switch on **Accept a self-signed certificate**. |
+| **not found** | After an action: the entity or the service does not exist. Check its spelling in Home Assistant. |
+
+Errors from actions go to the log as well: Settings → **Diagnostics** → **Open log folder**.

@@ -1,0 +1,50 @@
+---
+title: Text to speech
+description: Read a text aloud with one of your system's voices, variables included.
+actionTypes: [textToSpeech]
+sidebar:
+  order: 2
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['textToSpeech']} />
+
+<ActionShot type="textToSpeech" alt="Text to speech action with the text Welcome to the stream! You are viewer number {{viewers}}., voice Microsoft Aria and volume 80 %" />
+
+Text to speech reads a text aloud with a voice installed on your computer. Use it for spoken alerts, for reading back a counter ("Death number 12") or for a value a web request fetched.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| Text | What to say. Type `{{` to insert a variable; placeholders such as `{{deaths}}` or `{{velocity}}` are filled in when the action runs. |
+| **Voice** | One of the system's voices, listed with its language. **System default voice** uses the voice your system is set to. If the chosen voice is not installed on this computer, the default voice speaks instead. |
+| **Volume** | 0 to 100 % of the voice's full volume. |
+| **Preview** | Speaks the text now. Click **Stop** to end it early. |
+
+## How it runs
+
+- With **Wait** on, the next action starts when the voice has finished speaking.
+- Lunchpad speaks one text at a time. If a Text to speech action starts while another text is still being spoken, the new one is skipped and a note goes to the log. Keep **Wait** on when several speech actions follow each other.
+- Stopping the macro stops the speech. **Stop all macros** stops any speech.
+- If the system has no working speech engine, the action is skipped and the reason goes to the log.
+
+<Aside type="tip">
+The voices come from your operating system. Add more in the system's speech settings: on Windows under Settings → Time & language → Speech, on macOS under System Settings → Accessibility → Spoken Content.
+</Aside>
+
+## Example
+
+A death counter that announces itself:
+
+1. [Add to variable](/actions/system/add-to-variable/): `deaths`, add `1`, scope **Everywhere**.
+2. Text to speech: `Death number {{deaths}}.`
+
+## Related
+
+- [Play sound](/actions/media/play-sound/) — play a recorded clip instead
+- [Variables and placeholders](/guides/variables/) — what you can put between `{{ }}`
+- [Condition](/actions/flow/condition/) — say something only when a value is reached

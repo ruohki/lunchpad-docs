@@ -1,0 +1,61 @@
+---
+title: Push-to-talk
+description: Hold your voice chat's push-to-talk key while a part of the macro runs.
+actionTypes: [pushToTalkStart, pushToTalkEnd]
+sidebar:
+  order: 3
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['pushToTalkStart']} />
+
+<ActionShot type="pushToTalkStart" alt="Push-to-talk on, then Play sound announcement.wav, then Push-to-talk off" />
+
+Push-to-talk holds your voice chat's push-to-talk key while the actions between two markers run. Play a sound or a text-to-speech line into Discord or TeamSpeak, and your voice app transmits exactly as long as it plays.
+
+## The two markers
+
+Adding push-to-talk adds two rows at once: **Push-to-talk on** and **Push-to-talk off**. Drag the actions that should be heard between them. The markers keep their order; removing one removes both, and the actions in between stay.
+
+The markers have no settings. The key is set once for all buttons.
+
+## Set up the key
+
+1. Open **Settings → Keyboard**.
+2. Switch on **Hold a key while push-to-talk sections run**.
+3. Under **Key**, press the same key your voice app uses for push-to-talk, and pick any keys to hold **With** it. A mouse button works too: the middle button or the side buttons.
+
+## How it runs
+
+- At **Push-to-talk on**, Lunchpad presses and holds the key, then waits 250 ms so the voice app notices before anything is heard. At **Push-to-talk off**, it releases the key and waits another 250 ms.
+- Keep **Wait** on for the actions in between. If a Play sound has **Wait** off, the off marker follows right away and the key is released while the sound is still playing.
+- Several macros share one key. It goes down with the first push-to-talk section that starts and comes up when the last one ends.
+- If the setting is off or no key is set, the markers do nothing and add no pause.
+- **Stop all macros** always releases the key.
+
+<Aside type="caution">
+If you stop a single macro while it is inside a push-to-talk section (with **Stop this macro** or **Restart this macro**), the key can stay held. Run **Stop all macros** to release it: as an action on a button, from the right-click menu of any pad, or with **Stop all running macros** in the tray menu.
+</Aside>
+
+<Aside type="tip">
+Your voice app only hears what reaches its microphone input. To send a sound into voice chat, play it on a device the voice app records from, for example a virtual audio cable set as its input device, and pick that device in [Play sound](/actions/media/play-sound/).
+</Aside>
+
+On macOS, Lunchpad needs the Accessibility permission to press keys. See [Troubleshooting](/help/troubleshooting/).
+
+## Example
+
+The announcement from the screenshot:
+
+1. **Push-to-talk on**
+2. [Play sound](/actions/media/play-sound/): `announcement.wav`, **Wait** on
+3. **Push-to-talk off**
+
+## Related
+
+- [Settings](/guides/settings/) — the push-to-talk key
+- [Hotkey sequence](/actions/system/hotkey-sequence/) — press other keys
+- [Stop all macros](/actions/stop/stop-all-macros/)

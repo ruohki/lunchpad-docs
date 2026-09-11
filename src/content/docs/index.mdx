@@ -1,0 +1,67 @@
+---
+title: Lunchpad
+description: Turn a Novation Launchpad into a macro controller for streaming, sound boards and shortcuts.
+template: splash
+hero:
+  tagline: Turn a Novation Launchpad into a macro controller. Sounds, hotkeys, OBS and Streamlabs, Home Assistant, web requests and scripts, on every pad. For Windows and macOS, Linux is on the way.
+  image:
+    file: ../../assets/screenshots/app/main-window.png
+  actions:
+    - text: Get started
+      link: /getting-started/introduction/
+      icon: right-arrow
+    - text: Browse all actions
+      link: /actions/
+      icon: list-format
+      variant: minimal
+    - text: Download
+      link: https://github.com/ruohki/lunchpad/releases
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+import PadGrid from '~/components/PadGrid.astro';
+
+## Every pad is a button
+
+A button has a look, a colour and lists of actions: one for the press, one for the release, one for a long hold. Pages hold as many layouts as you like; the active page is painted onto the Launchpad, and the macros keep running while the window sits in the tray.
+
+<CardGrid>
+	<Card title="Sound board" icon="seti:audio">
+		Play sounds on any output device, trimmed with a waveform editor, louder the harder you hit the pad. Or let the system voice read out a text.
+	</Card>
+	<Card title="Keyboard and programs" icon="seti:shell">
+		Press, hold and release keys, type text, start programs and scripts and keep what they print.
+	</Card>
+	<Card title="OBS Studio and Streamlabs" icon="rocket">
+		Switch scenes, show sources, mute the mic, toggle filters, start the stream, save a replay. Pads can light up while a scene is live.
+	</Card>
+	<Card title="Logic when you need it" icon="random">
+		Variables, conditions, flip flops and small JavaScript snippets glue actions together. Web requests talk to anything with an API.
+	</Card>
+	<Card title="Home Assistant" icon="star">
+		Switch lights and plugs, dim the key light from a fader, close the blind, or call any service of your smart home.
+	</Card>
+	<Card title="Faders" icon="setting">
+		Turn a row or column of pads into one slider that blends between two colours and drives a volume or a dimmer.
+	</Card>
+	<Card title="No Launchpad yet?" icon="laptop">
+		Use the pads on screen with the layout of any supported model, and switch to the real thing later.
+	</Card>
+</CardGrid>
+
+## Made for the Launchpads you have
+
+Launchpad Mini (MK1, MK2, MK3), Launchpad S, MK2, X, Pro MK2 and Pro MK3. Lunchpad asks every MIDI device who it is, so it finds your Launchpad no matter what the system calls its ports.
+
+<PadGrid />
+
+## Where to next
+
+<CardGrid>
+	<LinkCard title="Install Lunchpad" href="/getting-started/installation/" description="Download, first start and the permissions it needs." />
+	<LinkCard title="Your first button" href="/getting-started/first-launch/" description="Connect a Launchpad and give a pad something to do." />
+	<LinkCard title="All actions" href="/actions/" description="Everything a button can do, one page each." />
+	<LinkCard title="Something is off?" href="/help/troubleshooting/" description="Common problems and how to fix them." />
+</CardGrid>

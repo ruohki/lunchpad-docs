@@ -1,0 +1,34 @@
+---
+title: Stop all sounds
+description: Silence every sound Lunchpad is playing, whichever button started it.
+actionTypes: [stopAllSounds]
+sidebar:
+  order: 5
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['stopAllSounds']} />
+
+<ActionShot type="stopAllSounds" alt="Stop all sounds action followed by a Play sound action with drumroll.mp3 in the When pressed list" />
+
+Stop all sounds silences every sound Lunchpad is playing right now, no matter which button started it. Use it as a panic button for a clip that runs too long, or put it before a Play sound so sounds never pile up.
+
+This action has no settings.
+
+## How it runs
+
+- It stops every sound from [Play sound](/actions/media/play-sound/) actions on every button. Those Play sound actions count as finished, so their macros go on with their next action.
+- It stops sounds only. Text to speech keeps talking and the macros keep running. To end everything, use [Stop all macros](/actions/stop/stop-all-macros/), which also silences sounds and speech.
+
+## Example
+
+A soundboard where a new sound cuts off the previous one: on every sound button, put Stop all sounds first and Play sound second, as in the screenshot.
+
+## Related
+
+- [Play sound](/actions/media/play-sound/)
+- [Stop all macros](/actions/stop/stop-all-macros/) — stop macros, sounds and speech
+- [Stop this macro](/actions/stop/stop-this-macro/) — stop only this button's sound

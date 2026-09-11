@@ -1,0 +1,47 @@
+---
+title: Turn on or off
+description: Turn any Home Assistant entity on or off, or toggle it, from a pad.
+actionTypes: [homeAssistantTurn]
+sidebar:
+  order: 1
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['homeAssistantTurn']} />
+
+<ActionShot type="homeAssistantTurn" alt="Home Assistant: on / off with the entity light.desk_lamp, shown below the field as Desk lamp, currently on, and Do set to Toggle" />
+
+The simplest Home Assistant action: one pad for the desk lamp, one for the "on air" sign, one for the fan. It works for every kind of entity that can be switched, because it uses Home Assistant's general `homeassistant.turn_on`, `turn_off` and `toggle` services rather than the ones of a single domain. Lights, switches, fans, media players, scripts and automations all answer to it.
+
+<Aside type="note">
+Connect Lunchpad to Home Assistant first, under Settings → **Home Assistant**. See [Home Assistant](/guides/home-assistant/).
+</Aside>
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Entity** | The entity id, for example `light.desk_lamp`. Start typing and Lunchpad suggests entities by id or name. Below the field it shows the entity's name and its state when the list was last loaded. |
+| **Reload** | Loads the entity list from Home Assistant again, for entities you added since. The count next to it shows how many Lunchpad knows, or **Not connected**. |
+| **Do** | **Turn on**, **Turn off** or **Toggle**. |
+
+You can type an entity id that is not in the list, for example while Home Assistant is offline. It is sent as typed.
+
+## How it runs
+
+- The action sends one service call to Home Assistant and goes on when Home Assistant has answered.
+- `{{placeholders}}` work in the entity, so `light.{{room}}_lamp` picks the lamp from a variable.
+- If Home Assistant cannot be reached or refuses the call (unknown entity, rejected token), the reason goes to the log and shows as the status under Settings → **Home Assistant**. The macro goes on with the next action.
+
+<Aside type="tip">
+**Active while** on a button follows OBS and Streamlabs only, so a pad cannot yet show the state of an entity by itself. For a light switch that shows its state, use a [Flip flop](/actions/flow/flip-flop/): side A turns on and sets the pad's colour, side B turns off and sets another colour.
+</Aside>
+
+## Related
+
+- [Set a value](/actions/home-assistant/set-a-value/) — brightness, position, volume and more
+- [Call a service](/actions/home-assistant/call-a-service/) — anything else Home Assistant can do
+- [Home Assistant](/guides/home-assistant/) — connecting Lunchpad

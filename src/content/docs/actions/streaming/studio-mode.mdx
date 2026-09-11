@@ -1,0 +1,42 @@
+---
+title: Studio mode
+description: Turn studio mode on or off, or push the preview scene live, in OBS Studio or Streamlabs Desktop.
+actionTypes: [obsStudioMode, slobsStudioMode]
+sidebar:
+  order: 7
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+<ActionHeader types={['obsStudioMode', 'slobsStudioMode']} />
+
+<Tabs syncKey="streaming-app">
+  <TabItem label="OBS Studio"><ActionShot type="obsStudioMode" alt="OBS: studio mode with Studio mode set to Transition: push preview live. Below: OBS Studio connected." /></TabItem>
+  <TabItem label="Streamlabs Desktop"><ActionShot type="slobsStudioMode" alt="Streamlabs: studio mode with Studio mode set to Transition: push preview live. Below: Streamlabs Desktop connected." /></TabItem>
+</Tabs>
+
+In studio mode, the app shows a preview next to the live output: you set up the next scene, then send it live with a transition. This action switches studio mode itself and gives you the transition button on a pad.
+
+<Aside type="note">
+Switch the integration on first, under Settings → **OBS Studio** or **Streamlabs Desktop**. See [OBS Studio and Streamlabs](/guides/obs-and-streamlabs/).
+</Aside>
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Studio mode** | **Turn on**, **Turn off**, **Toggle**, or **Transition: push preview live**. |
+
+## How it runs
+
+- **Turn on** while studio mode is on, or **Turn off** while it is off, changes nothing.
+- **Transition: push preview live** makes the preview scene the live scene, with the transition set in the app. It needs studio mode to be on; otherwise nothing happens (Streamlabs Desktop also notes it in the log).
+- In OBS Studio, [Switch scene](/actions/streaming/switch-scene/) changes the live scene directly, also in studio mode.
+- Errors are noted in the log and the macro goes on.
+
+## Related
+
+- [Switch scene](/actions/streaming/switch-scene/)
+- [OBS Studio and Streamlabs](/guides/obs-and-streamlabs/)

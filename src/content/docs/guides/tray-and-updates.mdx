@@ -1,0 +1,58 @@
+---
+title: Tray and updates
+description: Keep Lunchpad running in the tray, start it with your computer, and install new versions.
+sidebar:
+  order: 9
+---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Lunchpad runs its macros in the background. The window is only for editing: close it, and your pads keep working as long as Lunchpad sits in the tray.
+
+## The tray menu
+
+<Tabs syncKey="os">
+  <TabItem label="Windows">
+    The Lunchpad icon sits in the notification area of the taskbar. Click it to open the menu.
+  </TabItem>
+  <TabItem label="macOS">
+    The Lunchpad icon sits in the menu bar. Click it to open the menu. Clicking Lunchpad in the Dock also brings back a hidden window.
+  </TabItem>
+</Tabs>
+
+| Entry | What it does |
+| --- | --- |
+| **Join the Discord!** | Opens the Lunchpad Discord in your browser. |
+| **Show Lunchpad** | Brings the window back. |
+| **Stay on top** | Keeps the window above other windows. |
+| **Minimize to tray** | Closing the window hides it instead of quitting. |
+| **Run at startup** | Starts Lunchpad when you log in. |
+| **Stop all running macros** | Stops every macro that is running. |
+| **Quit** | Ends Lunchpad. Macros stop and the Launchpad goes dark. |
+
+The checkmarks match the switches in **Settings → Interface**, where **Minimize to tray** is called **Close to the tray** and **Run at startup** is called **Start Lunchpad with the system**. Changing one changes the other.
+
+## Start with your computer
+
+For a Launchpad that is always ready:
+
+1. Turn on **Start Lunchpad with the system** (or **Run at startup** in the tray).
+2. Turn on **Close to the tray**, so closing the window does not quit.
+3. Optionally turn on **Start hidden in the tray** in **Settings → Interface**, so Lunchpad starts without opening its window.
+
+With **Reconnect automatically** on (the default), Lunchpad connects to your Launchpad as soon as it starts, or when you plug it in later.
+
+<Aside type="caution">
+With **Close to the tray** off, closing the window quits Lunchpad and your pads stop working. Use **Quit** in the tray menu when you really want to end it.
+</Aside>
+
+## Updates
+
+Installed copies of Lunchpad look for a new release on GitHub a few seconds after they start. When there is one, a notice **Update available** appears with **Install and restart** and **Later**.
+
+- **Install and restart** downloads the new version, installs it and restarts Lunchpad.
+- **Later** hides the notice. You can install from **Settings → About Lunchpad** any time.
+
+**Check for updates** in **Settings → About Lunchpad** looks for a new version right now and tells you if you already have the latest.
+
+All releases, with their notes, are on the [releases page](https://github.com/ruohki/lunchpad/releases).

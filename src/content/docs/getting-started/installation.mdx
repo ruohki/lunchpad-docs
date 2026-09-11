@@ -1,0 +1,78 @@
+---
+title: Installation
+description: Download Lunchpad for Windows or macOS, give it the permissions it needs, and find where it keeps your data.
+sidebar:
+  order: 2
+---
+
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Lunchpad runs on Windows and macOS (Apple Silicon and Intel). Linux support is coming.
+
+## Download
+
+Get the latest build from the [releases page on GitHub](https://github.com/ruohki/lunchpad/releases). Pick the file for your system, install it like any other app, and start it.
+
+Once installed, Lunchpad checks the same releases page when it starts and offers new versions inside the app. See [Tray and updates](/guides/tray-and-updates/).
+
+## Set up your system
+
+<Tabs syncKey="os">
+  <TabItem label="Windows">
+    <Steps>
+
+    1. Run the installer and start Lunchpad.
+
+    2. Plug in your Launchpad. Windows needs no driver for it.
+
+    3. Close other programs that might be using the Launchpad, such as Ableton Live or another controller app. On Windows, only one program can open a MIDI port at a time, so Lunchpad cannot see a Launchpad that another program is holding.
+
+    </Steps>
+  </TabItem>
+  <TabItem label="macOS">
+    <Steps>
+
+    1. Open the downloaded file, move Lunchpad to your Applications folder and start it.
+
+    2. Plug in your Launchpad. macOS needs no driver for it.
+
+    3. Allow Lunchpad to press keys. Hotkey actions and push-to-talk need the Accessibility permission. Open **System Settings → Privacy & Security → Accessibility** and switch Lunchpad on.
+
+       If Lunchpad tries to press a key without the permission, it shows a notice **Lunchpad cannot press keys** with a **Check again** button. You can also go to **Settings → Keyboard** and click **Check keyboard access**, which opens the system prompt if the permission is missing.
+
+    </Steps>
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+Lunchpad does not need to stay in the foreground. Once your pages are set up you can close the window and keep it in the tray. Turn on **Close to the tray** in **Settings → Interface** so closing the window does not quit the app.
+</Aside>
+
+## Where your data lives
+
+Lunchpad keeps its settings, your pages and your shared variables in one folder:
+
+<Tabs syncKey="os">
+  <TabItem label="Windows">
+    - Settings and pages: `%APPDATA%\com.lunchpad.app`
+    - Logs: `%LOCALAPPDATA%\com.lunchpad.app\logs`
+  </TabItem>
+  <TabItem label="macOS">
+    - Settings and pages: `~/Library/Application Support/com.lunchpad.app`
+    - Logs: `~/Library/Logs/com.lunchpad.app`
+  </TabItem>
+</Tabs>
+
+Inside the settings folder:
+
+| File | What it holds |
+| --- | --- |
+| `profile.json` | Your pages, buttons, faders and actions. |
+| `profile.json.bak` | The profile as it was before the last change. **Settings → Pages & backup → Restore previous profile** brings it back. |
+| `variables.json` | Shared variables, so they survive a restart. |
+
+Sound files, images for buttons and programs you launch are not copied into this folder. Buttons point to them where they are on your disk, so keep them in a place that does not move.
+
+<Aside>
+Coming from the old Electron version of Lunchpad? Your old configuration can be imported. See [Pages and backup](/guides/pages-and-backup/#import-from-the-old-lunchpad).
+</Aside>

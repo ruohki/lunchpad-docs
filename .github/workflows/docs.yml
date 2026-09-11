@@ -1,0 +1,83 @@
+# Checks and builds the docs on every push and pull request. A tag starting
+# with "v" (v1.0.0, v2026.09.1, …) also publishes that build to the bunny.net
+# Storage Zone. Repository settings it reads:
+#   secrets    BUNNY_STORAGE_PASSWORD   storage zone password           (required to deploy)
+#              BUNNY_API_KEY            account API key                 } optional: purge the
+#   variables  BUNNY_PULLZONE_ID        pull zone id                    } CDN after a deploy
+#              BUNNY_STORAGE_ZONE       storage zone name, e.g. lunchpad-docs
+#              BUNNY_STORAGE_HOST       regional endpoint, default storage.bunnycdn.com
+#              SITE_URL                 public address, enables the sitemap (optional)
+name: Docs
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      - name: Every action of the app has a page and a screenshot
+        run: node scripts/actions.ts --check
+
+      - name: Build
+        run: bun run build
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: dist
+          retention-days: 14
+
+  deploy:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment: bunny
+    concurrency:
+      group: bunny-deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      # The exact build the job above checked, not a rebuild.
+      - uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: dist
+
+      - name: Publish to bunny.net
+        run: node scripts/deploy-bunny.ts
+        env:
+          BUNNY_STORAGE_ZONE: ${{ vars.BUNNY_STORAGE_ZONE }}
+          BUNNY_STORAGE_HOST: ${{ vars.BUNNY_STORAGE_HOST }}
+          BUNNY_STORAGE_PASSWORD: ${{ secrets.BUNNY_STORAGE_PASSWORD }}
+          BUNNY_API_KEY: ${{ secrets.BUNNY_API_KEY }}
+          BUNNY_PULLZONE_ID: ${{ vars.BUNNY_PULLZONE_ID }}

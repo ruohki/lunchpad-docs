@@ -1,0 +1,116 @@
+---
+// Every action of the app, grouped like the "Add action" menu, each linked to
+// the page whose `actionTypes` lists it. Built from the app's data, so a new
+// action appears here as soon as actions:sync ran (marked until it has a page).
+import { getCollection } from 'astro:content';
+import ActionIcon from './ActionIcon.astro';
+import { action, groupColour, groups, icons } from '~/lib/actions';
+
+const pages = await getCollection('docs', (entry) => (entry.data.actionTypes?.length ?? 0) > 0);
+const pageFor = (type: string) => pages.find((p) => p.data.actionTypes?.includes(type));
+---
+
+<div class="lp-action-index not-content">
+	{
+		groups.map((group) => {
+			const c = groupColour(group.id);
+			return (
+				<section>
+					<h2 id={`group-${group.id}`}>
+						<span class="lp-pad group-pad" style={`--pad: ${c.pad}; color: ${c.ink}`}>
+							{icons[group.icon] && <ActionIcon icon={group.icon} />}
+						</span>
+						{group.name}
+					</h2>
+					<ul>
+						{group.types.map((type) => {
+							const info = action(type);
+							const page = pageFor(type);
+							const inner = (
+								<>
+									<span class="lp-pad" style={`--pad: ${c.pad}; color: ${c.ink}`}>
+										<ActionIcon icon={info.icon} />
+									</span>
+									<span class="text">
+										<span class="name">{info.name}</span>
+										<span class="desc">{page?.data.description ?? info.desc}</span>
+									</span>
+								</>
+							);
+							return <li>{page ? <a href={`/${page.id}/`}>{inner}</a> : <div class="todo" title="Not documented yet">{inner}</div>}</li>;
+						})}
+					</ul>
+				</section>
+			);
+		})
+	}
+</div>
+
+<style>
+	.lp-action-index {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+		margin-top: 1.5rem;
+	}
+	h2 {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin: 0 0 0.8rem;
+		font-size: var(--sl-text-h4);
+		color: var(--sl-color-white);
+	}
+	.group-pad {
+		width: 1.6rem;
+	}
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+		gap: 0.6rem;
+	}
+	li a,
+	li .todo {
+		display: flex;
+		gap: 0.8rem;
+		align-items: flex-start;
+		height: 100%;
+		padding: 0.75rem 0.85rem;
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 12px;
+		background: var(--sl-color-gray-6);
+		text-decoration: none;
+		transition: border-color 0.15s, transform 0.15s;
+	}
+	li a:hover {
+		border-color: var(--sl-color-accent);
+		transform: translateY(-1px);
+	}
+	.todo {
+		opacity: 0.55;
+		border-style: dashed !important;
+	}
+	.lp-pad {
+		width: 2.3rem;
+		flex-shrink: 0;
+	}
+	.text {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		min-width: 0;
+	}
+	.name {
+		color: var(--sl-color-white);
+		font-weight: 600;
+		font-size: var(--sl-text-sm);
+	}
+	.desc {
+		color: var(--sl-color-gray-3);
+		font-size: var(--sl-text-xs);
+		line-height: 1.45;
+	}
+</style>

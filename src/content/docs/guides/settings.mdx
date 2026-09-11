@@ -1,0 +1,106 @@
+---
+title: Settings
+description: Every settings tab and switch in Lunchpad, and what it does.
+sidebar:
+  order: 8
+---
+
+import AppShot from '~/components/AppShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+Open the settings with the round gear in the corner of the pad grid. Changes take effect right away; there is no save button. <kbd>Esc</kbd> closes the settings.
+
+The tabs are grouped as in the app: **General**, **Integrations**, **Data** and **About**.
+
+## General
+
+### Launchpad
+
+<AppShot name="settings-launchpad" alt="The Launchpad settings tab." />
+
+**Connected device** shows the MIDI ports and firmware of the connected Launchpad.
+
+- **Repaint LEDs** sends every pad's colour to the device again, in case the LEDs got out of step.
+- **Disconnect** releases the Launchpad and goes back to the device list.
+- **Forget this Launchpad** removes the remembered device, so Lunchpad does not reconnect to it.
+
+**Behaviour:**
+
+- **Reconnect automatically**: reconnects the remembered Launchpad on start and when it is plugged in.
+- **Light empty pads while held**: pads without a button glow while pressed, so the connection is easy to check.
+- **Custom press threshold** (velocity-sensitive Launchpads only): a press lighter than this velocity is ignored. The model default is 25. Lower it if soft presses are missed, raise it if pads trigger too easily.
+
+### Sound
+
+<AppShot name="settings-sound" alt="The Sound settings tab." />
+
+**Default output device**: where sounds play unless an action picks another device. **System default** follows your computer's default device. **Refresh** reads the device list again after you plugged in headphones or an interface.
+
+### Keyboard
+
+<AppShot name="settings-keyboard" alt="The Keyboard settings tab." />
+
+**Push-to-talk:** macros can wrap actions in **Push-to-talk on** and **Push-to-talk off** markers. While such a section runs, Lunchpad holds the key combination you set here, for example your Discord push-to-talk key.
+
+- **Hold a key while push-to-talk sections run** switches the feature on.
+- **Key**: click and press the key. A mouse button works too: the middle button or the side buttons.
+- **With**: modifier keys to hold along with it.
+
+See [Push-to-talk](/actions/flow/push-to-talk/) for the action.
+
+**Check keyboard access**: on macOS, Lunchpad needs the Accessibility permission to press keys. This button opens the system prompt if it is missing.
+
+### Interface
+
+<AppShot name="settings-interface" alt="The Interface settings tab." />
+
+**Window** (the same switches are in the tray menu):
+
+- **Keep the window above other windows**.
+- **Close to the tray**: closing the window hides it; macros keep running and the tray icon brings it back.
+- **Start Lunchpad with the system**: registers Lunchpad as a login item.
+- **Start hidden in the tray**: Lunchpad opens without a window; the tray icon shows it.
+
+**Developer mode:** **Show diagnostics in the main window** adds the side panel with the connection status, device facts, the MIDI monitor and shared variables. See [developer mode](/guides/main-window/#developer-mode).
+
+## Integrations
+
+### OBS Studio and Streamlabs Desktop
+
+Connection settings for the two streaming apps: host, port, password or token, **Connect automatically**, and the connection status. Set-up is explained in [OBS Studio and Streamlabs](/guides/obs-and-streamlabs/).
+
+### Home Assistant
+
+**Connect to Home Assistant**, the **Home Assistant address**, the **Long-lived access token**, **Accept a self-signed certificate**, the connection status and **Reload entities**. Set-up is explained in [Home Assistant](/guides/home-assistant/).
+
+Passwords and tokens of the integrations are not written into the settings file: installed copies keep them in the system's credential store (the Keychain on macOS, the Credential Manager on Windows).
+
+## Data
+
+### Pages & backup
+
+Your pages in a list, page import and export, **Restore previous profile**, and **Import from the old Lunchpad**. See [Pages and backup](/guides/pages-and-backup/).
+
+## About
+
+### About Lunchpad
+
+<AppShot name="settings-about" alt="The About Lunchpad settings tab." />
+
+The version you run, links to the source code and the releases, the licence, and the Discord link.
+
+**Updates:** Lunchpad looks for a new release on GitHub when it starts. **Check for updates** looks right now. When a new version is available, **Install and restart** downloads and installs it. See [Tray and updates](/guides/tray-and-updates/#updates).
+
+### Diagnostics
+
+<AppShot name="settings-diagnostics" alt="The Diagnostics settings tab." />
+
+A **Report** to copy into a bug report. It lists versions, your system, MIDI ports, audio devices and the integrations, nothing personal beyond device names.
+
+- **Refresh** collects the report again.
+- **Copy report** puts it on the clipboard.
+- **Open log folder** shows the log files, which help when something goes wrong.
+
+<Aside type="tip">
+When you ask for help on Discord or open an issue on GitHub, paste the diagnostics report. It answers most of the first questions.
+</Aside>

@@ -1,0 +1,30 @@
+---
+title: Nothing on this pad
+description: The page you were looking for does not exist.
+template: splash
+editUrl: false
+pagefind: false
+hero:
+  title: Nothing on this pad
+  tagline: This page does not exist, or it moved. Pages about actions are named after the action, for example /actions/media/play-sound/.
+  actions:
+    - text: All actions
+      link: /actions/
+      icon: list-format
+    - text: Start page
+      link: /
+      icon: right-arrow
+      variant: minimal
+---
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+import PadGrid from '~/components/PadGrid.astro';
+
+<PadGrid rows={2} />
+
+Use the search at the top (<kbd>Ctrl</kbd> <kbd>K</kbd> or <kbd>⌘</kbd> <kbd>K</kbd>) to find a page by any word on it. If a link on this site brought you here, let us know on [Discord](https://discord.gg/4Ys9TRR) or in the [GitHub issues](https://github.com/ruohki/lunchpad/issues) so it gets fixed.
+
+<CardGrid>
+	<LinkCard title="Getting started" href="/getting-started/introduction/" description="What Lunchpad is and how to set it up." />
+	<LinkCard title="Troubleshooting" href="/help/troubleshooting/" description="Common problems and their fixes." />
+</CardGrid>

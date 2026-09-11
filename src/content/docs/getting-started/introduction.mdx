@@ -1,0 +1,56 @@
+---
+title: Introduction
+description: What Lunchpad is, how it thinks about pages, buttons and actions, and what you can build with it.
+sidebar:
+  order: 1
+---
+
+import AppShot from '~/components/AppShot.astro';
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+Lunchpad turns a Novation Launchpad into a macro controller. Every pad becomes a button with its own look and colour, and every button runs a list of actions when you press it: play a sound, switch an OBS scene, press a hotkey, call a web address, and a lot more.
+
+You do not need a Launchpad to try it. Lunchpad can draw the pads on screen, and clicking them runs the same macros.
+
+<AppShot name="main-window" alt="The Stream page on a Launchpad X: scene buttons in the top grid row, a sound board row below them and a volume fader on column 8." />
+
+## How it fits together
+
+Lunchpad has a small set of ideas. Once you know them, the rest of the app follows.
+
+<CardGrid>
+  <Card title="Pages" icon="document">
+    A page is a full layout for the Launchpad. Keep as many as you like, for example one for streaming and one for sounds. The active page is painted onto the device.
+  </Card>
+  <Card title="Buttons" icon="puzzle">
+    A button sits on one pad. It has a label (text or an image), a colour, an optional colour for when it is active, and its action lists.
+  </Card>
+  <Card title="Action lists" icon="list-format">
+    Every button has three lists: **When pressed**, **When released** and **When held**. The actions in a list run from top to bottom.
+  </Card>
+  <Card title="Faders" icon="setting">
+    A row or column of pads can act as one fader. Pressing a pad sets the level, and the level can drive any action, such as the volume of a microphone in OBS.
+  </Card>
+</CardGrid>
+
+A running list of actions is called a macro. Macros keep running while the window is hidden: Lunchpad lives in the tray (the menu bar on macOS), so you can close the window and keep using the pads.
+
+## What you can do with it
+
+- Play sounds on any output device, trimmed with a waveform editor, louder or softer depending on how hard you hit the pad.
+- Control OBS Studio and Streamlabs Desktop: scenes, sources, audio, filters, streaming, recording and the replay buffer.
+- Control your smart home through Home Assistant: switch lights and plugs, set brightness, blinds, fans and speakers, or call any service.
+- Press hotkeys, type text, start programs and scripts.
+- Call web APIs, keep values in variables, branch on conditions and run small JavaScript snippets.
+- Change colours of any button, switch pages, run other buttons, and alternate between two sets of actions.
+
+The full list is in the [action reference](/actions/).
+
+## Free software
+
+Lunchpad is free software under the GNU General Public License v3. You can use it, change it and pass it on, as long as you keep the licence, the credits and the source with it. If you paid money for it, you got ripped off.
+
+<CardGrid>
+  <LinkCard title="Install Lunchpad" href="/getting-started/installation/" description="Download it for Windows or macOS." />
+  <LinkCard title="First launch" href="/getting-started/first-launch/" description="Connect a Launchpad and make your first button." />
+</CardGrid>

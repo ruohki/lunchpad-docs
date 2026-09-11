@@ -1,0 +1,53 @@
+---
+title: Call a service
+description: Call any Home Assistant service with your own JSON data, for everything the other two actions do not cover.
+actionTypes: [homeAssistantCallService]
+sidebar:
+  order: 3
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['homeAssistantCallService']} />
+
+<ActionShot type="homeAssistantCallService" alt="Home Assistant: call a service with Domain light, Service turn_on, Entity light.shelf and the service data { &quot;rgb_color&quot;: [255, 122, 26], &quot;transition&quot;: 1.5 }" />
+
+Everything Home Assistant can do is a service: turn a light orange, run a script, activate a scene, send a notification to your phone. Call a service lets a pad do any of it. You write the domain, the service and its data; Lunchpad sends it.
+
+<Aside type="note">
+Connect Lunchpad to Home Assistant first, under Settings → **Home Assistant**. See [Home Assistant](/guides/home-assistant/).
+</Aside>
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Domain** | The part of the service before the dot, for example `light`, `scene` or `notify`. |
+| **Service** | The service itself, for example `turn_on`. Together: `light.turn_on`. |
+| **Entity (optional)** | An entity to act on, with the same suggestions as the other actions. It is added to the data as `entity_id`. Leave it empty for services without an entity, or to set `entity_id` in the data yourself. |
+| **Service data (JSON)** | Optional. A JSON object with the service's fields, for example `{ "rgb_color": [255, 122, 26] }`. Empty sends no fields. |
+
+To find a service and its fields, open **Developer tools** in Home Assistant and go to the **Actions** tab. It lists every service with a description of each field, and can show the data as YAML, which translates directly into JSON.
+
+## How it runs
+
+- `{{placeholders}}` work in every field. In the data they are filled in before the JSON is read, so write text placeholders in quotes (`"message": "{{user}} is live"`) and numbers without (`"brightness_pct": {{fader.desk}}`).
+- The data must be a JSON object. If it is not valid JSON after the placeholders are filled in, nothing is sent and the reason goes to the log.
+- If Home Assistant refuses the call (unknown service, wrong field), its message goes to the log and shows as the status under Settings → **Home Assistant**. The macro goes on.
+
+## Examples
+
+| Goal | Domain | Service | Entity | Data |
+| --- | --- | --- | --- | --- |
+| Shelf LEDs orange | `light` | `turn_on` | `light.shelf` | `{ "rgb_color": [255, 122, 26] }` |
+| Activate a scene | `scene` | `turn_on` | `scene.stream_start` | |
+| Run a script | `script` | `goodnight` | | |
+| Message to your phone | `notify` | `mobile_app_your_phone` | | `{ "message": "Stream is live" }` |
+
+## Related
+
+- [Turn on or off](/actions/home-assistant/turn-on-or-off/) and [Set a value](/actions/home-assistant/set-a-value/) — the common cases, without JSON
+- [HTTP request](/actions/system/http-request/) — for services that are not Home Assistant
+- [Variables and placeholders](/guides/variables/)

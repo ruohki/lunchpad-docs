@@ -1,0 +1,60 @@
+---
+// A little Launchpad drawn in CSS: pads in the app's shape, a diagonal LED sweep
+// like the one Lunchpad plays when it connects. Decoration only.
+interface Props {
+	columns?: number;
+	rows?: number;
+}
+
+const { columns = 8, rows = 4 } = Astro.props;
+const hues = [18, 32, 45, 150, 172, 210, 262, 320];
+const pads = Array.from({ length: rows * columns }, (_, i) => {
+	const x = i % columns;
+	const y = Math.floor(i / columns);
+	const hue = hues[(x + y) % hues.length];
+	return { delay: (x + y) * 90, colour: `hsl(${hue} 95% 58%)` };
+});
+---
+
+<div class="lp-grid not-content" style={`--cols: ${columns}`} aria-hidden="true">
+	{pads.map((p) => <span class="cell" style={`--pad: ${p.colour}; animation-delay: ${p.delay}ms`} />)}
+</div>
+
+<style>
+	.lp-grid {
+		display: grid;
+		grid-template-columns: repeat(var(--cols), 1fr);
+		gap: 0.45rem;
+		padding: 0.8rem;
+		max-width: 32rem;
+		margin-inline: auto;
+		border-radius: 18px;
+		background: var(--lp-stage-900);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 18px 40px -24px rgba(0, 0, 0, 0.9);
+	}
+	.cell {
+		aspect-ratio: 1;
+		border-radius: 14%;
+		background: var(--lp-stage-700);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 -3px 0 rgba(0, 0, 0, 0.45);
+		animation: sweep 3.6s ease-in-out infinite;
+	}
+	@keyframes sweep {
+		0%,
+		62%,
+		100% {
+			background: var(--lp-stage-700);
+		}
+		14%,
+		30% {
+			background: var(--pad);
+			box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.35), 0 0 16px -2px var(--pad);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.cell {
+			animation: none;
+			background: var(--pad);
+		}
+	}
+</style>

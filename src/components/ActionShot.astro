@@ -1,0 +1,14 @@
+---
+// The editor of one action, as captured by scripts/screenshots/scenarios/actions.ts.
+import Screenshot from './Screenshot.astro';
+
+interface Props {
+	type: string;
+	alt: string;
+	caption?: string;
+}
+
+const { type, alt, caption } = Astro.props;
+---
+
+<Screenshot name={`actions/${type}`} alt={alt} caption={caption} />

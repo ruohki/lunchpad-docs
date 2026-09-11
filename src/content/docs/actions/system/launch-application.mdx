@@ -1,0 +1,55 @@
+---
+title: Launch application
+description: Start a program or script, pass it arguments, and optionally keep what it prints.
+actionTypes: [launchApplication]
+sidebar:
+  order: 2
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['launchApplication']} />
+
+<ActionShot type="launchApplication" alt="Launch application running powershell.exe with the arguments -File “C:\Scripts\lights.ps1” {{velocity}}. Stop the program when the macro stops and Start without a window are on, and the output is saved to the variable lightsResult." />
+
+Launch application starts a program, the same way you would from a terminal. Open your streaming tools with one press, run a script that talks to your smart lights, or call a command-line tool and use its answer in the next actions.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Program or script** | The path of the program, or the name of a program on the PATH, such as `powershell.exe` or `python`. **Choose…** opens a file picker. |
+| **Arguments** | Passed to the program. They are split like in a shell: quotes keep words with spaces together, as in `-File "C:\My Scripts\lights.ps1"`. |
+| **Stop the program when the macro stops** | On: stopping the macro closes the program (on macOS its child processes too). Off: the program keeps running on its own. |
+| **Start without a window** | Windows only. Starts console programs and scripts without opening a console window. |
+| **Save output to variable** | Stores what the program prints (its standard output) in this variable once it exits. Trailing spaces and line breaks are trimmed. |
+| **Scope** | **This run** keeps the variable to this macro, **Everywhere** shares it with all macros. See [variables](/guides/variables/). |
+
+## How it runs
+
+- Lunchpad starts the program directly, not through a shell. Pipes, redirects, `&&` and variables like `%APPDATA%` do not work in the fields. Run a shell when you need them: `cmd.exe` with `/c ...`, `powershell.exe` with `-Command ...`, or `/bin/sh` with `-c "..."` on macOS.
+- With **Wait** on, the macro waits until the program exits. With **Wait** off, the next actions start straight away, but the macro still counts as running until the program has exited.
+- `{{placeholders}}` work in **Program or script** and **Arguments**, for example to pass `{{velocity}}` to a script.
+- Only standard output is saved, not error output, and only once the program exits. Keep **Wait** on so the next actions can read the variable. If the macro is stopped before the program exits, the variable is not set.
+- A program that cannot be started (wrong path, no permission) is noted in the log and the macro goes on.
+
+<Aside type="tip" title="Apps on macOS">
+An `.app` is a folder, not a program. Use `open` as the program with `-a "OBS"` as arguments, or point at the binary inside the bundle. With `open`, Lunchpad only starts `open` itself, which exits at once, so **Stop the program when the macro stops** cannot close the app.
+</Aside>
+
+## Example
+
+Dim your room lights with how hard you hit the pad (on a velocity-sensitive Launchpad):
+
+- **Program or script**: `powershell.exe`
+- **Arguments**: `-File "C:\Scripts\lights.ps1" {{velocity}}`
+- **Start without a window**: on
+- **Save output to variable**: `lightsResult`, so a following [Condition](/actions/flow/condition/) can check what the script reported.
+
+## Related
+
+- [HTTP request](/actions/system/http-request/) — talk to a web service without a script
+- [Run script](/actions/system/run-script/) — process the saved output
+- [Stop this macro](/actions/stop/stop-this-macro/) — close a program started with **Stop the program when the macro stops**

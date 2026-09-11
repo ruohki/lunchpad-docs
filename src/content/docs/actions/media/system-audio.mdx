@@ -1,0 +1,53 @@
+---
+title: System audio
+description: Set, nudge or mute the volume of your speakers or microphone, fixed or from a fader.
+actionTypes: [setSystemVolume]
+sidebar:
+  order: 3
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['setSystemVolume']} />
+
+<ActionShot type="setSystemVolume" alt="System audio action set to Device Speakers, Do Set the volume, at 35 %" />
+
+System audio changes the volume of your computer's default speakers or microphone, or mutes them. The level can be fixed or come from a variable, so a [fader](/guides/faders/) on the Launchpad becomes a master volume control.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Device** | **Speakers**: the system's default output device. **Microphone**: the system's default input device. To change which device is the default, use [Switch audio device](/actions/media/switch-audio-device/). |
+| **Do** | **Set the volume** to a level, **Change the volume by** a step, **Mute**, **Unmute** or **Toggle mute**. |
+| **Volume** | For **Set the volume**: the level, 0 to 100 %. |
+| **Step** | For **Change the volume by**: −50 to +50 %. Negative steps turn it down. The result never goes below 0 or above 100 %. |
+| **From variable** | A variable whose number replaces the slider, for example `value` in a fader's actions or `fader.volume` anywhere. If the variable does not hold a number, the slider value is used. |
+
+## How it runs
+
+- The action has no **Wait** switch. The next action starts once the system has applied the change.
+- If the system refuses the change, the reason goes to the log and the macro goes on.
+
+<Aside type="caution" title="macOS">
+macOS has no mute switch for the microphone. **Mute** sets the input level to 0 and **Unmute** brings back the level it had before (75 % if Lunchpad does not know it). **Toggle mute** treats a level of 0 as muted.
+
+Some outputs, such as HDMI and many USB interfaces, have no software volume on macOS. The system cannot change them either, so the action fails for them.
+</Aside>
+
+## Example
+
+A master volume on the Launchpad:
+
+1. Right-click a pad and choose **New fader here…**, range 0 to 100, unit `%`.
+2. On the fader's **Actions** tab, under **When the level changes**, add System audio: **Speakers**, **Set the volume**, **From variable** `value`.
+
+Two more buttons with **Change the volume by** −5 and +5 make fine steps.
+
+## Related
+
+- [Faders](/guides/faders/) — pads as a volume slider
+- [Switch audio device](/actions/media/switch-audio-device/) — pick which device is the default
+- [OBS & Streamlabs: set audio](/actions/streaming/set-audio/) — the volume of one source in your streaming app

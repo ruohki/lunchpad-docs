@@ -1,0 +1,79 @@
+---
+title: Variables and placeholders
+description: Pass values between actions with variables and use them in any text field as placeholders.
+sidebar:
+  order: 4
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Variables let actions pass values to each other. One action stores a value, a later action uses it. Every macro also gets a few values from the press itself, such as how hard you hit the pad.
+
+## Placeholders
+
+Write a variable's name in double curly braces, like `{{velocity}}`, in a text field of an action. When the action runs, Lunchpad replaces it with the variable's current value.
+
+Placeholders work in the text of **Text to speech**, the program and arguments of **Launch application**, typed text in a **Hotkey sequence**, the URL, headers, body and login of an **HTTP request**, the value of **Set variable**, the amount of **Add to variable**, the value of a **Condition**, the value of **Set fader**, and the scene, source and filter names of the OBS and Streamlabs actions.
+
+Type `{{` in such a field and Lunchpad offers the variables it knows: the built-ins, the variables this button writes, the shared variables and the fader levels.
+
+<Aside>
+A placeholder with a name Lunchpad does not know stays in the text as it is. If you see `{{something}}` in a spoken text or a web request, check the spelling of the variable.
+</Aside>
+
+## Built-in values
+
+Every macro can read these:
+
+| Placeholder | Value |
+| --- | --- |
+| `{{velocity}}` | How hard the pad was hit, 1 to 127. Models without velocity always report 127. |
+| `{{velocity01}}` | The same as a number from 0 to 1, for example `0.504`. |
+| `{{pressure}}` | The pressure (aftertouch) on the pad while you hold it, 0 to 127. 0 once released or on models without pressure. |
+| `{{pressure01}}` | The same as a number from 0 to 1. |
+| `{{x}}` | The column of the pad, counted from 0 at the left. |
+| `{{y}}` | The row of the pad, counted from 0 at the bottom. |
+| `{{pageId}}` | The id of the page the button is on. |
+
+A button started by [Run another button](/actions/general/run-another-button/) gets the velocity of the original press.
+
+## Your own variables
+
+These actions store values:
+
+- [Set variable](/actions/system/set-variable/) sets a variable to a text or a placeholder.
+- [Add to variable](/actions/system/add-to-variable/) adds a number, for counters.
+- [HTTP request](/actions/system/http-request/) can save the response body under a name, and the status code under the same name with `.status` added. A request that fails stores an empty body and status `0`.
+- [Launch application](/actions/system/launch-application/) can save the program's output.
+- [Run script](/actions/system/run-script/) can save its result, and can change variables directly.
+
+[Condition](/actions/flow/condition/) reads a variable and runs different actions depending on its value.
+
+## Scope: this run or everywhere
+
+When you store a variable, you choose its **Scope**:
+
+| Scope | Who sees it | How long it lives |
+| --- | --- | --- |
+| **This run** | Only this macro, and the buttons it runs with **Run another button**. | Until the macro ends. |
+| **Everywhere** | Every macro on every page. | Across restarts: Lunchpad saves shared variables and loads them again when it starts. |
+
+If a variable exists in both scopes, the **This run** value wins. Avoid the names of the built-in values for your own variables: `{{velocity}}` always means the press.
+
+Shared variables are listed with their values in the side panel of [developer mode](/guides/main-window/#developer-mode).
+
+<Aside type="tip">
+A death counter is two buttons: one with **Add to variable** `deaths`, amount `1`, and one with amount `-1`, both with scope **Everywhere**. A third button can say "`{{deaths}}` deaths so far" with **Text to speech**.
+</Aside>
+
+## Faders as variables
+
+Every [fader](/guides/faders/) keeps its level in a shared variable named `fader.` followed by the fader's name, for example `{{fader.volume}}`. Any macro can read it.
+
+Writing to that variable with the scope **Everywhere** moves the fader: **Set variable** `fader.volume` to `50`, or **Add to variable** `fader.volume` with `-5`, and the fader's pads and actions follow. With **This run** the value stays a variable of that macro and the fader does not move.
+
+While a fader runs its own actions, it also provides `value`, `percent`, `fraction`, `step`, `steps` and `display`. See [Faders](/guides/faders/#what-the-actions-receive).
+
+## Numbers from variables
+
+Volume actions have a **From variable** field instead of a placeholder. Enter just the name (for example `value` or `fader.volume`), or a placeholder. When the variable holds a number, it replaces the slider. When it does not, the slider's value is used.

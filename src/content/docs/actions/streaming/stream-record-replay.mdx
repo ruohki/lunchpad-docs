@@ -1,0 +1,58 @@
+---
+title: Stream, record, replay
+description: Start, stop or toggle the stream, the recording or the replay buffer in OBS Studio or Streamlabs Desktop.
+actionTypes: [obsStream, slobsStream]
+sidebar:
+  order: 5
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+<ActionHeader types={['obsStream', 'slobsStream']} />
+
+<Tabs syncKey="streaming-app">
+  <TabItem label="OBS Studio"><ActionShot type="obsStream" alt="OBS: stream, record, replay with What set to Replay buffer and Action set to Toggle. Below the fields: OBS Studio connected." /></TabItem>
+  <TabItem label="Streamlabs Desktop"><ActionShot type="slobsStream" alt="Streamlabs: stream, record, replay with What set to Replay buffer and Action set to Toggle. Below the fields: Streamlabs Desktop connected." /></TabItem>
+</Tabs>
+
+This action runs the big switches of your streaming app: going live, recording, and the replay buffer that keeps the last moments ready to save.
+
+<Aside type="note">
+Switch the integration on first, under Settings → **OBS Studio** or **Streamlabs Desktop**. See [OBS Studio and Streamlabs](/guides/obs-and-streamlabs/).
+</Aside>
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **What** | **Stream**, **Recording** or **Replay buffer**. |
+| **Action** | **Start**, **Stop** or **Toggle** (start when off, stop when running). |
+
+## How it runs
+
+- **Start** on something already running, or **Stop** on something that is off, changes nothing. Streamlabs Desktop checks first; OBS Studio refuses the request, which ends up in the log.
+- The replay buffer has to be set up in the app before it can start (in OBS Studio under Settings → Output → Replay Buffer).
+- Errors are noted in the log and the macro goes on.
+
+<Aside type="caution">
+A pad that stops the stream is easy to hit by accident. Consider putting it in **When held** so it needs a long press, see [action lists](/guides/action-lists/).
+</Aside>
+
+<Aside type="tip">
+Set **Active while** to **Streaming**, **Recording** or **Replay buffer running** so the pad shows the state. See [buttons](/guides/buttons/).
+</Aside>
+
+## Example
+
+A "Go live" button:
+
+1. [Switch scene](/actions/streaming/switch-scene/) `Starting soon`.
+2. **Stream, record, replay**: **Replay buffer**, **Start**.
+3. **Stream, record, replay**: **Stream**, **Start**.
+
+## Related
+
+- [Save replay](/actions/streaming/save-replay/)
+- [Switch scene](/actions/streaming/switch-scene/)

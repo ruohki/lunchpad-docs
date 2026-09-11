@@ -1,0 +1,111 @@
+---
+title: Troubleshooting
+description: Fixes for the most common problems with Launchpads, keys, sounds and the streaming integrations.
+sidebar:
+  order: 1
+---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Find your symptom below. If nothing here helps, see [Get help](#get-help) at the end.
+
+## The Launchpad does not show up
+
+- Plug it in and wait a moment. The device list updates on its own; **Scan again** looks once more.
+- Try another USB cable or port. Some cables only charge.
+- Make sure your model is [supported](/getting-started/supported-launchpads/).
+- **On Windows**, only one program can use a MIDI port at a time. Close Ableton Live, Novation Components, another controller app or a browser tab with Web MIDI, then scan again.
+
+If the Launchpad shows up as **Identified by port name only**, it did not answer the identification request. That is normal for the Launchpad S. For other models it can mean the port is busy or the device is still starting up; unplug and plug it in again.
+
+## Pads light up on screen but nothing happens on the device, or the other way round
+
+- Open **Settings → Launchpad** and click **Repaint LEDs**.
+- Turn on developer mode (**Settings → Interface → Show diagnostics in the main window**) and press a pad. If the **MIDI monitor** stays empty, the Launchpad does not reach Lunchpad: check the cable and close other MIDI apps.
+- **Disconnect** and connect again from the device list.
+
+## Keys are not pressed (macOS)
+
+Hotkeys and push-to-talk need the Accessibility permission.
+
+1. Open **System Settings → Privacy & Security → Accessibility**.
+2. Switch Lunchpad on. If it is already on, switch it off and on again after an update.
+3. In Lunchpad, click **Check again** on the notice, or **Settings → Keyboard → Check keyboard access**.
+
+## Soft presses are missed, or pads trigger too easily
+
+On velocity-sensitive Launchpads, presses below a threshold are ignored. Open **Settings → Launchpad**, turn on **Custom press threshold** and move the slider: lower if soft presses are missed, higher if pads fire when you brush them. The default is 25.
+
+On a **Launchpad Pro**, the press force comes from the Pro's own set-up screen. Hold **Setup** and check the velocity option in the third grid row from the top. With **Off**, every press counts as full force, so **Volume follows velocity** has no effect.
+
+## A pad shows a small dot
+
+The dot means a sound file this button plays is missing: it was moved, renamed or deleted, or the page came from another computer. Open the button, expand the **Play sound** action and choose the file again. A notice also lists the missing files.
+
+## Buttons disappeared after switching Launchpads
+
+Buttons are kept by position. If the new Launchpad has no pad at that position, the button is hidden, not deleted. A notice tells you how many, and **Settings → Pages & backup** shows the count per page. Connect the bigger Launchpad again to see them. See [Using pages on another model](/getting-started/supported-launchpads/#using-pages-on-another-model).
+
+## OBS Studio does not connect
+
+- Make sure OBS is running, version 28 or newer.
+- In OBS, open **Tools → WebSocket Server Settings**, switch on the server, and compare the port and password with **Settings → OBS Studio** in Lunchpad.
+- The **Status** line in the OBS tab shows the error OBS reports.
+- If OBS runs on another computer, enter that computer's address as **Host** and check that a firewall lets the port through.
+
+## Streamlabs Desktop does not connect
+
+- Make sure Streamlabs Desktop is running.
+- On the same computer, leave **Host** and **Port** at their defaults. Nothing needs to be switched on in Streamlabs.
+- For Streamlabs on another computer, turn on **Remote Control** in Streamlabs (**Settings → Remote Control**) and copy its token into **API token**.
+
+## Home Assistant does not connect
+
+- The status line under **Settings → Home Assistant** shows the reason. **the access token was rejected** means the token is wrong or was deleted: create a new one on your Home Assistant profile page, under **Security**.
+- **could not connect** or **timed out**: check the **Home Assistant address**, including `http://` or `https://` and the port, by opening it in a browser on the same computer.
+- For an `https://` address with a self-signed certificate, switch on **Accept a self-signed certificate**.
+- A new entity is missing from the suggestions: click **Reload entities**.
+
+More in [Home Assistant](/guides/home-assistant/#when-it-does-not-connect).
+
+## OBS, Streamlabs or Home Assistant actions are missing from the menu
+
+The **+ Add action** menu only shows integrations you have switched on. Turn on **Connect to OBS Studio**, **Connect to Streamlabs Desktop** or **Connect to Home Assistant** in the settings.
+
+## A macro keeps running
+
+Loops and long waits run until they end or you stop them. Right-click any pad and choose **Stop all macros**, or use **Stop all running macros** in the tray menu. To make a button stop itself, see [Stop this macro](/actions/stop/stop-this-macro/) and [Repeat while held](/guides/action-lists/#repeat-while-held).
+
+## Lunchpad is gone when I close the window
+
+With **Close to the tray** off, closing the window quits Lunchpad. Turn it on in **Settings → Interface**. See [Tray and updates](/guides/tray-and-updates/).
+
+## Something changed and I want it back
+
+- <kbd>Ctrl</kbd> + <kbd>Z</kbd> (<kbd>⌘</kbd> + <kbd>Z</kbd> on macOS) undoes changes to your pages while no editor is open.
+- **Settings → Pages & backup → Restore previous profile** brings back the profile as it was before the last change.
+
+## Logs and the diagnostics report
+
+Open **Settings → Diagnostics**:
+
+- **Copy report** copies a summary of versions, your system, MIDI ports, audio devices and integrations.
+- **Open log folder** shows the log files.
+
+<Tabs syncKey="os">
+  <TabItem label="Windows">
+    The logs are in `%LOCALAPPDATA%\com.lunchpad.app\logs`.
+  </TabItem>
+  <TabItem label="macOS">
+    The logs are in `~/Library/Logs/com.lunchpad.app`.
+  </TabItem>
+</Tabs>
+
+## Get help
+
+- Ask on [Discord](https://discord.gg/4Ys9TRR). You get the latest builds and help there.
+- Report a bug on [GitHub](https://github.com/ruohki/lunchpad/issues).
+
+<Aside type="tip">
+Paste the diagnostics report and describe what you pressed, what you expected, and what happened. Attach the latest log file if Lunchpad showed an error.
+</Aside>

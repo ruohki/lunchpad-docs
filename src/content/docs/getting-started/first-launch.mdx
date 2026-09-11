@@ -1,0 +1,61 @@
+---
+title: First launch
+description: Pick your Launchpad (or use the pads on screen) and build your first button.
+sidebar:
+  order: 3
+---
+
+import AppShot from '~/components/AppShot.astro';
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+## Choose your Launchpad
+
+The first time you start Lunchpad, it shows **Choose your Launchpad**. Lunchpad asks every MIDI device to identify itself, so the list only shows Launchpads it can actually drive.
+
+<AppShot name="device-picker" alt="First launch: a Launchpad X and a Launchpad Mini MK3 found, with the option to start without a Launchpad." />
+
+Each entry tells you how the device was recognised:
+
+- **Identified by device inquiry**: the Launchpad answered the identification request, often with its firmware version. This is the reliable way.
+- **Identified by port name only**: the device did not answer, so Lunchpad went by the name of its MIDI port. The Launchpad S works this way.
+
+Click **Connect** next to your Launchpad. The pads light up in a sweep and the main window opens with your first page.
+
+If nothing shows up, plug the Launchpad in and wait a moment: the list updates on its own. **Scan again** looks once more. On Windows, close other apps that may hold the MIDI ports.
+
+<Aside type="tip">
+**Reconnect automatically** (on by default) remembers the Launchpad you connect and connects to it again when Lunchpad starts and whenever you plug it in. A remembered device is marked **remembered** in the list.
+</Aside>
+
+## No Launchpad? Use the pads on screen
+
+Below the device list, **No Launchpad? Use the pads on screen.** lets you pick a **Layout** (any supported model) and click **Start without a Launchpad**. The pads in the window then run your macros when you click them, and you can switch to a real Launchpad any time.
+
+This is also handy for building pages for a friend's Launchpad model.
+
+## Make your first button
+
+<Steps>
+
+1. Right-click an empty pad and choose **Add button…**.
+
+   A new button gets a random colour from the palette so you can tell it apart right away.
+
+2. On the **Appearance** tab, type a **Caption**, for example `Hello`.
+
+3. Switch to the **Actions** tab. Under **When pressed**, click **+ Add action** and open **Media → Text to speech**.
+
+4. Type a text to speak, for example `Hello chat`. Click **Preview** to hear it.
+
+5. Click **Save**.
+
+6. Press the pad on your Launchpad (or click it on screen). Lunchpad speaks your text.
+
+</Steps>
+
+That is the whole loop: a button, a list of actions, a press. From here:
+
+- Learn what the main window can do in [The main window](/guides/main-window/).
+- Style buttons with colours and images in [Buttons](/guides/buttons/).
+- Understand pressed, released and held actions in [Action lists](/guides/action-lists/).
+- Browse everything a button can do in the [action reference](/actions/).

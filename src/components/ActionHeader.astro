@@ -1,0 +1,136 @@
+---
+// Top of every action page: the action as the app shows it (icon, name,
+// description, where to find it) straight from the app's data, so it stays in
+// step when names change. Pass both types for the OBS / Streamlabs twins.
+import ActionIcon from './ActionIcon.astro';
+import { action, actions, groupColour, groupName } from '~/lib/actions';
+
+interface Props {
+	types: string[];
+}
+
+const { types } = Astro.props;
+const items = types.map((type) => ({ type, ...action(type) }));
+const desc = items.map((i) => i.desc).find(Boolean);
+const markers = Object.values(actions).filter((a) => a.partOf && types.includes(a.partOf));
+const wait = items.some((i) => i.wait);
+---
+
+<div class="lp-action-header not-content">
+	<div class="tiles">
+		{
+			items.map((i) => {
+				const c = groupColour(i.group);
+				return (
+					<span class="lp-pad" style={`--pad: ${c.pad}; color: ${c.ink}`} title={i.name}>
+						<ActionIcon icon={i.icon} />
+					</span>
+				);
+			})
+		}
+	</div>
+	<div class="body">
+		{desc && <p class="desc">{desc}</p>}
+		<dl>
+			<dt>Where</dt>
+			<dd class="paths">
+				{
+					items.map((i) => (
+						<span class="path">
+							<span>+ Add action</span>
+							<span aria-hidden="true">›</span>
+							<span>{groupName(i.group)}</span>
+							<span aria-hidden="true">›</span>
+							<strong>{i.name}</strong>
+						</span>
+					))
+				}
+			</dd>
+			{
+				markers.length > 0 && (
+					<>
+						<dt>Comes with</dt>
+						<dd>{markers.map((m) => m.name).join(', ')}, added and removed as one set</dd>
+					</>
+				)
+			}
+			{
+				wait && (
+					<>
+						<dt>Wait</dt>
+						<dd>
+							Has a <strong>Wait</strong> switch: on, the next action starts once this one is done
+						</dd>
+					</>
+				)
+			}
+		</dl>
+	</div>
+</div>
+
+<style>
+	.lp-action-header {
+		display: flex;
+		gap: 1.25rem;
+		align-items: flex-start;
+		padding: 1rem 1.25rem;
+		margin-block: 1rem 1.5rem;
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 14px;
+		background: var(--sl-color-gray-6);
+	}
+	.tiles {
+		display: flex;
+		gap: 0.5rem;
+		flex-shrink: 0;
+	}
+	.lp-pad {
+		width: 3.25rem;
+	}
+	.body {
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+	}
+	.desc {
+		margin: 0;
+		color: var(--sl-color-white);
+		font-size: var(--sl-text-lg);
+		line-height: 1.4;
+	}
+	dl {
+		display: grid;
+		grid-template-columns: max-content 1fr;
+		gap: 0.3rem 0.9rem;
+		margin: 0;
+		font-size: var(--sl-text-sm);
+	}
+	dt {
+		color: var(--sl-color-gray-3);
+	}
+	dd {
+		margin: 0;
+		color: var(--sl-color-gray-2);
+	}
+	dd.paths {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+	.path {
+		display: inline-flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+	}
+	.path strong,
+	dd strong {
+		color: var(--sl-color-white);
+		font-weight: 600;
+	}
+	@media (max-width: 30rem) {
+		.lp-action-header {
+			flex-direction: column;
+		}
+	}
+</style>

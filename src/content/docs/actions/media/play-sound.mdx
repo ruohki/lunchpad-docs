@@ -1,0 +1,57 @@
+---
+title: Play sound
+description: Play an audio file on any output device, trimmed to the part you want.
+actionTypes: [playSound]
+sidebar:
+  order: 1
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['playSound']} />
+
+<ActionShot type="playSound" alt="Play sound action with airhorn.wav trimmed by the two waveform handles, output device Headphones (Arctis 7 Game), volume 90 % and Volume follows velocity switched on" />
+
+Play sound plays an audio file from your computer: an airhorn, a drum roll, a clip of your own voice. Each action has its own output device and volume, and the waveform editor cuts the sound down to the part you want without touching the file.
+
+Sounds overlap. Press three sound buttons in a row and you hear all three at once, even when they play on different devices.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Choose sound…** | Picks the file. Lunchpad plays MP3, WAV, FLAC, OGG/OGA, M4A, AAC and AIFF. The file stays where it is; the button remembers its path. Hover the file name to see the full path. |
+| **Preview** | Plays the trimmed part on the chosen device at the chosen volume. Click **Stop** to cut it short. |
+| Waveform | Drag the two handles to choose where the sound starts and ends. The numbers below show the start, the full length and the end in seconds. Choosing another file resets the trim. |
+| **Output device** | Where the sound plays. **Default from settings** uses the device picked under [Settings → Sound](/guides/settings/), which is the system default unless you changed it. A device that is not connected shows as "(not found)"; the sound then plays on the default device. |
+| **Volume** | 0 to 200 %. Above 100 % the sound gets louder than the file and may distort. |
+| **Volume follows velocity** | Only shown for velocity-sensitive Launchpads (X, Pro MK2, Pro MK3). The volume is scaled by how hard you hit the pad: a full-force press plays at the set volume, a soft one quieter. |
+
+## How it runs
+
+- With **Wait** on, the next action starts when the sound (the trimmed part) has finished. Switch **Wait** off to let the following actions run while the sound plays.
+- Stopping the macro stops its sound at once, whether by a **Stop this macro** or **Stop all macros** action, **Stop all macros** in the right-click menu of a pad, or **Stop all running macros** in the tray menu.
+- The file path is used exactly as saved. Placeholders are not replaced in it.
+- If the file is missing or cannot be read, the action is skipped, the reason goes to the log and the macro goes on. A pad whose sound file is gone shows a small dot, and a notice lists the missing files. Open the button and choose the file again.
+
+<Aside type="tip">
+On a Launchpad Pro, the press force comes from the pad's own set-up screen. If its velocity option is Off, every press counts as full force. See [Supported Launchpads](/getting-started/supported-launchpads/).
+</Aside>
+
+## Example
+
+A sound that plays only while you hold the pad:
+
+1. **When pressed**: Play sound with your file.
+2. **When released**: [Stop this macro](/actions/stop/stop-this-macro/).
+
+Releasing the pad stops the sound wherever it is.
+
+## Related
+
+- [Stop all sounds](/actions/media/stop-all-sounds/) — silence every sound at once
+- [Push-to-talk](/actions/flow/push-to-talk/) — play a sound into voice chat
+- [Action lists](/guides/action-lists/) — the **Wait** switch, **Repeat while held** and held actions
+- [Settings](/guides/settings/) — the default output device

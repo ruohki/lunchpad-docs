@@ -1,0 +1,50 @@
+---
+title: Add to variable
+description: Count up or down by adding a number to a variable.
+actionTypes: [addToVariable]
+sidebar:
+  order: 6
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['addToVariable']} />
+
+<ActionShot type="addToVariable" alt="Add to variable: adds 1 to the variable deaths, with the scope Everywhere." />
+
+Add to variable turns a variable into a counter: deaths, wins, drinks, the number of times the chat said the magic word. Put a positive number in **Add** to count up and a negative one to count down.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Name** | The variable to change. |
+| **Add** | The number to add, or a placeholder that holds one. A negative number subtracts. |
+| **Scope** | Where the result is stored: **This run** or **Everywhere** (the default for this action). See [variables](/guides/variables/). |
+
+## How it runs
+
+- A variable that does not exist yet, or does not hold a number, counts as 0. An **Add** value that is not a number adds 0.
+- Whole results are stored without decimals (`4`, not `4.0`); others keep up to three decimals.
+- The current value is read the way the macro sees it (this run's value first, then the shared one) and the result is written to the chosen scope.
+- Shared counters are saved and survive a restart of Lunchpad.
+- On `fader.<name>` with **Everywhere**, the fader moves by that amount: `fader.volume` with `-5` turns a volume fader down a step. See [faders](/guides/faders/).
+
+## Example
+
+A death counter on two pads:
+
+- "Deaths +1": **Add to variable** `deaths`, **Add** `1`, **Everywhere**, then [Text to speech](/actions/media/text-to-speech/) `{{deaths}} deaths`.
+- "Deaths −1": **Add to variable** `deaths`, **Add** `-1`, **Everywhere**.
+
+<Aside type="tip">
+To reset a counter, use [Set variable](/actions/system/set-variable/) with the value `0`.
+</Aside>
+
+## Related
+
+- [Set variable](/actions/system/set-variable/) — set an exact value
+- [Condition](/actions/flow/condition/) — react when a counter reaches a number
+- [Set fader](/actions/general/set-fader/) — move a fader to an exact value

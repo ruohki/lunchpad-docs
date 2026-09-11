@@ -1,0 +1,42 @@
+---
+title: Set fader
+description: Move a fader to a value, as if its pad had been pressed.
+actionTypes: [setFader]
+sidebar:
+  order: 5
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['setFader']} />
+
+<ActionShot type="setFader" alt="Set fader action moving the fader volume to 25 with Run the fader's actions switched on" />
+
+Set fader moves one of your [faders](/guides/faders/) to a value. The pads light up to the new level and, unless you switch it off, the fader's own actions run, exactly as if you had pressed the pad. Use it for presets: a "Music low" button that pulls the music fader down to 20.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Fader** | Any fader on any page, by name. A fader that no longer exists shows as "(not in Lunchpad)". |
+| **Value** | The new level, in the fader's own range (for a 0 to 100 % fader, `25` means 25 %). Values outside the range are clamped to it. Placeholders work, for example `{{level}}`. |
+| **Run the fader's actions** | Off: only the level and the LEDs change; the actions under **When the level changes** do not run. |
+
+## How it runs
+
+- The action has no **Wait** switch. The fader's actions start as their own macro; this macro does not wait for them.
+- If the fader is already at that value, nothing happens and its actions do not run.
+- The fader's actions receive the new level in `value`, `percent` and the other fader variables, and every macro can read it as `fader.<name>`.
+- If the value is not a number, or no fader has that name, nothing changes and the reason goes to the log. If two faders share a name, the first one found is used.
+
+<Aside type="tip">
+Writing to `fader.<name>` moves the fader too. [Add to variable](/actions/system/add-to-variable/) with `fader.volume`, amount `-5` and scope **Everywhere** turns a button into a "volume down" step. This way the fader's actions always run.
+</Aside>
+
+## Related
+
+- [Faders](/guides/faders/) — create faders and their actions
+- [System audio](/actions/media/system-audio/) — what a volume fader usually controls
+- [Variables and placeholders](/guides/variables/)

@@ -1,0 +1,28 @@
+---
+title: Actions
+description: Everything a button can do, grouped like the Add action menu in the app.
+sidebar:
+  label: Overview
+  order: 0
+---
+
+import ActionIndex from '~/components/ActionIndex.astro';
+import AppShot from '~/components/AppShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+Actions are the steps of a macro. Open a button (right-click a pad, **Edit button…**), switch to the **Actions** tab and use **+ Add action** next to the list you want to fill: **When pressed**, **When released** or **When held**. Faders have their own list, **When the level changes**, on the **Actions** tab of the fader editor.
+
+<AppShot name="add-action-menu" alt="The Add action menu of the button editor with the Media submenu open: Play sound, Text to speech, System audio, Switch audio device, Stop all sounds" />
+
+A few things hold for every action:
+
+- **Order.** Actions run top to bottom. Drag the handle on the left of a row to move it.
+- **Waiting.** Actions that take time have a **Wait** switch. On, the next action starts when this one is done. Off, the next one starts right away and both run side by side. See [Action lists](/guides/action-lists/).
+- **Sets.** Conditions, flip flops and push-to-talk come as markers that belong together. The actions you drag between the markers are the ones they control.
+- **Placeholders.** Many text fields take `{{placeholders}}` such as `{{velocity}}` or a variable of yours. Type `{{` to pick one. See [Variables and placeholders](/guides/variables/).
+
+<Aside type="tip">
+The **OBS Studio**, **Streamlabs** and **Home Assistant** groups only show up in the menu when the integration is switched on under **Settings**. See [OBS Studio and Streamlabs](/guides/obs-and-streamlabs/) and [Home Assistant](/guides/home-assistant/).
+</Aside>
+
+<ActionIndex />

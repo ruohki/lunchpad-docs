@@ -1,0 +1,98 @@
+---
+title: OBS Studio and Streamlabs
+description: Connect Lunchpad to OBS Studio or Streamlabs Desktop to control scenes, sources, audio and outputs.
+sidebar:
+  order: 7
+---
+
+import AppShot from '~/components/AppShot.astro';
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Lunchpad talks to OBS Studio and Streamlabs Desktop. Both integrations offer the same controls:
+
+- switch scenes, also across scene collections,
+- show or hide sources,
+- mute, unmute and set the volume of audio sources,
+- turn filters on and off,
+- start, stop or toggle streaming, recording and the replay buffer,
+- save the replay buffer,
+- turn studio mode on or off, and push the preview scene live.
+
+Buttons can also light up while a scene is live or a source is muted. See [Active while](/guides/buttons/#active-while).
+
+## Connect
+
+<Tabs>
+  <TabItem label="OBS Studio">
+    <Steps>
+
+    1. In OBS Studio (version 28 or newer), open **Tools → WebSocket Server Settings** and switch on the WebSocket server. Note the port and, if you set one, the password.
+
+    2. In Lunchpad, open **Settings → OBS Studio** and switch on **Connect to OBS Studio**.
+
+    3. Enter the **Host** (`localhost` when OBS runs on the same computer), the **Port** (4455 by default) and the **Password**.
+
+    4. Leave **Connect automatically** on so Lunchpad connects whenever OBS is running, or click **Connect now**.
+
+    </Steps>
+
+    <AppShot name="settings-obs" alt="The OBS Studio settings tab." />
+
+    Once connected, the **Status** shows how many scenes and sources the current scene collection has.
+  </TabItem>
+  <TabItem label="Streamlabs Desktop">
+    <Steps>
+
+    1. In Lunchpad, open **Settings → Streamlabs Desktop** and switch on **Connect to Streamlabs Desktop**.
+
+    2. Leave **Host** and **Port** as they are when Streamlabs runs on the same computer. Streamlabs accepts connections from the same computer while it runs; there is nothing to switch on.
+
+    3. Leave **Connect automatically** on, or click **Connect now**.
+
+    </Steps>
+
+    <AppShot name="settings-slobs" alt="The Streamlabs Desktop settings tab." />
+
+    Once connected, the **Status** shows the scenes and sources of the current collection and whether the stream, the recording, the replay buffer and studio mode are on.
+
+    **Streamlabs on another computer:** turn on **Remote Control** in Streamlabs (**Settings → Remote Control**), enter that computer's address as **Host**, and copy its token into **API token**. The token is only needed for another computer.
+  </TabItem>
+</Tabs>
+
+## Use the actions
+
+After you switch an integration on, its actions appear in the **+ Add action** menu under **OBS Studio** or **Streamlabs**. Integrations that are switched off stay out of the menu.
+
+While the app is connected, the action fields offer its scenes, sources and filters in lists. Each action shows whether the app is connected, and **Reload lists** fetches them again after you changed something in OBS or Streamlabs.
+
+<Aside type="tip">
+You can set up actions while OBS or Streamlabs is closed. The fields then take typed names. Type them exactly as they appear in the app. A saved name that the app does not have (any more) is marked "not in OBS Studio" or "not in Streamlabs Desktop".
+</Aside>
+
+Scene, source and filter names also accept [placeholders](/guides/variables/), so a variable like `{{nextScene}}` can pick the scene.
+
+The actions are documented one by one in the action reference:
+
+- [Switch scene](/actions/streaming/switch-scene/)
+- [Show or hide source](/actions/streaming/show-or-hide-source/)
+- [Set audio](/actions/streaming/set-audio/)
+- [Toggle filter](/actions/streaming/toggle-filter/)
+- [Stream, record, replay](/actions/streaming/stream-record-replay/)
+- [Save replay](/actions/streaming/save-replay/)
+- [Studio mode](/actions/streaming/studio-mode/)
+
+## Volume in dB or percent
+
+**Set audio** can take the volume in dB or in percent:
+
+- In OBS, percent is OBS's own volume scale from the advanced audio properties: 100 % is 0 dB.
+- In Streamlabs, percent is the position of the mixer fader: 100 % is the top.
+
+A 0 to 100 [fader](/guides/faders/) fits the percent scale directly.
+
+## If it does not connect
+
+- Check that OBS or Streamlabs is running.
+- For OBS, check that the WebSocket server is on and that port and password match. The **Status** line shows the error OBS reports.
+- For Streamlabs on another computer, check that Remote Control is on and the token is current.
+- See [Troubleshooting](/help/troubleshooting/) for more.

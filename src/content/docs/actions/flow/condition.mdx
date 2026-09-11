@@ -1,0 +1,64 @@
+---
+title: Condition
+description: Run some actions only when a variable passes a check, and others when it does not.
+actionTypes: [ifStart, ifElse, ifEnd]
+sidebar:
+  order: 1
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['ifStart']} />
+
+<ActionShot type="ifStart" alt="Condition checking whether deaths is greater than 9, followed by Text to speech Ten deaths. Time for a break., then Otherwise with Add to variable deaths plus 1, then End condition" />
+
+A condition checks a variable when the macro reaches it and picks what runs next. For example: once the death counter passes 9, say "Time for a break"; otherwise just count up.
+
+## The three markers
+
+Adding a condition adds three rows at once:
+
+- **Condition**: holds the check. The actions below it, up to **Otherwise**, run when the check holds.
+- **Otherwise**: the actions between it and **End condition** run when the check does not hold. Leave this part empty if nothing should happen.
+- **End condition**: everything after it runs either way.
+
+Drag other actions between the markers to put them in a branch. The markers keep their order and cannot be dragged past each other. Removing one of them removes all three; the actions in between stay.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Variable** | The name of the variable to check, without braces: one of yours such as `deaths`, a built-in value such as `velocity`, `x`, `y` or `pageId`, a fader level such as `fader.volume`, or a saved answer such as `weather.status`. A variable that is not set counts as empty. |
+| **Check** | **equals**, **does not equal**, **contains**, **starts with**, **ends with**, **is greater than**, **is less than**, **is empty**, **is not empty** or **matches regex**. |
+| **Value** | What to compare with. Placeholders work here, for example `{{limit}}`. Not shown for **is empty** and **is not empty**. |
+
+## How the check works
+
+- When both sides are numbers, they compare as numbers: `10` equals `10.0`, and `100` is greater than `99`.
+- Otherwise they compare as text, with upper and lower case counting as different. **is greater than** and **is less than** then compare alphabetically.
+- **is empty** and **is not empty** ignore spaces.
+- **matches regex** takes a regular expression, for example `^scene-\d+$`. It matches anywhere in the text unless you anchor it with `^` and `$`. An invalid expression never matches.
+
+## How it runs
+
+- The check uses the variable's value at the moment the macro reaches the **Condition** row, so an action above it can set the value first.
+- You can put a condition inside a branch of another condition.
+
+## Example
+
+The death counter from the screenshot, on one button:
+
+1. **Condition**: `deaths` **is greater than** `9`
+2. [Text to speech](/actions/media/text-to-speech/): "Ten deaths. Time for a break."
+3. **Otherwise**
+4. [Add to variable](/actions/system/add-to-variable/): `deaths`, add `1`
+5. **End condition**
+
+## Related
+
+- [Variables and placeholders](/guides/variables/) — where values come from
+- [Set variable](/actions/system/set-variable/) and [Add to variable](/actions/system/add-to-variable/)
+- [Run script](/actions/system/run-script/) — for checks a single comparison cannot express
+- [Flip flop](/actions/flow/flip-flop/) — alternate without a variable

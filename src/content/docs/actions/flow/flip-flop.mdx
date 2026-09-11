@@ -1,0 +1,62 @@
+---
+title: Flip flop
+description: Alternate between two sets of actions on every press, for toggle buttons.
+actionTypes: [flipFlopStart, flipFlopMiddle, flipFlopEnd]
+sidebar:
+  order: 2
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['flipFlopStart']} />
+
+<ActionShot type="flipFlopStart" alt="Flip flop with side A muting the microphone through System audio and setting the pad colour, side B unmuting it and setting another colour, then Flip flop: end" />
+
+A flip flop turns one pad into a toggle. The first press runs the A actions, the next press the B actions, then A again. Use it for mute and unmute, lights on and off, or two scenes on one pad.
+
+## The three markers
+
+Adding a flip flop adds three rows at once:
+
+- **Flip flop: A**: the actions below it, up to the B marker, run on every other press.
+- **Flip flop: B**: the actions between it and the end marker run on the presses in between.
+- **Flip flop: end**: everything after it runs on every press.
+
+Drag other actions between the markers to put them on a side. The markers keep their order and cannot be dragged past each other. Removing one of them removes all three; the actions in between stay.
+
+The markers have no settings.
+
+## How it runs
+
+- Lunchpad remembers which side comes next and saves it in your profile, so the toggle is still right after a restart.
+- The side flips when a run reaches **Flip flop: end**. If the macro is stopped before that, the same side runs again next time. A second press while the first run is still going also runs the same side.
+- A button can hold several flip flops; each keeps its own side.
+- With **Repeat while held**, each repeat runs the other side.
+
+<Aside type="caution">
+Flip flops remember their side in the **When pressed** and **When released** lists. In **When held** and in a fader's actions they currently always run the A side.
+</Aside>
+
+<Aside type="tip">
+A flip flop only knows about its own presses. If you also mute your microphone somewhere else, the pad gets out of step. For OBS Studio and Streamlabs sources, [Set audio](/actions/streaming/set-audio/) with **Toggle** plus **Active while** → **Source is muted** follows the app instead. See [Buttons](/guides/buttons/).
+</Aside>
+
+## Example
+
+The microphone toggle from the screenshot:
+
+1. **Flip flop: A**
+2. [System audio](/actions/media/system-audio/): **Microphone**, **Mute**
+3. [Set colour](/actions/general/set-colour/): **This button**, red
+4. **Flip flop: B**
+5. System audio: **Microphone**, **Unmute**
+6. Set colour: **This button**, green
+7. **Flip flop: end**
+
+## Related
+
+- [Condition](/actions/flow/condition/) — branch on a variable instead
+- [Set colour](/actions/general/set-colour/) — show which side is active
+- [Action lists](/guides/action-lists/)

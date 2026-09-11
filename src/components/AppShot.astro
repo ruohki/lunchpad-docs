@@ -1,0 +1,14 @@
+---
+// A view of the app, as captured by scripts/screenshots/scenarios/app.ts.
+import Screenshot from './Screenshot.astro';
+
+interface Props {
+	name: string;
+	alt: string;
+	caption?: string;
+}
+
+const { name, alt, caption } = Astro.props;
+---
+
+<Screenshot name={`app/${name}`} alt={alt} caption={caption} />

@@ -1,0 +1,73 @@
+---
+title: HTTP request
+description: Call a web address with any method, headers, body, file upload and login, and keep the answer.
+actionTypes: [httpRequest]
+sidebar:
+  order: 3
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['httpRequest']} />
+
+<ActionShot type="httpRequest" alt="HTTP request: POST to https://api.example.com/lights/{{x}}/{{y}} with the header X-Api-Key {{apiKey}} and a JSON body containing {{velocity}}. The response is saved to the variable lights. Below, the Send test result reads Status 200 in 142 ms." />
+
+HTTP request calls a web address. Anything with a web API or webhook can be driven from a pad: smart lights, Home Assistant, Stream Deck-style web services, chat bots, Discord webhooks, your own server.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| Method | GET, POST, PUT, PATCH, DELETE or HEAD. |
+| URL | The address to call. |
+| **Send test** | Sends the request now and shows the status, the time it took and the start of the answer. |
+| **Login** | **None**, **Username and password** (basic authentication) or **Bearer token**. |
+| **Headers** | Extra headers; add one with **+ Header**. |
+| **Body** | What to send and how. Not shown for GET and HEAD, which send no body. |
+| **Save response to** | Stores the answer in this variable. |
+| **Scope** | **This run** or **Everywhere**, see [variables](/guides/variables/). |
+| **Timeout (ms)** | How long to wait for an answer, 500 to 120000 ms. The default is 10000. |
+| **Ignore certificate errors** | Accepts self-signed or expired HTTPS certificates, for devices on your own network. |
+
+The **Body** kinds:
+
+| Kind | Sends |
+| --- | --- |
+| **JSON** | The text with `Content-Type: application/json`. |
+| **Form (urlencoded)** | The text with `Content-Type: application/x-www-form-urlencoded`. |
+| **Plain text** | The text with `Content-Type: text/plain`. |
+| **Custom content type** | The text with the content type you type. |
+| **Form with files** | `multipart/form-data`: one text field per `name=value` line, plus the files under **Files** (**Field name**, **Path to the file**). |
+| **File contents** | The bytes of one file. The content type is guessed from the file name unless you type one. |
+| **No content type** | The text without a content type header. |
+
+A text body that is empty is not sent at all.
+
+## How it runs
+
+- `{{placeholders}}` work in the URL, header values, the body, the password, the bearer token, and the file paths and names. A placeholder with a name Lunchpad does not know is sent as typed.
+- With **Wait** on, the next action starts once the answer is in. Keep it on when the next actions use the saved response.
+- When the macro is stopped, a request that is still waiting is cancelled.
+- The saved variable holds the first 2 KB of the answer. A second variable, named like yours with `.status` added (`lights.status` for `lights`), holds the status code.
+- Error codes such as 404 or 500 are saved like any other answer and noted in the log. When there is no answer at all (no connection, timeout, bad address), the variable is emptied and the status is `0`.
+- Lunchpad identifies itself as `Lunchpad/` plus its version in the User-Agent header.
+
+<Aside type="note" title="Testing with placeholders">
+**Send test** fills the trigger values with test values: velocity 127, column and row 0. Your own variables are not filled in during a test, so they are sent as typed.
+</Aside>
+
+## Example
+
+Only react when a smart-home call worked:
+
+1. **HTTP request**: POST `http://homeassistant.local:8123/api/services/light/toggle` with **Bearer token** and the JSON body `{ "entity_id": "light.desk" }`, **Save response to** `ha`.
+2. [Condition](/actions/flow/condition/): `ha.status` **equals** `200`.
+3. Inside the condition, [Set colour](/actions/general/set-colour/) to show the new state on the pad.
+
+## Related
+
+- [Run script](/actions/system/run-script/) — pick values out of a JSON answer
+- [Condition](/actions/flow/condition/) — branch on `.status` or the answer
+- [Variables and placeholders](/guides/variables/)

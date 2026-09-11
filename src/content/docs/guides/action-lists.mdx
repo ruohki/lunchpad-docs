@@ -1,0 +1,83 @@
+---
+title: Action lists
+description: When pressed, when released and when held, the order of actions, the Wait switch, looping and stopping.
+sidebar:
+  order: 3
+---
+
+import AppShot from '~/components/AppShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+The **Actions** tab of the button editor holds what a button does. There are three lists, and each runs at a different moment.
+
+<AppShot name="button-editor-actions" alt="The Actions tab of a Mic button: pressing it toggles the OBS microphone mute, and a held action plays a sound." />
+
+| List | Runs… |
+| --- | --- |
+| **When pressed** | when you press the pad. |
+| **When released** | when you let go of it. |
+| **When held** | when you hold the pad longer than **Counts as held after** (100 to 5000 ms, 500 ms by default). |
+
+Click **+ Add action** next to a list to add an action. The menu groups the actions the same way the [action reference](/actions/) does. OBS Studio, Streamlabs and Home Assistant actions only appear once you switch the integration on in the settings.
+
+<AppShot name="add-action-menu" alt="The Add action menu with the Media submenu open." />
+
+A new action opens expanded so you can fill it in. Click an action's title to fold or unfold it, drag the handle on its left to reorder it, and click the cross to remove it.
+
+## Tap or hold
+
+As soon as a button has held actions, a short press and a long press can do different things.
+
+With **Pressed actions wait until it is clear this is a tap** switched on (the default), the pressed actions wait:
+
+- Let go before the hold time: the pressed actions run. That is a tap.
+- Keep holding past the hold time: the held actions run instead, and the pressed actions do not.
+
+Switch it off, and the pressed actions run the moment you press. The held actions come on top once the hold time has passed.
+
+The released actions run on every release, tap or hold.
+
+## Order and the Wait switch
+
+Actions in a list run from top to bottom, one after another. Actions that take time (**Play sound**, **Text to speech**, **Launch application**, **Hotkey sequence**, **HTTP request**, **Run script** and **Run another button**) have a **Wait** switch:
+
+- **Wait** on (the default): the next action starts after this one has finished.
+- **Wait** off: the next action starts right away, and this one runs alongside.
+
+A list is only done when every action in it has finished, including the ones that did not wait.
+
+<Aside type="tip">
+To play a sound and switch a scene at the same moment, turn **Wait** off on the sound. To say something and then switch, leave it on.
+</Aside>
+
+## Markers
+
+Some actions come as a set of markers that wrap other actions:
+
+- [Condition](/actions/flow/condition/): **Condition**, **Otherwise** and **End condition**.
+- [Flip flop](/actions/flow/flip-flop/): **Flip flop: A**, **Flip flop: B** and **Flip flop: end**.
+- [Push-to-talk](/actions/flow/push-to-talk/): **Push-to-talk on** and **Push-to-talk off**.
+
+Markers have a dashed outline. Put the actions they control between them. Markers keep their order among themselves, and removing one marker removes its whole set.
+
+## Repeat while held
+
+**Repeat while held** runs the pressed actions again and again for as long as you hold the pad. When you switch it on, Lunchpad adds [Stop this macro](/actions/stop/stop-this-macro/) to the released actions, so letting go ends the loop.
+
+A loop without any delay still gets a tiny pause between rounds, so it cannot freeze your computer. Add a [Delay](/actions/general/delay/) to set the pace yourself.
+
+## Pressing a button that is still running
+
+Pressing a button whose macro is still running starts a second run next to the first. That is often what you want for a sound board, where the same sound can overlap.
+
+When it is not, use:
+
+- [Restart this macro](/actions/stop/restart-this-macro/) as the first action: a new press stops the older runs and only the newest continues.
+- [Stop this macro](/actions/stop/stop-this-macro/) on another list, for example the released list, to end every run of this button.
+
+To stop everything that is running, right-click any pad and choose **Stop all macros**, or use the tray menu.
+
+## Where to go next
+
+- The [action reference](/actions/) explains every action and its settings.
+- [Variables and placeholders](/guides/variables/) shows how actions pass values to each other.

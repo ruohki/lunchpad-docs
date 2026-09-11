@@ -1,0 +1,77 @@
+---
+title: Hotkey sequence
+description: Press, hold and release keys, pause, and type text, exactly as if you did it on the keyboard.
+actionTypes: [hotkey]
+sidebar:
+  order: 1
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['hotkey']} />
+
+<ActionShot type="hotkey" alt="Hotkey sequence with three steps: Press key Ctrl+Shift+M, Wait 150 ms, and Type text “gg wp!” at 25 ms per character. Release held keys at the end is switched on." />
+
+A hotkey sequence is a list of keyboard steps that Lunchpad plays back in order. Use it to fire shortcuts in other programs (mute in Discord, a hotkey in your capture software, a macro in your editor) or to type a whole chat message with one press.
+
+The keys go to whichever window has the focus, just like a real keyboard.
+
+## Steps
+
+Add steps with the buttons under the list, drag a step by its handle to reorder it, and remove it with the cross. The dropdown at the start of a row changes what the step does.
+
+| Step | What it does |
+| --- | --- |
+| **Press key** | Presses a key together with the modifiers you switched on, then lets go. |
+| **Hold key** | Presses the key and its modifiers and keeps them down. |
+| **Release key** | Lets go of a key that a **Hold key** step pressed earlier. |
+| **Wait** | Pauses for 0 to 5000 ms. |
+| **Type text** | Types the text. **per character** sets a pause between characters (0 to 5000 ms); 0 types it all at once. |
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| Key button | Click it, then press the key or combination. It shows **Press a key or a mouse button…** while it listens and **Not set** when empty. Modifiers you hold while pressing are recorded too. |
+| Modifier buttons | Switch modifiers on and off by hand: Ctrl, Alt, Shift and Win on Windows, ⌃ ⌥ ⇧ ⌘ on macOS. |
+| **Release held keys at the end** | Keys that a **Hold key** step pressed and no **Release key** step let go of are released when the sequence ends. |
+
+A few things about recording a key:
+
+- A modifier on its own is not a key: the recorder keeps waiting until you press a non-modifier key.
+- Pressing <kbd>Esc</kbd> cancels the recording, so the Escape key itself cannot be recorded this way.
+- The middle, right, back and forward mouse buttons can be recorded like keys. The left button cannot.
+- Keys Lunchpad can press: letters and digits, F1 to F20, arrows, Home, End, Page Up and Page Down, Insert, Caps Lock, Space, Enter, Tab, Backspace, Delete, the number pad, and the media keys (volume up, down and mute, play/pause, next, previous).
+
+## How it runs
+
+- Steps run top to bottom. With **Wait** on, the next action starts after the last step; with **Wait** off, the next actions start straight away while the sequence plays.
+- When the macro is stopped, the sequence stops after the current step and a running **Wait** step is cut short. **Release held keys at the end** still lets go of held keys.
+- `{{placeholders}}` work in **Type text** steps, for example `GG {{lastRaider}}!`. Key steps take no placeholders.
+- A key name Lunchpad does not know is skipped and noted in the log.
+
+<Aside type="caution" title="macOS needs the Accessibility permission">
+The first key Lunchpad presses makes macOS ask for it. Until you allow it, Lunchpad shows **Lunchpad cannot press keys**. Allow Lunchpad under System Settings → Privacy & Security → Accessibility, then click **Check again**. You can also trigger the check from Settings → Keyboard → **Check keyboard access**.
+</Aside>
+
+<Aside type="tip" title="Windows and programs running as administrator">
+Windows does not let a normal program send keys to a program that runs as administrator. If a game or tool ignores Lunchpad's keys, check whether it runs elevated.
+</Aside>
+
+## Example
+
+Send a message in a game chat that opens with <kbd>Enter</kbd>:
+
+1. **Press key** Enter, to open the chat.
+2. **Wait** 100 ms, so the chat box is ready.
+3. **Type text** `gg wp!` at 20 ms **per character**. Some games drop characters that arrive too fast.
+4. **Press key** Enter, to send.
+
+## Related
+
+- [Push-to-talk](/actions/flow/push-to-talk/) — hold a key for a whole section of a macro
+- [Variables and placeholders](/guides/variables/) — what you can put in `{{ }}`
+- [Launch application](/actions/system/launch-application/) — when a shortcut is not enough
+- [Troubleshooting](/help/troubleshooting/) — keys do not arrive

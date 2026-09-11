@@ -1,0 +1,54 @@
+---
+title: Supported Launchpads
+description: Which Launchpad models Lunchpad drives, and how they differ in size, colours and velocity.
+sidebar:
+  order: 4
+---
+
+import { Aside, Badge } from '@astrojs/starlight/components';
+
+Lunchpad drives every Launchpad model listed below. It finds and remembers the right device no matter what the operating system calls its ports.
+
+| Model | Layout in Lunchpad | Colours | Velocity | Status |
+| --- | --- | --- | --- | --- |
+| Launchpad MK2 | 8 × 8 grid, top row, right column | RGB | No | <Badge text="Tested on hardware" variant="success" /> |
+| Launchpad X | 8 × 8 grid, top row, right column | RGB | Yes, plus pressure | <Badge text="Tested on hardware" variant="success" /> |
+| Launchpad Mini MK3 | 8 × 8 grid, top row, right column | RGB | No | <Badge text="Not yet tested" variant="caution" /> |
+| Launchpad Pro MK2 | 8 × 8 grid with buttons on all four sides | RGB | Yes, plus pressure | <Badge text="Tested on hardware" variant="success" /> |
+| Launchpad Pro MK3 | 8 × 8 grid, buttons on all sides, two bottom rows | RGB | Yes, plus pressure | <Badge text="Not yet tested" variant="caution" /> |
+| Launchpad S, Launchpad Mini (MK1 and MK2) | 8 × 8 grid, top row, right column | Red and green | No | <Badge text="Tested on hardware" variant="success" /> |
+| Launchpad (original, first generation) | 8 × 8 grid, top row, right column | Red and green | No | <Badge text="Not yet tested" variant="caution" /> |
+
+"Not yet tested" means the model is built from Novation's programmer manual but nobody has confirmed it on a real device yet. If you own one, a report on [Discord](https://discord.gg/4Ys9TRR) or [GitHub](https://github.com/ruohki/lunchpad/issues) helps a lot.
+
+The round buttons around the grid work like any other pad: you can put buttons and faders on them. The corner where the Launchpad has no button (or its logo LED) holds the settings gear in the window.
+
+## Velocity and pressure
+
+On velocity-sensitive models, Lunchpad knows how hard you hit a pad. Actions can use it: a sound can play quieter on a soft press (**Volume follows velocity**), and every action can read the `velocity` placeholder. Models without velocity report every press as full force (127). See [Variables and placeholders](/guides/variables/).
+
+The same models send pressure (aftertouch) while you hold a pad, available as the `pressure` placeholder.
+
+Very soft touches on a velocity-sensitive pad are ignored, so a pad does not fire when you brush it. The default threshold is 25 (out of 127). You can change it in **Settings → Launchpad → Custom press threshold**.
+
+<Aside type="caution" title="Launchpad Pro: velocity comes from the Pro itself">
+On a Launchpad Pro, the press force comes from the pad's own set-up screen. Hold **Setup** on the device and pick the velocity option (Low, Med, High or Off) in the third grid row from the top. With **Off**, every press counts as full force.
+</Aside>
+
+## Red and green Launchpads
+
+The Launchpad S, the Launchpad Mini MK1 and MK2 and the original Launchpad have red and green LEDs only. On these, Lunchpad:
+
+- offers the 16 colours the device can show instead of the full palette,
+- draws the pads on screen the way the LEDs will look (a pure blue pad stays dark),
+- shows **Flashing** normally, but shows **Pulsing** as a steady colour, because the hardware cannot pulse.
+
+## Using pages on another model
+
+Pages are not tied to one model. Buttons keep their position when you connect a different Launchpad.
+
+If a page has buttons where the connected Launchpad has no pad (for example the side buttons of a Pro on a Launchpad X), those buttons are kept but not shown. Lunchpad tells you with a notice, and **Settings → Pages & backup** lists how many buttons each page has outside the grid. They come back when you connect a Launchpad with a bigger grid.
+
+<Aside>
+The Launchpad Pro MK2 numbers its pads from the edge of its outer ring of buttons. A page built on an 8 × 8 model therefore lands one pad up and to the right on a Pro MK2.
+</Aside>

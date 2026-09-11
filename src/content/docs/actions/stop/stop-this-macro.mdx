@@ -1,0 +1,40 @@
+---
+title: Stop this macro
+description: Stop every run of this button that is still going, including the one this action is in.
+actionTypes: [stopThisMacro]
+sidebar:
+  order: 1
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['stopThisMacro']} />
+
+<ActionShot type="stopThisMacro" alt="Actions tab of a button with Repeat while held switched on. When pressed plays a sound; When released holds Stop this macro." />
+
+Stop this macro ends everything this button is doing. Its most common job is ending a repeating or long-running macro the moment you let go of the pad. The action has no settings.
+
+## How it runs
+
+- Every press of a pad starts its own run, so pressing a button that is still busy starts a second run next to the first. Stop this macro stops all runs of this button: from the pressed, released and held lists alike.
+- The run the action is in stops too, so actions after it in the same list do not run.
+- Other buttons keep running.
+- Stopping ends waits and delays at once, stops the sounds and speech of the stopped runs, ends a hotkey sequence after its current step, cancels HTTP requests still waiting for an answer, and closes programs started with **Stop the program when the macro stops**.
+
+## Repeat while held
+
+**Repeat while held** runs the pressed actions again and again, so it needs a way out. When you switch it on, Lunchpad adds Stop this macro to **When released** for you, unless the list already has one. Switching repeat off leaves it in place.
+
+If you remove it, the repeat only ends when you stop it another way, for example by right-clicking a pad and choosing **Stop all macros**.
+
+<Aside type="tip">
+Put Stop this macro in **When held** to cancel a long macro with a long press, or at the start of **When pressed** to make a second press stop the first run instead of starting another one. Note that the second press then stops itself too.
+</Aside>
+
+## Related
+
+- [Restart this macro](/actions/stop/restart-this-macro/) — stop older runs but keep the new one
+- [Stop all macros](/actions/stop/stop-all-macros/) — stop every button
+- [Action lists](/guides/action-lists/) — pressed, released, held and repeat

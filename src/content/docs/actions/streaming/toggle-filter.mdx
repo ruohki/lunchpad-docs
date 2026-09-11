@@ -1,0 +1,50 @@
+---
+title: Toggle filter
+description: Turn a filter of a source on or off in OBS Studio or Streamlabs Desktop.
+actionTypes: [obsToggleFilter, slobsToggleFilter]
+sidebar:
+  order: 4
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+<ActionHeader types={['obsToggleFilter', 'slobsToggleFilter']} />
+
+<Tabs syncKey="streaming-app">
+  <TabItem label="OBS Studio"><ActionShot type="obsToggleFilter" alt="OBS: toggle filter with Source Webcam, Filter Background blur and Filter enabled switched on. Below the fields: OBS Studio connected." /></TabItem>
+  <TabItem label="Streamlabs Desktop"><ActionShot type="slobsToggleFilter" alt="Streamlabs: toggle filter with Source Webcam, Filter Background blur and Filter enabled switched on. Below the fields: Streamlabs Desktop connected." /></TabItem>
+</Tabs>
+
+Filters change how a source looks or sounds: a blur, a colour correction, a chroma key, noise suppression, a voice changer. This action switches one of them on or off.
+
+<Aside type="note">
+Switch the integration on first, under Settings → **OBS Studio** or **Streamlabs Desktop**. See [OBS Studio and Streamlabs](/guides/obs-and-streamlabs/).
+</Aside>
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Source** | The source that has the filter. In OBS Studio the list also holds your scenes, since scenes can carry filters too. |
+| **Filter** | The filter to change. The list shows the filters of the chosen source; picking another source clears it. |
+| **Filter enabled** | On: the action switches the filter on. Off: it switches it off. |
+
+## How it runs
+
+- Despite its name, the action always sets the state you chose in **Filter enabled**; it does not flip it. For one pad that alternates, use a [Flip flop](/actions/flow/flip-flop/) with this action once on and once off.
+- `{{placeholders}}` work in the source and filter names.
+- Errors (unknown source or filter, app not running) are noted in the log and the macro goes on.
+
+## Example
+
+A "privacy" pad that blurs the webcam on every other press:
+
+1. [Flip flop](/actions/flow/flip-flop/) **A**: **Toggle filter** `Webcam` / `Background blur`, **Filter enabled** on.
+2. **B**: the same action with **Filter enabled** off.
+
+## Related
+
+- [Show or hide source](/actions/streaming/show-or-hide-source/)
+- [Flip flop](/actions/flow/flip-flop/)

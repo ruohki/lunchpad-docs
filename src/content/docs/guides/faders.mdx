@@ -1,0 +1,101 @@
+---
+title: Faders
+description: Turn a row or column of pads into one control and feed its level into any action.
+sidebar:
+  order: 5
+---
+
+import AppShot from '~/components/AppShot.astro';
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+A fader turns a run of pads into one control. Pressing a pad sets the level: the first pad is the minimum, the last pad the maximum. The pads blend between two colours up to the level and dim above it, so you can read the level on the Launchpad.
+
+Use a fader for anything with a range: the volume of your microphone in OBS, the system volume, a light's brightness through a web API.
+
+## Create a fader
+
+<Steps>
+
+1. Right-click the pad where the fader should start (its minimum) and choose **New fader here…**.
+
+2. Give it a **Name**, for example `mic`. The name is how other actions find it.
+
+3. Pick a **Direction** (**Up**, **Right**, **Down** or **Left**) and how many **Pads** it uses. The label shows how many fit from this pad.
+
+4. Set the range with **Value at the first pad** and **Value at the last pad**, and the **Unit** and **Decimals** of the level shown on the pad.
+
+5. Switch to the **Actions** tab at the top of the editor and add the actions the level should drive under **When the level changes**. For a microphone: **OBS: set audio** on your mic source, with **Volume from variable** set to `value`.
+
+6. Click **Save**.
+
+</Steps>
+
+The fader editor has two tabs: **Fader** for where the fader sits, how it looks and its range, and **Actions** for what it does. The **Actions** tab shows how many actions the fader has, for example **Actions · 1**.
+
+<AppShot name="fader-editor" alt="The Fader tab of the fader editor for the volume fader: name, direction, pads, a preview of the pad colours, the two colours, brightness above the level, minimum, maximum, unit and decimals" />
+
+## Fader settings
+
+The **Fader** tab:
+
+| Setting | What it does |
+| --- | --- |
+| **Name** | Identifies the fader for **Set fader** and the `fader.` variable. |
+| **Direction**, **Pads** | Where the fader runs from its first pad, and how long it is (at least 2 pads). |
+| **Preview** | Shows the pads with the current colours and the level. |
+| **Colour at the minimum**, **Colour at the maximum** | The pads blend from one to the other. |
+| **Brightness above the level** | How bright the pads above the level stay, 0 to 60 %. |
+| **Value at the first pad**, **Value at the last pad** | The range of the level, from the pad the fader starts on to its last pad. The two must differ. |
+| **Invert** | Swaps the two values (and the display scale), so the fader counts the other way. See below. |
+| **Unit**, **Decimals** | How the level is written on the pad, for example `%` with 0 decimals. |
+| **Show the level on another scale** | Shows the level on a different scale than the real value, for example a −100 to 26 dB range shown as 0 to 100 %. The actions still get the real value. |
+
+The level is remembered, so a fader keeps its position across restarts.
+
+### Counting down
+
+The first pad of a fader is the one you created it on; the run continues in its direction. Normally the first pad is the low end. Click **Invert**, or enter a **Value at the first pad** larger than the **Value at the last pad**, and the first pad becomes the high end: a fader from 100 to 0 has 100 at its first pad and 0 at its last. The editor then says **Counting down** under the range.
+
+The actions and the `fader.` variable get the values as the fader shows them, so a counting-down fader sends 100 from its first pad.
+
+## What the actions receive
+
+The **Actions** tab holds one list, **When the level changes**: the actions that run whenever the level changes. It works like a button's action lists, with the same **+ Add action** menu.
+
+<AppShot name="fader-editor-actions" alt="The Actions tab of the fader editor: a hint about the fader's variables and the list When the level changes with a System audio action that sets the speakers from the variable value" />
+
+These actions can read the level as placeholders or in **From variable** fields:
+
+| Name | Value |
+| --- | --- |
+| `value` | The level in the fader's own range, for example `-12` for a −60 to 0 dB fader. |
+| `percent` | The level from 0 to 100. |
+| `fraction` | The level from 0 to 1. |
+| `step` | Which pad is lit last, counted from 0. |
+| `steps` | How many pads the fader has. |
+| `display` | The level on the display scale, if you set one. |
+
+Match the unit to the action: a 0 to 100 fader fits a volume action set to %, a −60 to 0 fader fits one set to dB.
+
+Every macro, not just the fader's own, can read the level as `fader.` plus the name, for example `{{fader.mic}}`.
+
+## Pads under a fader
+
+The pads inside a fader belong to it. Buttons on those pads are hidden while the fader exists, and colour actions aimed at them are ignored. The fader editor warns you when a fader would cover buttons, and refuses to overlap another fader.
+
+Remove the fader, and the buttons underneath come back.
+
+## Move, edit and remove
+
+- <kbd>Ctrl</kbd> or <kbd>⌘</kbd> and drag any pad of the fader to move the whole fader. It only lands where every pad is free.
+- Right-click a fader pad for **Edit fader…** and **Remove fader**, or <kbd>Ctrl</kbd>/<kbd>⌘</kbd> and double-click it.
+
+## Set a fader from other buttons
+
+The [Set fader](/actions/general/set-fader/) action moves a fader to a value, as if its pad had been pressed. It can also move it silently, without running the fader's actions.
+
+Writing to the fader's variable works too, with the scope **Everywhere**. A button with **Add to variable** `fader.mic`, amount `-5`, scope **Everywhere**, turns the mic down by 5 on every press.
+
+<Aside type="tip">
+A pair of buttons with **Add to variable** `fader.volume`, amounts `5` and `-5` and scope **Everywhere**, makes a volume up and down control, and the fader shows the result.
+</Aside>

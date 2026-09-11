@@ -1,0 +1,37 @@
+---
+title: Restart this macro
+description: Stop the older runs of this button so only the newest press carries on.
+actionTypes: [restartThisMacro]
+sidebar:
+  order: 2
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+
+<ActionHeader types={['restartThisMacro']} />
+
+<ActionShot type="restartThisMacro" alt="When pressed list with Restart this macro first, followed by a Play sound action." />
+
+Every press of a pad starts its own run, so pressing quickly layers the runs on top of each other: a sound plays twice, a countdown runs twice. Restart this macro makes a new press replace the older ones instead. The action has no settings.
+
+## How it runs
+
+- It stops every other run of this button that is still going, from any of its lists. The run it is in carries on with the next action.
+- Other buttons are not affected.
+- The stopped runs end the same way as with [Stop this macro](/actions/stop/stop-this-macro/): their sounds stop, waits end, requests are cancelled.
+- Put it first in **When pressed**. Anything before it still runs in parallel with the older runs.
+
+## Example
+
+A sound that restarts on every press instead of stacking:
+
+1. **Restart this macro**
+2. [Play sound](/actions/media/play-sound/) `drumroll.mp3`
+
+The same works for a "Be right back" button with a [Delay](/actions/general/delay/) of a few minutes before it switches back: pressing it again starts the timer over.
+
+## Related
+
+- [Stop this macro](/actions/stop/stop-this-macro/) — stop all runs, including this one
+- [Stop all macros](/actions/stop/stop-all-macros/)

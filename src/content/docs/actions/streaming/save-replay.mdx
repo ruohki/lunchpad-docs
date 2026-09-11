@@ -1,0 +1,44 @@
+---
+title: Save replay
+description: Save the replay buffer of OBS Studio or Streamlabs Desktop to a file.
+actionTypes: [obsSaveReplay, slobsSaveReplay]
+sidebar:
+  order: 6
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+<ActionHeader types={['obsSaveReplay', 'slobsSaveReplay']} />
+
+<Tabs syncKey="streaming-app">
+  <TabItem label="OBS Studio"><ActionShot type="obsSaveReplay" alt="When pressed list with OBS: save replay, followed by Play sound with clip.wav." /></TabItem>
+  <TabItem label="Streamlabs Desktop"><ActionShot type="slobsSaveReplay" alt="When pressed list with Streamlabs: save replay, followed by Play sound with clip.wav." /></TabItem>
+</Tabs>
+
+Something great just happened on stream. Save replay writes the last seconds the replay buffer holds to a file, so you can clip it later. The action has no settings.
+
+<Aside type="note">
+Switch the integration on first, under Settings → **OBS Studio** or **Streamlabs Desktop**. See [OBS Studio and Streamlabs](/guides/obs-and-streamlabs/).
+</Aside>
+
+## How it runs
+
+- The replay buffer has to be running. Start it with [Stream, record, replay](/actions/streaming/stream-record-replay/) or in the app. If it is not running, the app refuses and the log notes it.
+- The file lands where the app saves replays; its length is set in the app.
+- Errors are noted in the log and the macro goes on.
+
+## Example
+
+A "Clip it" pad that confirms with a sound:
+
+1. **Save replay**
+2. [Play sound](/actions/media/play-sound/) `clip.wav`
+
+Give it an active colour so the pad lights while the macro runs.
+
+## Related
+
+- [Stream, record, replay](/actions/streaming/stream-record-replay/) — start the replay buffer
+- [Play sound](/actions/media/play-sound/)

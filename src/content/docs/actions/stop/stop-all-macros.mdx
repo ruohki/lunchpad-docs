@@ -1,0 +1,31 @@
+---
+title: Stop all macros
+description: Stop every running macro on every page, silence all sounds and release push-to-talk.
+actionTypes: [stopAllMacros]
+sidebar:
+  order: 3
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+
+<ActionHeader types={['stopAllMacros']} />
+
+<ActionShot type="stopAllMacros" alt="When pressed list with Stop all macros, followed by Stop all sounds." />
+
+Stop all macros is the panic button. It stops everything Lunchpad is running, on every page, including the macro it is in. The action has no settings.
+
+## How it runs
+
+- Every running macro stops, including fader actions and the macro this action belongs to. Actions after it in the same list do not run.
+- Every sound Lunchpad plays and any speech stop, even ones started outside a macro.
+- A held push-to-talk key is released.
+- Programs started with **Stop the program when the macro stops** close.
+
+You do not need a pad for this: right-click any pad and choose **Stop all macros** (it reads **Stop 2 running macros** while something runs), or use **Stop all running macros** in the tray menu.
+
+## Related
+
+- [Stop this macro](/actions/stop/stop-this-macro/) — stop only this button
+- [Stop all sounds](/actions/media/stop-all-sounds/) — silence sounds but keep macros running
+- [Tray and updates](/guides/tray-and-updates/) — the tray menu

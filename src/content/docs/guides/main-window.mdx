@@ -1,0 +1,98 @@
+---
+title: The main window
+description: Page tabs, pads, the right-click menu, moving and copying buttons, and undo.
+sidebar:
+  order: 1
+---
+
+import AppShot from '~/components/AppShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+The main window is a picture of your Launchpad. Every pad on screen is a pad on the device, and what you do in one shows up in the other.
+
+<AppShot name="main-window" alt="The Stream page on a Launchpad X: scene buttons in the top grid row, a sound board row below them and a volume fader on column 8." />
+
+## The header
+
+The strip at the top holds the app name and the page tabs.
+
+- Click a tab to switch to that page. The Launchpad repaints right away.
+- The small number next to a page name is how many buttons it has.
+- Double-click a tab to rename it.
+- Right-click a tab for **Rename**, **Duplicate**, **Move left**, **Move right** and **Remove page**. The first page cannot be removed.
+- **+** adds a page. With more than one page, the arrow next to it lists every page, which helps when the tabs do not fit.
+
+More about pages in [Pages and backup](/guides/pages-and-backup/).
+
+## Pads
+
+- **Click a pad** to press it, just like pressing it on the Launchpad. Buttons run their actions; the physical pad lights up while you hold the mouse button.
+- A pad with a running macro shows a pulsing outline.
+- A small yellow dot in the corner means a sound file this button plays is missing.
+- The round **gear** in the corner of the grid opens the settings.
+
+## The right-click menu
+
+Right-click a pad to edit it.
+
+<AppShot name="context-menu" alt="The right-click menu on a pad." />
+
+| Entry | What it does |
+| --- | --- |
+| **Edit button…** / **Add button…** | Opens the [button editor](/guides/buttons/). |
+| **Copy**, **Cut**, **Paste** | Copy a button, including all its actions, and paste it on another pad or another page. |
+| **New fader here…** | Starts a [fader](/guides/faders/) at this pad. |
+| **Clear button** | Removes the button from the pad. |
+| **Undo**, **Redo** | Step back and forward through your changes to the pages. |
+| **Stop all macros** | Stops everything that is running. Shows how many macros are running. |
+
+On a fader, the menu offers **Edit fader…** and **Remove fader** instead.
+
+## Move and copy with the mouse
+
+<kbd>Ctrl</kbd> (<kbd>⌘</kbd> on macOS) and drag a button to move it to another pad. Drop it on a pad that already has a button, and the two swap places.
+
+<kbd>Shift</kbd> and drag to copy a button. Dropping a copy on a pad that already has a button replaces that button. <kbd>Alt</kbd> works for copying too.
+
+Faders move the same way: <kbd>Ctrl</kbd> or <kbd>⌘</kbd> and drag any of their pads. A fader only lands where every one of its pads is free.
+
+Press <kbd>Esc</kbd> during a drag to cancel it.
+
+<kbd>Ctrl</kbd> or <kbd>⌘</kbd> and double-click a pad to open its editor directly.
+
+## Undo and redo
+
+Removing a page, clearing a button or removing a fader shows a short notice with **Undo**. The keyboard works too:
+
+- Undo: <kbd>Ctrl</kbd> + <kbd>Z</kbd> (<kbd>⌘</kbd> + <kbd>Z</kbd> on macOS)
+- Redo: <kbd>Ctrl</kbd> + <kbd>Y</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd> (<kbd>⇧</kbd> + <kbd>⌘</kbd> + <kbd>Z</kbd> on macOS)
+
+The shortcuts do nothing while an editor is open or while you type in a text field.
+
+## Stopping macros
+
+A macro that loops or waits for a long time keeps running until it ends or you stop it. To stop everything at once:
+
+- right-click any pad and choose **Stop all macros**, or
+- use **Stop all running macros** in the tray menu, or
+- give a button the [Stop all macros](/actions/stop/stop-all-macros/) action.
+
+## Developer mode
+
+**Settings → Interface → Show diagnostics in the main window** adds a side panel next to the pads. It is off by default so the window is just your pages.
+
+<AppShot name="developer-mode" alt="The main window with the diagnostics side panel: connection status, device facts, MIDI monitor and shared variables." />
+
+The panel shows:
+
+- the connected model, its firmware and MIDI ports,
+- how many pads the device has and whether it has RGB or red and green LEDs,
+- your **Shared variables** and their current values,
+- **Last press**: the last pad you pressed, with its MIDI note, velocity and pressure,
+- the **MIDI monitor**, a live list of the messages the Launchpad sends.
+
+The header also shows the connection status while developer mode is on.
+
+<Aside type="tip">
+The MIDI monitor is the quickest way to check that a pad reaches Lunchpad at all. If pressing a pad adds nothing to the monitor, the problem is between the Launchpad and your computer.
+</Aside>

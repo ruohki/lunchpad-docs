@@ -1,0 +1,48 @@
+---
+title: Switch audio device
+description: Make another speaker or microphone the system default with one press.
+actionTypes: [setAudioDevice]
+sidebar:
+  order: 4
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['setAudioDevice']} />
+
+<ActionShot type="setAudioDevice" alt="Switch audio device action with Device Speakers switching to Headphones (Arctis 7 Game), next to the Refresh button" />
+
+Switch audio device changes which device your computer uses by default for playback or recording. Flip between headphones and speakers, or between two microphones, without opening the sound settings.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Device** (left) | **Speakers** switches the default output, **Microphone** the default input. Changing it clears the device next to it. |
+| **Device** (right) | The device to make the default, as the system names it. A saved device that is not connected right now shows as "(not found)". |
+| **Refresh** | Reads the device list again, for example after plugging in a headset. |
+
+## How it runs
+
+- The action has no **Wait** switch; it takes effect right away.
+- The name is matched exactly first, then ignoring upper and lower case, then as part of a longer name. A device whose name gains a prefix after reconnecting (Windows likes "2- Headphones") is still found.
+- On Windows the device becomes the default for everything: the default device and the default communication device.
+- Programs that use the default device follow the switch. Programs where you picked a specific device in their own settings keep using that device.
+- If no device matches, nothing changes and the reason goes to the log.
+
+## Example
+
+One pad that toggles between headphones and speakers, using a [flip flop](/actions/flow/flip-flop/):
+
+1. **Flip flop: A** → Switch audio device: **Speakers**, your headphones.
+2. **Flip flop: B** → Switch audio device: **Speakers**, your speakers.
+3. **Flip flop: end**.
+
+Add a [Set colour](/actions/general/set-colour/) to each side so the pad shows which one is active.
+
+## Related
+
+- [System audio](/actions/media/system-audio/) — volume and mute of the default device
+- [Play sound](/actions/media/play-sound/) — pick a device per sound instead

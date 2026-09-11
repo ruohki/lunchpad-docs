@@ -1,0 +1,63 @@
+---
+title: Pages and backup
+description: Organise buttons in pages, share pages as files, restore a previous profile and import the old Lunchpad.
+sidebar:
+  order: 6
+---
+
+import AppShot from '~/components/AppShot.astro';
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+Every page is a full layout for the Launchpad. Only the active page is shown on the device; the others wait until you switch to them, with a tab or with the [Switch page](/actions/general/switch-page/) action.
+
+## Managing pages
+
+From the page tabs in the header:
+
+- **+** adds a page.
+- Double-click a tab to rename it.
+- Right-click a tab for **Rename**, **Duplicate**, **Move left**, **Move right** and **Remove page**.
+
+**Settings → Pages & backup** has the same controls in a list, plus exporting and importing:
+
+<AppShot name="settings-pages" alt="The Pages & backup settings tab." />
+
+- Click a page to show it, double-click to rename it, drag the handle to reorder.
+- Each page shows how many buttons and actions it has, and how many buttons lie outside the grid of the connected Launchpad.
+- The buttons on the right rename, duplicate, move up, move down, export and remove a page.
+
+The first page cannot be removed. Removing any other page can be undone from the notice or with <kbd>Ctrl</kbd> + <kbd>Z</kbd>.
+
+## Share a page as a file
+
+**Export page…** saves one page as a `.lunchpad-page.json` file. **Import page…** adds a page from such a file to your pages. Use it to back up a page, move it to another computer or share it with a friend.
+
+Sound files, programs and scripts are referenced by their path, not copied into the file. On another computer, open the buttons and choose the files again. Buttons with a missing sound file show a small dot, and Lunchpad lists the missing files in a notice.
+
+## Restore the previous profile
+
+Lunchpad saves your pages after every change and keeps the version before the last change as a backup. **Restore previous profile** brings that version back.
+
+Use it when a change went wrong and undo does not reach it, for example after an import that replaced your pages.
+
+<Aside>
+If Lunchpad ever finds your profile unreadable when it starts, it keeps a copy of it as `profile.json.unreadable` in the settings folder and starts with an empty profile. See [Installation](/getting-started/installation/#where-your-data-lives) for where that folder is.
+</Aside>
+
+## Import from the old Lunchpad
+
+Lunchpad 1.0 is a rewrite of the original Electron app. Your old pages can come along.
+
+<Steps>
+
+1. In the old app, open the crash screen or **Settings → Pages** and copy the configuration to a file.
+
+2. In Lunchpad, open **Settings → Pages & backup** and go to **Import from the old Lunchpad**.
+
+3. Choose **Add to my pages** to keep your current pages and add the old ones, or **Replace my pages** to swap them.
+
+4. Click **Choose configuration file…** and pick the file.
+
+</Steps>
+
+Sounds keep their paths; hotkeys, colours and OBS actions carry over. Lunchpad shows a notice with the number of pages, buttons and actions it imported, and notes on anything it had to change or skip. For example, the sound output device resets to the app default, because the old app's device ids do not carry over.

@@ -1,0 +1,51 @@
+---
+title: Set variable
+description: Remember a value, fixed or built from placeholders, for later actions and other buttons.
+actionTypes: [setVariable]
+sidebar:
+  order: 5
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['setVariable']} />
+
+<ActionShot type="setVariable" alt="Set variable: the name lastPress gets the value {{x}},{{y}} on {{pageId}}, with the scope Everywhere." />
+
+Set variable stores a value under a name. Later actions use it as a `{{placeholder}}`, and [conditions](/actions/flow/condition/) can check it. Use it to remember a state (which scene you picked last, whether a mode is on) or to pass a value from one button to another.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Name** | The variable's name. Suggestions show names you already use. |
+| **Value** | What to store. Type `{{` to pick a variable; placeholders are replaced when the action runs. |
+| **Scope** | **This run**: only this macro and the buttons it calls with [Run another button](/actions/general/run-another-button/). **Everywhere**: shared by all macros. |
+
+## How it runs
+
+- The action is instant. The value is stored as text.
+- Shared (**Everywhere**) variables are saved in the config folder (`variables.json`) and are still there after Lunchpad restarts. **This run** variables are gone when the macro ends.
+- When a name exists in both scopes, the macro sees this run's value.
+- The built-in names `velocity`, `velocity01`, `pressure`, `pressure01`, `x`, `y` and `pageId` always win in placeholders. Do not name your own variables like that.
+- An empty name does nothing. Spaces around the name are ignored.
+- Writing `fader.<name>` with **Everywhere** moves that fader, for example `fader.volume` to `50`. See [faders](/guides/faders/).
+
+<Aside type="tip">
+Switch on developer mode (Settings → Interface) to see the shared variables and their values next to the pads while you build a macro.
+</Aside>
+
+## Example
+
+Remember which scene a button picked, so another button can switch back to it:
+
+1. On each scene button: [Switch scene](/actions/streaming/switch-scene/) followed by **Set variable** `lastScene` = `Gameplay` (**Everywhere**).
+2. On a "back" button: **Switch scene** with the scene name `{{lastScene}}`.
+
+## Related
+
+- [Add to variable](/actions/system/add-to-variable/) — counters
+- [Run script](/actions/system/run-script/) — compute a value
+- [Variables and placeholders](/guides/variables/)

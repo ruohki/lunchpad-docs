@@ -1,0 +1,49 @@
+---
+title: Run another button
+description: Run the actions of another button, on any page, as part of this macro.
+actionTypes: [runButton]
+sidebar:
+  order: 3
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['runButton']} />
+
+<ActionShot type="runButton" alt="Run another button action targeting page Scenes, column 1, row 8, with Run set to pressed, then released" />
+
+Run another button runs the actions of a different button as if it were part of this one. Build a macro once and reuse it: a "Go live" button can run your "Starting soon" scene button and your "Mic on" button instead of copying their actions.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Page** | **Same page** means the page of the button that is running. Or pick any page. |
+| **Column**, **Row** | Where the other button sits: the same numbers the button editor shows in its title, counted from the bottom-left pad. |
+| **Run** | Which of its lists to run: **pressed actions**, **released actions**, **pressed, then released** (both, one after the other), or **held actions**. |
+
+## How it runs
+
+- With **Wait** on, this macro waits until the other button's actions have finished. With **Wait** off, they run alongside and this macro goes on right away.
+- The other button's actions share this run's variables with the scope **This run**, and they get the same press force (`{{velocity}}`).
+- Inside the other button's actions, "this button" means that other button. Its pad shows as running while they run.
+- Stopping this macro also stops the other button's actions.
+- If there is no button at that position, or it has no actions in the chosen list, nothing happens.
+- If the other button has **Repeat while held** on and you run its pressed actions, they repeat until this macro is stopped.
+- Buttons that run each other are cut off after 8 levels, so a button that runs itself cannot loop forever.
+
+## Example
+
+A "Go live" button:
+
+1. Run another button: **Scenes** page, the "Starting soon" button, **pressed, then released**.
+2. Run another button: the "Mic on" button on the same page, **pressed actions**.
+3. [OBS & Streamlabs: stream, record, replay](/actions/streaming/stream-record-replay/): start the stream.
+
+## Related
+
+- [Action lists](/guides/action-lists/) — pressed, released and held actions
+- [Variables and placeholders](/guides/variables/) — **This run** and **Everywhere** scopes
+- [Stop this macro](/actions/stop/stop-this-macro/)

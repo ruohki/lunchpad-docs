@@ -1,0 +1,75 @@
+---
+title: Run script
+description: Run a small JavaScript snippet that reads and changes variables and returns a result.
+actionTypes: [runScript]
+sidebar:
+  order: 4
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['runScript']} />
+
+<ActionShot type="runScript" alt="Run script with a snippet that counts deaths in a shared variable and returns a message. The result is saved to the variable message, and the Run test result is shown below the code." />
+
+Run script is the glue between actions. When a [condition](/actions/flow/condition/) is not enough, a few lines of JavaScript can do maths, format text, pick a value out of a JSON answer or keep a counter.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| Code | The JavaScript to run. |
+| **Save result to** | Stores the result in this variable. |
+| **Scope** | **This run** or **Everywhere**, see [variables](/guides/variables/). |
+| **Run test** | Runs the snippet now and shows the result, how long it took and which shared variables it would change. |
+
+## What the script sees
+
+| Name | Contains |
+| --- | --- |
+| `vars.name` | Every variable the macro can see: the trigger values, shared variables and this run's variables (this run's win over shared ones). |
+| `globals.name` | Only the shared variables. |
+| `velocity`, `velocity01`, `pressure`, `pressure01`, `x`, `y` | The trigger values, as numbers. |
+| `pageId` | The page of the button, as text. |
+
+All variables are text. Turn them into numbers before doing maths: `Number(vars.count) + 1`.
+
+## How it runs
+
+- The result is the value of the last expression, or what you `return`. As soon as the word `return` appears anywhere in the code, even in a comment or a string, the snippet runs as a function body, so it needs an explicit `return` to have a result.
+- Assigning `vars.name = ...` sets a variable for this run. Assigning `globals.name = ...` sets a shared variable.
+- Text results are saved as they are, whole numbers without decimals, objects and arrays as JSON. No result saves an empty text.
+- The snippet runs in a sandbox: plain JavaScript without a console, network or file access. Loops stop after 2,000,000 rounds and nesting after 256 calls, so a runaway loop ends with an error instead of hanging Lunchpad.
+- An error is noted in the log and the macro goes on. The **Save result to** variable is not changed.
+- With **Wait** on, the next actions see the result and the changed variables.
+
+<Aside type="note" title="Run test does not change anything">
+**Run test** uses test values (velocity 127, column and row 0, the page `default`) and your current shared variables. It lists the shared variables the snippet would change, but it does not change them.
+</Aside>
+
+## Examples
+
+A death counter that says something useful (shared variable `deaths`, result saved to `message`):
+
+```js
+globals.deaths = Number(globals.deaths || 0) + 1;
+return globals.deaths === 1 ? "First death!" : `Death number ${globals.deaths}`;
+```
+
+Pick a value out of an [HTTP request](/actions/system/http-request/) answer saved as `weather`:
+
+```js
+return JSON.parse(vars.weather).main.temp > 25 ? "hot" : "fine";
+```
+
+<Aside type="caution">
+A saved HTTP answer holds only its first 2 KB. `JSON.parse` fails on a longer answer that was cut off, so ask the service for a short answer if you can.
+</Aside>
+
+## Related
+
+- [Set variable](/actions/system/set-variable/) and [Add to variable](/actions/system/add-to-variable/) — simple cases without code
+- [Condition](/actions/flow/condition/) — branch on the result
+- [Variables and placeholders](/guides/variables/)

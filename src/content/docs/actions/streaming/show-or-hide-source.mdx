@@ -1,0 +1,52 @@
+---
+title: Show or hide source
+description: Show, hide or toggle a source in a scene of OBS Studio or Streamlabs Desktop.
+actionTypes: [obsToggleSource, slobsToggleSource]
+sidebar:
+  order: 2
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+<ActionHeader types={['obsToggleSource', 'slobsToggleSource']} />
+
+<Tabs syncKey="streaming-app">
+  <TabItem label="OBS Studio"><ActionShot type="obsToggleSource" alt="OBS: show or hide source with Scene Gameplay, Source Webcam and Do set to Toggle. Below the fields: OBS Studio connected." /></TabItem>
+  <TabItem label="Streamlabs Desktop"><ActionShot type="slobsToggleSource" alt="Streamlabs: show or hide source with Scene Gameplay, Source Webcam and Do set to Toggle. Below the fields: Streamlabs Desktop connected." /></TabItem>
+</Tabs>
+
+Show or hide source switches a single element of a scene: the webcam, an overlay, an alert box, a "starting soon" timer. Use **Toggle** for one pad that flips it on and off.
+
+<Aside type="note">
+Switch the integration on first, under Settings → **OBS Studio** or **Streamlabs Desktop**. See [OBS Studio and Streamlabs](/guides/obs-and-streamlabs/).
+</Aside>
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Scene** | The scene that contains the source. |
+| **Source** | The source to show or hide. |
+| **Do** | **Show**, **Hide** or **Toggle** (flip between the two). |
+
+While the app is not connected, type the names exactly as they appear in the app.
+
+## How it runs
+
+- The action changes every copy of the source in that scene. With **Toggle**, each copy flips from its current state.
+- It works on the current scene collection.
+- `{{placeholders}}` work in the scene and source names.
+- If the source is not in the scene, nothing changes: Streamlabs Desktop reports it in the log, OBS Studio does nothing.
+- Errors are noted in the log and the macro goes on.
+
+<Aside type="tip">
+Set **Active while** to **Source is visible** so the pad lights while the source is shown. See [buttons](/guides/buttons/).
+</Aside>
+
+## Related
+
+- [Switch scene](/actions/streaming/switch-scene/)
+- [Toggle filter](/actions/streaming/toggle-filter/) — change how a source looks instead
+- [Flip flop](/actions/flow/flip-flop/) — do more than one thing on alternate presses

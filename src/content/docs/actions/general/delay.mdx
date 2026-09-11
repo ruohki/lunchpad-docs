@@ -1,0 +1,38 @@
+---
+title: Delay
+description: Wait a number of milliseconds before the next action starts.
+actionTypes: [delay]
+sidebar:
+  order: 1
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['delay']} />
+
+<ActionShot type="delay" alt="When pressed list with Play sound drumroll.mp3, an open Delay of 1500 milliseconds and Play sound applause.ogg" />
+
+Delay pauses the macro before the next action. Use it to time things: switch the scene, wait a moment, then play the sound.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Milliseconds** | How long to wait. 1000 is one second. Whole numbers only. |
+
+## How it runs
+
+- A delay always holds up the actions after it.
+- Actions before it with **Wait** off keep running during the delay. In the screenshot, with **Wait** on for the drum roll, the applause comes 1.5 seconds after the drum roll ends. With **Wait** off, it comes 1.5 seconds after the drum roll starts.
+- Stopping the macro ends the delay at once; the actions after it do not run.
+
+<Aside type="tip">
+For pauses between key presses, use the **Wait** step inside a [Hotkey sequence](/actions/system/hotkey-sequence/) instead.
+</Aside>
+
+## Related
+
+- [Action lists](/guides/action-lists/) — how **Wait** works
+- [Repeat while held](/guides/action-lists/) — a delay sets the pace of a repeating button
