@@ -144,8 +144,10 @@ Repository settings (Settings → Secrets and variables → Actions):
 | `BUNNY_PULLZONE_ID` | variable | The Pull Zone's id (in its URL in the dashboard) |
 | `SITE_URL` | variable | Public address, e.g. `https://docs.example.com`; turns on the sitemap |
 
-Without the two purge settings a deploy still works, but pages cached at the edge stay old until
-they expire.
+Without the two purge settings a deploy still works, but pages already cached at the edge stay
+old until they expire, and the Pull Zone sends `max-age=2592000`: up to 30 days. Set
+`BUNNY_API_KEY` and `BUNNY_PULLZONE_ID` so every deploy purges, or purge by hand in the bunny.net
+dashboard after a deploy.
 
 ## How the screenshots are made
 
