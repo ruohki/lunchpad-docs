@@ -8,12 +8,13 @@ const act = (kind: ActionKind): Action => ({ id: `app-${Math.random().toString(3
 const settingsTabs: [string, string][] = [
   ["launchpad", "Launchpad"],
   ["sound", "Sound"],
-  ["keyboard", "Keyboard"],
+  ["keyboard", "Keyboard & mouse"],
   ["interface", "Interface"],
   ["obs", "OBS Studio"],
   ["slobs", "Streamlabs Desktop"],
   ["home-assistant", "Home Assistant"],
   ["pages", "Pages & backup"],
+  ["variables", "Variables"],
   ["about", "About Lunchpad"],
   ["diagnostics", "Diagnostics"],
 ];
@@ -38,6 +39,18 @@ export const appShots: Shot[] = [
       await pad(page, 1, 6).click({ button: "right" });
       await page.getByRole("menu").waitFor();
       await page.waitForTimeout(400);
+    },
+  },
+
+  {
+    name: "app/outside-panel",
+    viewport: WINDOW,
+    scenario: { outside: true },
+    run: async (page) => {
+      await page.getByRole("button", { name: "Show them" }).click();
+      // The notice has done its job once the panel is open; it would cover it.
+      await page.getByRole("button", { name: "Dismiss" }).first().click();
+      await settle(page, 700);
     },
   },
 

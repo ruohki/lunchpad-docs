@@ -5,7 +5,7 @@
 // A screenshot scenario tweaks the start state through
 // `window.__LUNCHPAD_SCENARIO__` (set by capture.ts before the page loads).
 import type { Button, DeviceState, Fader, LaunchpadModel, Page, Profile, Settings } from "@app/lib/api";
-import { AUDIO, DISCOVERED, FILTERS, INPUTS, MODELS, VOICES, demoHomeAssistant, demoObs, demoProfile, demoSettings, demoSlobs, layoutFor, peaks } from "./fixtures";
+import { AUDIO, C, DISCOVERED, FILTERS, INPUTS, MODELS, VOICES, button, demoHomeAssistant, demoObs, demoProfile, demoSettings, demoSlobs, layoutFor, peaks } from "./fixtures";
 
 export interface Scenario {
   /** "picker" starts without a connected Launchpad */
@@ -25,6 +25,8 @@ export interface Scenario {
   running?: [number, number][];
   /** what "Run test" in the script editor reports */
   scriptResult?: string;
+  /** put two buttons on pads the connected Launchpad does not have (the "Out of sight" panel) */
+  outside?: boolean;
 }
 
 /** Top-left pad of the grid (column 1, row 8): where scenarios put their button. */
@@ -62,8 +64,13 @@ if (scenario.focus) {
   page.buttons.push({ ...(base ?? {}), down: [], up: [], hold: [], ...(base ? {} : { look: { type: "text", caption: "", size: 15, face: "sans", color: "#ffffff" }, color: { mode: "palette", index: 9 }, activeColor: null, loop: false, holdMs: 500, holdWait: true, stateLink: null }), ...scenario.focus, ...FOCUS_PAD } as Page["buttons"][number]);
 }
 
+if (scenario.outside) {
+  // Pads 10 and 11 of a Launchpad Pro: no pad for them on the Launchpad X of the demo data.
+  profile.pages[0].buttons.push({ ...button("Cue", C.violet), x: 9, y: 3 }, { ...button("Tempo", C.teal), x: 4, y: 9 });
+}
+
 const connected = scenario.connected ?? true;
-const variables: Record<string, string> = scenario.variables ?? { deaths: "3", lastScene: "Gameplay" };
+const variables: Record<string, string> = scenario.variables ?? { deaths: "3", lastScene: "Gameplay", "fader.volume": "75" };
 
 let device: DeviceState =
   scenario.view === "picker"
@@ -313,6 +320,14 @@ export function handle(cmd: string, a: Args): unknown {
       return { result: scenario.scriptResult ?? "ok", locals: {}, globals: {}, elapsedMs: 3 };
     case "get_variables":
       return variables;
+    case "delete_variables":
+      (a.names as string[]).forEach((name) => delete variables[name]);
+      return variables;
+    case "clear_variables":
+      Object.keys(variables).forEach((name) => delete variables[name]);
+      return variables;
+    case "prune_fader_variables":
+      return 0;
     case "get_running_macros":
       return (scenario.running ?? []).map(([x, y], i) => ({ id: `run-${i}`, pageId: profile.activePage, x, y, list: "down", startedAtMs: Date.now() }));
     case "stop_all_macros":

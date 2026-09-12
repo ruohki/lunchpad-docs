@@ -60,7 +60,7 @@ When you store a variable, you choose its **Scope**:
 
 If a variable exists in both scopes, the **This run** value wins. Avoid the names of the built-in values for your own variables: `{{velocity}}` always means the press.
 
-Shared variables are listed with their values in the side panel of [developer mode](/guides/main-window/#developer-mode).
+**Settings → Variables** lists every shared variable with its value and removes what you no longer want: one variable with the **✕** next to it, levels of renamed or removed faders with **Remove stale fader values**, or the whole list with **Remove all**. The same list is in the side panel of [developer mode](/guides/main-window/#developer-mode).
 
 <Aside type="tip">
 A death counter is two buttons: one with **Add to variable** `deaths`, amount `1`, and one with amount `-1`, both with scope **Everywhere**. A third button can say "`{{deaths}}` deaths so far" with **Text to speech**.
@@ -68,7 +68,7 @@ A death counter is two buttons: one with **Add to variable** `deaths`, amount `1
 
 ## Faders as variables
 
-Every [fader](/guides/faders/) keeps its level in a shared variable named `fader.` followed by the fader's name, for example `{{fader.volume}}`. Any macro can read it.
+Every [fader](/guides/faders/) keeps its level in a shared variable named `fader.` followed by the fader's name, for example `{{fader.volume}}`. Any macro can read it. A fader without a name, or one you would rather address whatever it is called, is also published under its id.
 
 Writing to that variable with the scope **Everywhere** moves the fader: **Set variable** `fader.volume` to `50`, or **Add to variable** `fader.volume` with `-5`, and the fader's pads and actions follow. With **This run** the value stays a variable of that macro and the fader does not move.
 

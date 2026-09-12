@@ -36,9 +36,9 @@ The tabs are grouped as in the app: **General**, **Integrations**, **Data** and 
 
 **Default output device**: where sounds play unless an action picks another device. **System default** follows your computer's default device. **Refresh** reads the device list again after you plugged in headphones or an interface.
 
-### Keyboard
+### Keyboard & mouse
 
-<AppShot name="settings-keyboard" alt="The Keyboard settings tab." />
+<AppShot name="settings-keyboard" alt="The Keyboard & mouse settings tab." />
 
 **Push-to-talk:** macros can wrap actions in **Push-to-talk on** and **Push-to-talk off** markers. While such a section runs, Lunchpad holds the key combination you set here, for example your Discord push-to-talk key.
 
@@ -80,6 +80,18 @@ Passwords and tokens of the integrations are not written into the settings file:
 ### Pages & backup
 
 Your pages in a list, page import and export, **Restore previous profile**, and **Import from the old Lunchpad**. See [Pages and backup](/guides/pages-and-backup/).
+
+### Variables
+
+<AppShot name="settings-variables" alt="The Variables settings tab: buttons to remove stale fader values and all variables, and a list of shared variables with their values." />
+
+Every shared variable with its current value: what macros wrote with **Set variable** or **Add to variable**, plus the level of every fader as `fader.<name>`. They survive restarts.
+
+- The **✕** next to a variable removes that one.
+- **Remove stale fader values** drops levels of faders that were renamed or removed.
+- **Remove all** clears the list, after a confirmation.
+
+Variables of a running macro (**This run**) are not listed here; they are gone when the macro ends. See [Variables and placeholders](/guides/variables/).
 
 ## About
 

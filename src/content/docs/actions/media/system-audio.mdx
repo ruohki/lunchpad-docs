@@ -12,15 +12,18 @@ import { Aside } from '@astrojs/starlight/components';
 
 <ActionHeader types={['setSystemVolume']} />
 
-<ActionShot type="setSystemVolume" alt="System audio action set to Device Speakers, Do Set the volume, at 35 %" />
+<ActionShot type="setSystemVolume" alt="System audio action with the first Device set to Speakers, the second Device set to Headphones (Arctis 7 Game), Do set to Set the volume and the level at 35 %" />
 
-System audio changes the volume of your computer's default speakers or microphone, or mutes them. The level can be fixed or come from a variable, so a [fader](/guides/faders/) on the Launchpad becomes a master volume control.
+System audio changes the volume of your speakers or microphone, or mutes them. It works on the device that is the system default at the time, or on one device you name, so a pad can turn down your headset while the rest of the system stays as it is. The level can be fixed or come from a variable, so a [fader](/guides/faders/) on the Launchpad becomes a volume control.
 
 ## Settings
 
+The editor has two fields labelled **Device**: the first picks speakers or microphone, the second which device of that kind.
+
 | Setting | What it does |
 | --- | --- |
-| **Device** | **Speakers**: the system's default output device. **Microphone**: the system's default input device. To change which device is the default, use [Switch audio device](/actions/media/switch-audio-device/). |
+| **Device** (first) | **Speakers** for an output, **Microphone** for an input. Changing it resets the device below. |
+| **Device** (second) | **System default** follows whatever is the default when the macro runs. Otherwise pick one device by name; the list comes from your system. A device that is not connected stays selectable and is shown as "(not found)". |
 | **Do** | **Set the volume** to a level, **Change the volume by** a step, **Mute**, **Unmute** or **Toggle mute**. |
 | **Volume** | For **Set the volume**: the level, 0 to 100 %. |
 | **Step** | For **Change the volume by**: −50 to +50 %. Negative steps turn it down. The result never goes below 0 or above 100 %. |
@@ -29,12 +32,11 @@ System audio changes the volume of your computer's default speakers or microphon
 ## How it runs
 
 - The action has no **Wait** switch. The next action starts once the system has applied the change.
+- `{{placeholders}}` work in the device name, so `{{room}} speakers` picks the device from a variable.
 - If the system refuses the change, the reason goes to the log and the macro goes on.
 
-<Aside type="caution" title="macOS">
-macOS has no mute switch for the microphone. **Mute** sets the input level to 0 and **Unmute** brings back the level it had before (75 % if Lunchpad does not know it). **Toggle mute** treats a level of 0 as muted.
-
-Some outputs, such as HDMI and many USB interfaces, have no software volume on macOS. The system cannot change them either, so the action fails for them.
+<Aside type="caution" title="Devices without a volume control">
+Some outputs, such as HDMI and many USB interfaces, have no volume Lunchpad can set; the system cannot change them either, and the action fails for them. The same holds for a microphone without a mute switch (the Mac's own microphone): Lunchpad parks it at level 0 for **Mute** and brings the level back on **Unmute**, and treats a level of 0 as muted for **Toggle mute**.
 </Aside>
 
 ## Example
@@ -42,9 +44,9 @@ Some outputs, such as HDMI and many USB interfaces, have no software volume on m
 A master volume on the Launchpad:
 
 1. Right-click a pad and choose **New fader here…**, range 0 to 100, unit `%`.
-2. On the fader's **Actions** tab, under **When the level changes**, add System audio: **Speakers**, **Set the volume**, **From variable** `value`.
+2. On the fader's **Actions** tab, under **When the level changes**, add System audio: **Speakers**, **System default**, **Set the volume**, **From variable** `value`.
 
-Two more buttons with **Change the volume by** −5 and +5 make fine steps.
+Two more buttons with **Change the volume by** −5 and +5 make fine steps. Pick a named device instead of **System default** to keep one output, for example your headset, on its own fader.
 
 ## Related
 

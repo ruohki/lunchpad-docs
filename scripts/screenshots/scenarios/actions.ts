@@ -66,7 +66,7 @@ export const actionShots: Shot[] = [
   // media
   shot("playSound", [sound("airhorn.wav", { volume: 0.9, start: 0.04, end: 0.72, outputDevice: "Headphones (Arctis 7 Game)", volumeFromVelocity: true })]),
   shot("textToSpeech", [act({ type: "textToSpeech", text: "Welcome to the stream! You are viewer number {{viewers}}.", voice: "aria", volume: 0.8 })]),
-  shot("setSystemVolume", [act({ type: "setSystemVolume", target: "output", mode: "set", volume: 35, volumeFrom: null })]),
+  shot("setSystemVolume", [act({ type: "setSystemVolume", target: "output", mode: "set", volume: 35, volumeFrom: null, device: "Headphones (Arctis 7 Game)" })]),
   shot("setAudioDevice", [act({ type: "setAudioDevice", target: "output", device: "Headphones (Arctis 7 Game)" })]),
   shot("stopAllSounds", [act({ type: "stopAllSounds" }), sound("drumroll.mp3")], { open: [] }),
 
