@@ -10,9 +10,12 @@ import type {
   HaState,
   Layout,
   LaunchpadModel,
+  Page,
   ModelInfo,
   ObsState,
   PadColor,
+  PadRegion,
+  PadShape,
   PadSpec,
   PlacedButton,
   Profile,
@@ -33,10 +36,12 @@ export const MODELS: ModelInfo[] = [
   { model: "LaunchpadProMk2", name: "Launchpad Pro MK2" },
   { model: "LaunchpadProMk3", name: "Launchpad Pro MK3" },
   { model: "LaunchpadLegacy", name: "Launchpad (first generation)" },
+  { model: "LaunchkeyMiniMk3", name: "Launchkey Mini MK3" },
 ];
 
 /** The 9 × 9 layout of the X (and, close enough for screenshots, every 8 × 8 model). */
 export function layoutFor(model: LaunchpadModel): Layout {
+  if (model === "LaunchkeyMiniMk3") return launchkeyLayout();
   const pads: PadSpec[] = [];
   for (let y = 0; y < 9; y++) {
     for (let x = 0; x < 9; x++) {
@@ -56,6 +61,57 @@ export function layoutFor(model: LaunchpadModel): Layout {
     pads,
     limitedColor: model === "LaunchpadLegacy",
     velocitySensitive: model === "LaunchpadX" || model === "LaunchpadProMk2" || model === "LaunchpadProMk3",
+  };
+}
+
+/**
+ * Launchkey Mini MK3: keys, pads, knobs and the two touch strips, mirroring
+ * src-tauri/src/midi/models/launchkey_mini_mk3.rs (15 × 7, each pad row two
+ * half-rows). Used to look at the keyboard models in the harness.
+ */
+function launchkeyLayout(): Layout {
+  const pads: PadSpec[] = [];
+  // A control without a note sends nothing (the printed keyboard functions); the app draws
+  // those greyed out, so everything that can hold a button needs its real note or CC here.
+  const at = (x: number, y: number, shape: PadShape, region: PadRegion, label: string | null, rows = 1, led: PadSpec["led"] = "none", note: number | null = null, cc = false) =>
+    pads.push({ x, y, shape, region, label, note, cc, led, rows });
+  const blackAfter = (x: number) => [0, 1, 3, 4, 5].includes(x % 7) && x + 1 < 15;
+  const WHITE_OFFSETS = [0, 2, 4, 5, 7, 9, 11];
+  const whiteNote = (i: number) => 48 + 12 * Math.floor(i / 7) + WHITE_OFFSETS[i % 7];
+
+  for (let y = 6; y >= 0; y--) {
+    for (let x = 0; x < 15; x++) {
+      if (y === 6 && x === 0) at(x, y, "strip", "left", "Pitch", 5);
+      else if (y === 6 && x === 1) at(x, y, "strip", "left", "Modulation", 5);
+      else if ((x === 0 || x === 1) && y >= 2 && y <= 5) continue; // covered by the strips
+      else if (x === 2 && y === 6) at(x, y, "rect", "left", "Shift", 1, "none", 108, true);
+      else if (x === 2 && y === 5) at(x, y, "rect", "left", "Transpose");
+      else if (x === 2 && y === 3) at(x, y, "rect", "left", "+");
+      else if (x === 2 && y === 2) at(x, y, "rect", "left", "−");
+      else if (x >= 4 && x <= 11 && y === 6) at(x, y, "knob", "top", null);
+      else if (x >= 4 && x <= 11 && y === 5) at(x, y, "pad", "grid", null, 2, "rgb", 96 + (x - 4));
+      else if (x >= 4 && x <= 11 && y === 3) at(x, y, "pad", "grid", null, 2, "rgb", 112 + (x - 4));
+      else if (x === 12 && y === 5) at(x, y, "pad", "right", ">", 2, "rgb", 104, true);
+      else if (x === 12 && y === 3) at(x, y, "pad", "right", "Stop Solo Mute", 2, "rgb", 105, true);
+      else if (x >= 4 && x <= 12 && (y === 2 || y === 4)) continue; // lower halves of the pad rows
+      else if (x === 13 && y === 4) at(x, y, "rect", "right", "Arp");
+      else if (x === 14 && y === 4) at(x, y, "rect", "right", "Fixed Chord");
+      else if (x === 13 && y === 2) at(x, y, "rect", "right", "▶", 1, "white", 115, true);
+      else if (x === 14 && y === 2) at(x, y, "rect", "right", "●", 1, "white", 117, true);
+      else if (y === 0) at(x, y, "keyWhite", "bottom", null, 1, "none", whiteNote(x));
+      else if (y === 1 && blackAfter(x)) at(x, y, "keyBlack", "bottom", null, 1, "none", whiteNote(x) + 1);
+      else at(x, y, "empty", "other", null);
+    }
+  }
+  return {
+    model: "LaunchkeyMiniMk3",
+    modelName: "Launchkey Mini MK3",
+    width: 15,
+    height: 7,
+    rowWeights: [1.6, 1.1, 0.46, 0.46, 0.46, 0.46, 0.8],
+    pads,
+    limitedColor: false,
+    velocitySensitive: true,
   };
 }
 
@@ -193,6 +249,35 @@ export function demoProfile(): Profile {
         buttons: [at(0, 7, sound("airhorn.wav", "Horn", C.amber)), at(1, 7, sound("applause.ogg", "Clap", C.green))],
       },
       { id: "scenes", name: "Scenes", faders: [], buttons: [at(0, 7, scene("Gameplay", "Game", C.green))] },
+    ],
+  };
+}
+
+/** A page laid out for the Launchkey: buttons on the pads, the scene buttons, transport and one key, a fader on a knob. */
+export function launchkeyPage(): Page {
+  const pad = (x: number, y: number, caption: string, color: PadColor) => at(x, y, button(caption, color));
+  return {
+    id: "default",
+    name: "Keys",
+    faders: [
+      { ...volumeFader, id: "fader-filter", name: "filter", variable: "", x: 4, y: 6, direction: "up", length: 1, min: 0, max: 100, unit: "%", value: 40 },
+    ],
+    buttons: [
+      pad(5, 5, "Start", C.teal),
+      pad(6, 5, "Game", C.green),
+      pad(7, 5, "Chat", C.blue),
+      pad(8, 5, "BRB", C.violet),
+      pad(9, 5, "End", C.pink),
+      pad(11, 5, "Live", C.red),
+      pad(5, 3, "Horn", C.amber),
+      pad(6, 3, "Drums", C.orange),
+      pad(7, 3, "Clap", C.green),
+      pad(8, 3, "Boo", C.red),
+      pad(11, 3, "Clip", C.orange),
+      pad(12, 5, "Next", C.white),
+      pad(12, 3, "Stop", C.dim),
+      pad(13, 2, "▶", C.green),
+      pad(0, 0, "Horn", C.amber),
     ],
   };
 }

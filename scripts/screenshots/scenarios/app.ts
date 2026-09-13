@@ -96,6 +96,24 @@ export const appShots: Shot[] = [
     },
   },
 
+  // Keyboard models: the whole board, and the fader editor of a knob.
+  { name: "app/launchkey", viewport: { width: 1020, height: 560 }, scenario: { model: "LaunchkeyMiniMk3" } },
+
+  {
+    name: "app/fader-knob",
+    viewport: TALL,
+    scenario: { model: "LaunchkeyMiniMk3" },
+    run: async (page) => {
+      // The knob that already carries the demo fader: a named fader reads better than an empty one.
+      await pad(page, 4, 6).click({ button: "right" });
+      await page.getByRole("menuitem", { name: /Edit fader/ }).click();
+      const dialog = page.getByRole("dialog");
+      await dialog.waitFor();
+      await settle(page);
+      return dialog;
+    },
+  },
+
   { name: "app/fader-editor", viewport: TALL, run: (page) => openFaderEditor(page) },
 
   {

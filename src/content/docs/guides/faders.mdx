@@ -40,7 +40,8 @@ The **Fader** tab:
 
 | Setting | What it does |
 | --- | --- |
-| **Name** | Identifies the fader for **Set fader** and the `fader.` variable. |
+| **Name** | Identifies the fader for **Set fader** and in the fader list. |
+| **Variable name** | What macros read the level as: `fader.` plus this name. Empty uses the fader's name (spaces become underscores); a fader without a name is published under its id. |
 | **Direction**, **Pads** | Where the fader runs from its first pad, and how long it is (at least 2 pads). |
 | **Preview** | Shows the pads with the current colours and the level. |
 | **Colour at the minimum**, **Colour at the maximum** | The pads blend from one to the other. |
@@ -78,6 +79,12 @@ These actions can read the level as placeholders or in **From variable** fields:
 Match the unit to the action: a 0 to 100 fader fits a volume action set to %, a −60 to 0 fader fits one set to dB.
 
 Every macro, not just the fader's own, can read the level as `fader.` plus the name, for example `{{fader.mic}}`.
+
+## On a knob or a touch strip
+
+A [Launchkey](/guides/launchkey/) has knobs and touch strips instead of pads for continuous control. Right-click one and choose **Assign a fader…**: it holds exactly one fader, and the hardware supplies the value, so the editor drops **Direction**, **Pads** and the colours and keeps the range, the variable and the actions.
+
+Turning the knob or touching the strip moves the fader and runs its actions, paced to a few runs per second while it moves.
 
 ## Pads under a fader
 

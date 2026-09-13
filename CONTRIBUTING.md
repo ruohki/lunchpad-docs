@@ -53,7 +53,23 @@ share the page of their menu entry.
 4. If the editor asks the backend for something new (a list of devices, a test run), answer
    the command in `scripts/screenshots/mock/backend.ts` with demo data from `fixtures.ts`.
    Unhandled commands log `[mock backend] unhandled command …` in the browser console and
-   return `null`.
+   return `null`. A quick check that nothing is missing:
+
+   ```bash
+   node --input-type=module -e 'import {readFileSync} from "node:fs";
+   const api = readFileSync(process.env.LUNCHPAD_DIR + "/src/lib/api.ts", "utf8");
+   const used = [...new Set([...api.matchAll(/invoke[^(\n]*\(\s*"(\w+)"/g)].map(m => m[1]))];
+   const mock = new Set([...readFileSync("scripts/screenshots/mock/backend.ts", "utf8").matchAll(/case "(\w+)"/g)].map(m => m[1]));
+   console.log(used.filter(c => !mock.has(c)));'
+   ```
+
+### Other devices in a shot
+
+`scenario.model` picks which device is "connected", for example
+`{ model: "LaunchkeyMiniMk3" }`; `fixtures.ts` holds that layout and a page laid out for it.
+When adding a layout, give every control that can hold a button its real note or CC number: a
+control without one is what the app draws as an inert keyboard function (greyed out, no button),
+so pads and keys silently disappear from the shot.
 5. `npm run screenshots -- myAction` and look at `src/assets/screenshots/actions/myAction.png`.
 6. Write the page from the template below and put it in the group folder with the right
    `sidebar.order` (its position in the app's submenu). For the release that introduces it,

@@ -5,7 +5,7 @@
 // A screenshot scenario tweaks the start state through
 // `window.__LUNCHPAD_SCENARIO__` (set by capture.ts before the page loads).
 import type { Button, DeviceState, Fader, LaunchpadModel, Page, Profile, Settings } from "@app/lib/api";
-import { AUDIO, C, DISCOVERED, FILTERS, INPUTS, MODELS, VOICES, button, demoHomeAssistant, demoObs, demoProfile, demoSettings, demoSlobs, layoutFor, peaks } from "./fixtures";
+import { AUDIO, C, DISCOVERED, FILTERS, INPUTS, MODELS, VOICES, button, demoHomeAssistant, demoObs, demoProfile, demoSettings, demoSlobs, launchkeyPage, layoutFor, peaks } from "./fixtures";
 
 export interface Scenario {
   /** "picker" starts without a connected Launchpad */
@@ -27,6 +27,8 @@ export interface Scenario {
   scriptResult?: string;
   /** put two buttons on pads the connected Launchpad does not have (the "Out of sight" panel) */
   outside?: boolean;
+  /** which device is connected (default: the Launchpad X) */
+  model?: LaunchpadModel;
 }
 
 /** Top-left pad of the grid (column 1, row 8): where scenarios put their button. */
@@ -64,6 +66,9 @@ if (scenario.focus) {
   page.buttons.push({ ...(base ?? {}), down: [], up: [], hold: [], ...(base ? {} : { look: { type: "text", caption: "", size: 15, face: "sans", color: "#ffffff" }, color: { mode: "palette", index: 9 }, activeColor: null, loop: false, holdMs: 500, holdWait: true, stateLink: null }), ...scenario.focus, ...FOCUS_PAD } as Page["buttons"][number]);
 }
 
+// The demo pages are drawn for a Launchpad; a keyboard model gets its own page.
+if (scenario.model === "LaunchkeyMiniMk3") profile.pages[0] = launchkeyPage();
+
 if (scenario.outside) {
   // Pads 10 and 11 of a Launchpad Pro: no pad for them on the Launchpad X of the demo data.
   profile.pages[0].buttons.push({ ...button("Cue", C.violet), x: 9, y: 3 }, { ...button("Tempo", C.teal), x: 4, y: 9 });
@@ -75,7 +80,7 @@ const variables: Record<string, string> = scenario.variables ?? { deaths: "3", l
 let device: DeviceState =
   scenario.view === "picker"
     ? { status: "disconnected", device: null, layout: null, savedDevice: settings.device, autoConnect: true, pressFeedback: true, pressThreshold: null, pressed: [], error: null }
-    : connectedState("LaunchpadX", false);
+    : connectedState(scenario.model ?? "LaunchpadX", false);
 
 function connectedState(model: LaunchpadModel, virtual: boolean): DeviceState {
   const layout = layoutFor(model);

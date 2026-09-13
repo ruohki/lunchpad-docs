@@ -68,7 +68,7 @@ A death counter is two buttons: one with **Add to variable** `deaths`, amount `1
 
 ## Faders as variables
 
-Every [fader](/guides/faders/) keeps its level in a shared variable named `fader.` followed by the fader's name, for example `{{fader.volume}}`. Any macro can read it. A fader without a name, or one you would rather address whatever it is called, is also published under its id.
+Every [fader](/guides/faders/) keeps its level in a shared variable named `fader.` followed by its **Variable name**, for example `{{fader.volume}}`. Any macro can read it. The **Variable name** defaults to the fader's name with spaces as underscores; a fader without a name is published under its id instead.
 
 Writing to that variable with the scope **Everywhere** moves the fader: **Set variable** `fader.volume` to `50`, or **Add to variable** `fader.volume` with `-5`, and the fader's pads and actions follow. With **This run** the value stays a variable of that macro and the fader does not move.
 
