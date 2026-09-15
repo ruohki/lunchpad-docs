@@ -46,10 +46,10 @@ export function layoutFor(model: LaunchpadModel): Layout {
   for (let y = 0; y < 9; y++) {
     for (let x = 0; x < 9; x++) {
       const note = (y + 1) * 10 + x + 1;
-      if (x === 8 && y === 8) pads.push({ x, y, shape: "logo", region: "other", label: null, note: 99, cc: false });
-      else if (y === 8) pads.push({ x, y, shape: "round", region: "top", label: X_TOP[x], note, cc: true });
-      else if (x === 8) pads.push({ x, y, shape: "round", region: "right", label: X_RIGHT[7 - y], note, cc: true });
-      else pads.push({ x, y, shape: "pad", region: "grid", label: null, note, cc: false });
+      if (x === 8 && y === 8) pads.push({ x, y, shape: "logo", region: "other", label: null, note: 99, cc: false, led: "none", rows: 1 });
+      else if (y === 8) pads.push({ x, y, shape: "round", region: "top", label: X_TOP[x], note, cc: true, led: "rgb", rows: 1 });
+      else if (x === 8) pads.push({ x, y, shape: "round", region: "right", label: X_RIGHT[7 - y], note, cc: true, led: "rgb", rows: 1 });
+      else pads.push({ x, y, shape: "pad", region: "grid", label: null, note, cc: false, led: "rgb", rows: 1 });
     }
   }
   return {
@@ -73,15 +73,16 @@ function launchkeyLayout(): Layout {
   const pads: PadSpec[] = [];
   // A control without a note sends nothing (the printed keyboard functions); the app draws
   // those greyed out, so everything that can hold a button needs its real note or CC here.
-  const at = (x: number, y: number, shape: PadShape, region: PadRegion, label: string | null, rows = 1, led: PadSpec["led"] = "none", note: number | null = null, cc = false) =>
-    pads.push({ x, y, shape, region, label, note, cc, led, rows });
+  const at = (x: number, y: number, shape: PadShape, region: PadRegion, label: string | null, rows = 1, led: PadSpec["led"] = "none", note: number | null = null, cc = false, centred = false) =>
+    pads.push({ x, y, shape, region, label, note, cc, led, rows, centred });
   const blackAfter = (x: number) => [0, 1, 3, 4, 5].includes(x % 7) && x + 1 < 15;
   const WHITE_OFFSETS = [0, 2, 4, 5, 7, 9, 11];
   const whiteNote = (i: number) => 48 + 12 * Math.floor(i / 7) + WHITE_OFFSETS[i % 7];
 
   for (let y = 6; y >= 0; y--) {
     for (let x = 0; x < 15; x++) {
-      if (y === 6 && x === 0) at(x, y, "strip", "left", "Pitch", 5);
+      // The pitch strip springs back to the middle: drawn as a bar, not a fill.
+      if (y === 6 && x === 0) at(x, y, "strip", "left", "Pitch", 5, "none", null, false, true);
       else if (y === 6 && x === 1) at(x, y, "strip", "left", "Modulation", 5);
       else if ((x === 0 || x === 1) && y >= 2 && y <= 5) continue; // covered by the strips
       else if (x === 2 && y === 6) at(x, y, "rect", "left", "Shift", 1, "none", 108, true);
