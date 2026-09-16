@@ -4,9 +4,10 @@
 //   node scripts/actions.ts --check  only check (no Lunchpad checkout needed)
 //
 // Sync reads the app's own sources: the action list (src/lib/api.ts), the
-// "Add action" menu (ActionsTab.tsx), icons (actionUtils.ts, icons/icons.ts)
-// and the English names (i18n/en.json). The check fails when an action the app
-// ships has no docs page or no screenshot.
+// "Add action" menu (ActionsTab.tsx), the icon names (actionUtils.ts) and the
+// English names (i18n/en.json). The app draws those icons with lucide-react, so
+// the drawings themselves come from lucide-static here, by the same name. The
+// check fails when an action the app ships has no docs page or no screenshot.
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -216,6 +217,34 @@ function schema(): { payloads: Record<string, PayloadInfo>; types: Record<string
 const read = (path: string) => readFileSync(join(LUNCHPAD, path), "utf8");
 const strings = (list: string) => [...list.matchAll(/"(\w+)"/g)].map((m) => m[1]);
 
+/** Lucide's SVGs, from this project's node_modules; the app draws the same set with lucide-react. */
+const LUCIDE = join(DOCS, "node_modules/lucide-static/icons");
+
+/** `MousePointerClick` → `mouse-pointer-click`, `Volume2` → `volume-2`: how Lucide names its files. */
+const kebab = (name: string) =>
+  name
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+    .replace(/([a-zA-Z])(\d)/g, "$1-$2")
+    .toLowerCase();
+
+/**
+ * One icon, ready to drop into an `<svg>`. Lucide draws with strokes and keeps
+ * the attributes on its own `<svg>` tag; `ActionIcon.astro` renders the body
+ * into a bare one, so they travel with the body instead — without them a
+ * stroked icon comes out invisible.
+ */
+function lucideIcon(name: string): { viewBox: string; body: string } {
+  const file = join(LUCIDE, `${kebab(name)}.svg`);
+  if (!existsSync(file)) {
+    throw new Error(`No Lucide icon "${kebab(name)}.svg" for "${name}". The app names its icons after lucide-react components; check the spelling in actionUtils.ts, or run "bun install" here.`);
+  }
+  const svg = readFileSync(file, "utf8");
+  const tag = /<svg[^>]*>/.exec(svg)![0];
+  const viewBox = /viewBox="([^"]+)"/.exec(tag)?.[1] ?? "0 0 24 24";
+  const body = svg.slice(svg.indexOf(tag) + tag.length).replace("</svg>", "").trim().replace(/\s+/g, " ");
+  return { viewBox, body: `<g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${body}</g>` };
+}
+
 function sync(): ActionData {
   const api = read("src/lib/api.ts");
   const available = strings(/AVAILABLE_ACTIONS[^[]*\[([\s\S]*?)\]\s*\)/.exec(api)![1]);
@@ -266,11 +295,8 @@ function sync(): ActionData {
   }
 
   const icons: ActionData["icons"] = {};
-  const iconSource = read("src/icons/icons.ts");
   const wanted = new Set([...Object.values(actions).map((a) => a.icon), ...Object.values(groupIcon)]);
-  for (const m of iconSource.matchAll(/^\s+(\w+): \{ viewBox: "([^"]*)", body: ("(?:[^"\\]|\\.)*") \},?$/gm)) {
-    if (wanted.has(m[1])) icons[m[1]] = { viewBox: m[2], body: JSON.parse(m[3]) };
-  }
+  for (const name of [...wanted].sort()) icons[name] = lucideIcon(name);
 
   const { payloads, types } = schema();
   const missing = Object.keys(actions).filter((t) => !payloads[t]);

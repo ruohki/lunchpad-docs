@@ -16,7 +16,15 @@ Node 22.18 or newer runs the TypeScript scripts in `scripts/` directly.
 
 | Script | What it does |
 | --- | --- |
-| `npm run actions:sync` | Reads the app and writes `src/data/actions.json` (names, descriptions, icons, menu groups, Wait switch, and the JSON each action is), then checks coverage |
+| `npm run actions:sync` | Reads the app and writes `src/data/actions.json` (names, descriptions, icon names, menu groups, Wait switch, and the JSON each action is), then checks coverage |
+
+The app draws its icons with [lucide-react](https://lucide.dev) and `actionUtils.ts` names them
+(`Volume2`, `MousePointerClick`, …). The site cannot import React components, so `actions:sync`
+looks each name up in `lucide-static` here — `MousePointerClick` becomes `mouse-pointer-click.svg`
+— and stores the drawing in `actions.json` for `ActionIcon.astro`. Lucide draws with strokes and
+normally keeps those attributes on its own `<svg>`; the component renders only the body, so the
+sync wraps it in a `<g>` that carries them. Without that, every icon comes out invisible. A name
+the app uses that Lucide does not have fails the sync by name rather than writing a blank icon.
 | `npm run actions:check` | Only the check: every action has a page (`actionTypes`) and a screenshot, no page names a removed action |
 | `npm run screenshots` | Takes every screenshot; `npm run screenshots -- playSound app/settings` takes only the ones whose name contains a word |
 | `npm run app:demo` | Serves the app's interface with demo data at http://localhost:1430, to look around before writing a scenario |
