@@ -7,6 +7,8 @@ import type {
   DiscoveredLaunchpad,
   DownloadCacheInfo,
   Fader,
+  HubBackup,
+  HubState,
   HaEntity,
   HaState,
   Layout,
@@ -27,6 +29,9 @@ import launchkeyMiniMk4 from "./layouts/LaunchkeyMiniMk4.json";
 import launchpadMiniMk3 from "./layouts/LaunchpadMiniMk3.json";
 import launchpadProMk3 from "./layouts/LaunchpadProMk3.json";
 import launchpadX from "./layouts/LaunchpadX.json";
+import launchpadMk2 from "./layouts/LaunchpadMk2.json";
+import launchpadProMk2 from "./layouts/LaunchpadProMk2.json";
+import launchpadLegacy from "./layouts/LaunchpadLegacy.json";
 
 // ----- layouts -----------------------------------------------------------------
 
@@ -58,6 +63,9 @@ const REAL_LAYOUTS: Partial<Record<LaunchpadModel, Layout>> = {
   LaunchpadProMk3: launchpadProMk3 as Layout,
   LaunchkeyMiniMk3: launchkeyMiniMk3 as Layout,
   LaunchkeyMiniMk4: launchkeyMiniMk4 as Layout,
+  LaunchpadMk2: launchpadMk2 as Layout,
+  LaunchpadProMk2: launchpadProMk2 as Layout,
+  LaunchpadLegacy: launchpadLegacy as Layout,
 };
 
 /** The model's real layout when one is dumped here, else the 9 × 9 layout of the X (close enough for screenshots of every other 8 × 8 model). */
@@ -381,6 +389,53 @@ export const AUDIO: AudioDevices = {
   devices: ["Speakers (Realtek(R) Audio)", "Headphones (Arctis 7 Game)", "CABLE Input (VB-Audio Virtual Cable)"],
 };
 export const INPUTS = ["Microphone (Shure MV7)", "Line In (Realtek(R) Audio)", "Headset Microphone (Arctis 7 Chat)"];
+
+// ----- community hub ------------------------------------------------------------
+
+const HUB = "https://hub.lunchp.ad";
+/** Fixed moments, so a shot taken today looks like one taken last week. */
+const AT = (iso: string) => Date.parse(iso);
+
+/** Signed in and listening, with one thing waiting and two things shared. */
+export function demoHub(): HubState {
+  return {
+    url: HUB,
+    status: "connected",
+    user: { id: "u-7", handle: "demo", name: "Demo", image: null },
+    link: null,
+    error: null,
+    inbox: [
+      {
+        id: "d-1",
+        kind: "page",
+        title: "Stream starter pack",
+        listingId: "l-31",
+        listingUrl: `${HUB}/l/stream-starter-pack`,
+        versionNumber: 3,
+        author: { handle: "novadrift", name: "Nova Drift" },
+        risk: "caution",
+        formatVersion: 1,
+        appVersion: "1.0.0-rc.3",
+        content: {},
+        receivedAt: AT("2026-09-16T08:41:00Z"),
+        fetched: false,
+      },
+    ],
+    shared: [
+      { listingId: "l-12", kind: "button", title: "Airhorn", url: `${HUB}/l/airhorn`, shareUrl: `${HUB}/s/ab12cd34`, pageId: "default", x: 0, y: 5, status: "published", sharedAt: AT("2026-09-09T16:20:00Z") },
+      { listingId: "l-19", kind: "page", title: "Sound board", url: `${HUB}/l/sound-board`, shareUrl: `${HUB}/s/ef56gh78`, pageId: "sounds", x: null, y: null, status: "pending", sharedAt: AT("2026-09-15T10:05:00Z") },
+    ],
+  };
+}
+
+/** Private configuration backups on the hub; `stats` is read straight by the row. */
+export const HUB_BACKUPS: HubBackup[] = [
+  { id: "bk-3", name: "Before the big reshuffle", appVersion: "1.0.0-rc.3", formatVersion: 1, model: "x", stats: { pages: 3, buttons: 26, faders: 1, actions: 48 }, bytes: 48_120, createdAt: AT("2026-09-16T07:55:00Z") },
+  { id: "bk-2", name: "Stream night", appVersion: "1.0.0-rc.3", formatVersion: 1, model: "x", stats: { pages: 3, buttons: 24, faders: 1, actions: 44 }, bytes: 44_800, createdAt: AT("2026-09-12T19:30:00Z") },
+];
+
+/** What the hub answers when something is shared or updated. */
+export const HUB_SHARE_RESULT = { id: "l-12", url: `${HUB}/l/airhorn`, shareUrl: `${HUB}/s/ab12cd34`, status: "published" as const, statusReason: null, title: "Airhorn", versionNumber: 2 };
 
 /** Where the demo computer keeps its files, and what HTTP request actions have saved there. */
 export const CONFIG_DIR = "C:\\Users\\Demo\\AppData\\Roaming\\com.lunchpad.app";

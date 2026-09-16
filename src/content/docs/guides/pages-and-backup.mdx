@@ -36,23 +36,63 @@ Sound files, programs and scripts are referenced by their path, not copied into 
 
 Everything you typed into a button travels with it, including its [description](/guides/buttons/#description). [Secrets](/guides/secrets/) do not: an action keeps the `{{secret.name}}` reference, and whoever opens the page needs a secret of that name of their own.
 
+## Share on the community hub
+
+Lunchpad can also sign in to a **community hub**, where people publish buttons and pages for each other. Settings → **Community hub** signs you in through your browser; everything below needs that, and nothing is sent anywhere while you are signed out.
+
+<AppShot name="share-dialog" alt="The Share this button on the hub dialog: Title, One line about it, a Markdown description, tags, and a Public or Unlisted choice, with a note that the hub refuses anything with a written-out token or password." />
+
+You share **one button or one page** at a time — never your whole configuration. Right-click the pad and choose **Share on the hub…**, or use the globe next to a page under **Pages & backup**. The dialog asks for:
+
+| Field | What it is for |
+| --- | --- |
+| **Title** | The name on the hub. Starts from the button's caption or the page's name. |
+| **One line about it** | What it is for, shown on the card. |
+| **Description** | Markdown. The right place to say what it needs: OBS running, a secret named so-and-so, a sound file. A button's own [description](/guides/buttons/#description) is filled in for you. |
+| **Tags** | Up to eight, to be found by. |
+| **Visibility** | **Public** is listed and searchable; **Unlisted** is reachable only with the link. |
+
+After sharing you get a link to copy. A listing can also wait for a moderator before it appears.
+
+**Changing it later:** the same menu says **Update on the hub…** once something has been shared from that pad or page. It publishes what is there *now* as a new version, with a line about what changed, and people who install it get the newest one. Settings → **Community hub** lists everything you have shared, where it lives in your pages, and whether it is live.
+
+<Aside type="caution" title="What actually gets published">
+The button or page goes up as it is written. Pictures are embedded, so they work on someone else's computer — but **paths and text do not change**: a sound file's path, a program and its arguments, the address in a web request and the code of a script are published exactly as you typed them, and a path usually contains your account name. Read your own button before you share it.
+
+Secret *values* never travel, because they live in your credential store and the action only carries `{{secret.name}}`. A password you typed **straight into an action** is not a secret — it is part of the button, and it would be published with it. The hub scans for that and refuses what it recognises, but do not rely on it: put keys in [Secrets](/guides/secrets/).
+</Aside>
+
+## What arrives from the hub
+
+Things sent to the app from the hub — or a configuration you restore from a hub backup — wait in an **inbox** rather than landing in your pages. You choose where each one goes, and then it passes through exactly the same [check before importing](#check-before-importing) as a file. Nothing from the hub runs until you have read it and confirmed.
+
 ## Check before importing
 
 A page file is not a settings file: it holds actions, and an action can start a program, press keys, run a script or call a web address. So when you import anything made elsewhere — a page file, or a configuration from the old Lunchpad — and it contains something of that kind, Lunchpad shows you what it found first.
 
-<AppShot name="import-review" alt="The Check before importing dialog: a summary of pages, buttons and actions, findings grouped under Needs a close look and Worth checking, each naming the page, column, row and action, and an Import button that stays disabled until the box is ticked." />
+<AppShot name="import-review" alt="The Check before importing dialog: a summary of pages, buttons and actions, then findings grouped under Needs a close look, Worth checking and Good to know, each naming the button and pad it sits on and offering to show the action in full, with Everything in this file below and an Import button that stays disabled until the box is ticked." />
 
-**Nothing is imported while you read it.** The file has only been looked at; your pages are untouched until you tick **I have checked these and want to import them** and click **Import**. **Cancel** or <kbd>Esc</kbd> throws the file away.
+**Nothing is imported while you read it.** The file has only been read; your pages are untouched until you tick **I have checked these and want to import them** and click **Import**. **Cancel** or <kbd>Esc</kbd> throws the file away.
 
 Findings come in three groups:
 
 | Group | What it means |
 | --- | --- |
-| **Needs a close look** | A secret of yours is used, a file from this computer is uploaded, or a program is started. |
-| **Worth checking** | A web address is called, a script runs, keys are pressed, Home Assistant is controlled, a login is written into the action, or certificate checks are switched off. |
+| **Needs a close look** | A secret of yours is used, a file from this computer is uploaded, a program is started, or a launcher or terminal is opened for something to be typed into. |
+| **Worth checking** | A web address is called, a script runs, keys are pressed, something that looks like a command or an address is typed, Home Assistant is controlled, a login is written into the action, or certificate checks are switched off. |
 | **Good to know** | A sound is played, something is spoken, a downloaded file is written, OBS or Streamlabs is controlled. |
 
-Each line says what the action does and where it sits: the page, the column and row of the pad, and which action it is.
+Each line says what the action does and where it sits: the page, the button's caption, the column and row of the pad, and which action it is. A fader is named instead of a pad.
+
+### Read it, do not just count it
+
+A list of warnings you cannot check is not much use, so every finding **opens the action in full**: click **Show the action** and you see it as its editor would — every field readable, `{{placeholders}}` marked, secrets in red, and code and JSON coloured.
+
+Below the findings, **Everything in this file** unfolds the whole import: every page, every button and every action that would arrive, with its summary and its details. Nothing is hidden behind the summary, so a button with no finding against it can still be read before you accept it.
+
+<Aside type="caution" title="Two that are easy to miss">
+A **launcher or terminal** being opened is treated as a danger even when the action itself looks harmless: whatever is typed into it afterwards runs on your computer with your rights. In the same spirit, a [hotkey sequence](/actions/system/hotkey-sequence/) that **types something resembling a command or an address** is worth checking, because typing is how a macro reaches a program that Lunchpad never launched.
+</Aside>
 
 <Aside type="caution" title="Why a secret is worth a close look">
 An action that uses `{{secret.name}}` is filled in from **your** credential store when the pad is pressed. A page made by someone else can name a secret you have and send its value wherever that action points. That is why any use of a secret is listed under **Needs a close look**, together with the destination.
