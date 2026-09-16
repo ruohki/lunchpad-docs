@@ -46,6 +46,18 @@ for (const shot of shots) {
     await page.waitForSelector(shot.scenario?.view === "picker" ? "text=Choose your Launchpad" : '[data-pad="0,0"]', { timeout: 30_000 });
     await page.waitForTimeout(1200); // pads fade in one by one
     const target = shot.run ? await shot.run(page) : undefined;
+    // A dialog grown to its full height (CAPTURE_CSS) can end up taller than the window.
+    // It is centred and fixed, so the overflow goes off the top of the screen and the shot
+    // loses the dialog's header. Give the window the room it needs and let it settle.
+    if (target) {
+      const box = await target.boundingBox();
+      const size = page.viewportSize()!;
+      const needed = Math.ceil((box?.height ?? 0) + (shot.margin ?? 0) * 2 + 40);
+      if (needed > size.height) {
+        await page.setViewportSize({ width: size.width, height: Math.min(needed, 4000) });
+        await page.waitForTimeout(400);
+      }
+    }
     const path = join(OUT, `${shot.name}.png`);
     mkdirSync(dirname(path), { recursive: true });
     if (target && shot.margin) {
