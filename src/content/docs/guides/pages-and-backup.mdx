@@ -38,7 +38,7 @@ Everything you typed into a button travels with it, including its [description](
 
 ## Check before importing
 
-A page file is not a settings file: it holds actions, and an action can start a program, press keys, run a script or call a web address. So when you import a page that has anything of that kind in it, Lunchpad shows you what it found first.
+A page file is not a settings file: it holds actions, and an action can start a program, press keys, run a script or call a web address. So when you import anything made elsewhere — a page file, or a configuration from the old Lunchpad — and it contains something of that kind, Lunchpad shows you what it found first.
 
 <AppShot name="import-review" alt="The Check before importing dialog: a summary of pages, buttons and actions, findings grouped under Needs a close look and Worth checking, each naming the page, column, row and action, and an Import button that stays disabled until the box is ticked." />
 
@@ -85,5 +85,7 @@ Lunchpad 1.0 is a rewrite of the original Electron app. Your old pages can come 
 4. Click **Choose configuration file…** and pick the file.
 
 </Steps>
+
+An old configuration goes through the same [check before importing](#check-before-importing) as a page file: if its buttons start programs, call web addresses or run scripts, you see that list first, and nothing is imported until you confirm it.
 
 Sounds keep their paths; hotkeys, colours and OBS actions carry over. Lunchpad shows a notice with the number of pages, buttons and actions it imported, and notes on anything it had to change or skip. For example, the sound output device resets to the app default, because the old app's device ids do not carry over.

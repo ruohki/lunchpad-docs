@@ -33,7 +33,8 @@ Run script is the glue between actions. When a [condition](/actions/flow/conditi
 
 - The code is **coloured as you type**, and the field grows with it instead of scrolling.
 - The **⤢** button in the corner opens the code in a window of its own. **Done**, <kbd>Esc</kbd> or a click outside brings you back.
-- Typing `vars.`, `globals.` or `Lunchpad.` opens the list of names you can use, under the caret. <kbd>↑</kbd> <kbd>↓</kbd> choose, <kbd>Enter</kbd> or <kbd>Tab</kbd> insert, <kbd>Esc</kbd> closes. `Lunchpad.button.`, `Lunchpad.device.` and `Lunchpad.activePage.` complete their fields too, and picking a function puts the caret between its brackets.
+- Typing `vars.`, `globals.` or `Lunchpad.` opens the list of names you can use, under the caret. <kbd>↑</kbd> <kbd>↓</kbd> choose, <kbd>Enter</kbd> or <kbd>Tab</kbd> insert, <kbd>Esc</kbd> closes. `Lunchpad.button.`, `Lunchpad.device.` and `Lunchpad.activePage.` complete their fields too, and picking a function puts the caret between its brackets. Every entry says in one line what it is.
+- **While the caret is inside a `Lunchpad` call, a hint shows what it takes**: the whole signature, with the argument you are typing marked and explained — `runButton(x, y, { page, trigger })` tells you that `y` counts from 0 at the bottom while you are on it. It follows you into an object or a list argument, so the fields of `{ page, trigger }` are explained too. <kbd>Esc</kbd> hides it until you move the caret.
 - A name with a dot is inserted the only way that works in JavaScript: `vars["fader.volume"]`, not `vars.fader.volume`.
 
 ## What the script sees
