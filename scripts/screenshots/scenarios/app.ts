@@ -209,7 +209,9 @@ export const appShots: Shot[] = [
         down: [
           act({
             type: "runScript",
-            code: "// Pick the loudest scene of the last poll and announce it.\nfunction ordinal(n) {\n  const s = ['th', 'st', 'nd', 'rd'];\n  return n + (s[(n % 100 - 20) % 10] ?? s[n % 100] ?? s[0]);\n}\n\nconst deaths = Number(globals.deaths ?? 0) + 1;\nglobals.deaths = deaths;\n\nreturn `${ordinal(deaths)} death of the stream`;",
+            // A helper that returns, and a last line that uses it: exactly what the page
+            // explains about where a script's result comes from.
+            code: "// Count this death and announce it: 3rd death of the stream.\nfunction ordinal(n) {\n  const suffix = ['th', 'st', 'nd', 'rd'];\n  const rest = n % 100;\n  return n + (suffix[(rest - 20) % 10] ?? suffix[rest] ?? suffix[0]);\n}\n\nconst deaths = Number(globals.deaths ?? 0) + 1;\nglobals.deaths = deaths;\n\nreturn `${ordinal(deaths)} death of the stream`;",
             saveTo: "message",
             saveScope: "local",
           }),
