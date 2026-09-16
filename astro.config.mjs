@@ -12,7 +12,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Lunchpad',
-			description: 'Turn a Novation Launchpad into a macro controller: sounds, hotkeys, OBS and Streamlabs, web requests and scripts on every pad.',
+			description: 'Turn any Novation Launchpad into a macro controller: sounds, hotkeys, OBS and Streamlabs, web requests and scripts on every pad.',
 			logo: { src: './src/assets/lunchpad-icon.png', alt: 'Lunchpad' },
 			favicon: '/favicon.png',
 			social: [
