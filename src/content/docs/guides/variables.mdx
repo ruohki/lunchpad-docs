@@ -1,41 +1,91 @@
 ---
 title: Variables and placeholders
-description: Pass values between actions with variables and use them in any text field as placeholders.
+description: Pass values between actions with variables, and use what Lunchpad provides in any text field.
 sidebar:
   order: 4
 ---
 
+import AppShot from '~/components/AppShot.astro';
 import { Aside } from '@astrojs/starlight/components';
 
-Variables let actions pass values to each other. One action stores a value, a later action uses it. Every macro also gets a few values from the press itself, such as how hard you hit the pad.
+Variables let actions pass values to each other. One action stores a value, a later action uses it. Every macro also gets a long list of values from Lunchpad itself: how hard you hit the pad, the time, what OBS is doing, which device is connected.
 
 ## Placeholders
 
 Write a variable's name in double curly braces, like `{{velocity}}`, in a text field of an action. When the action runs, Lunchpad replaces it with the variable's current value.
 
-Placeholders work in the text of **Text to speech**, the program and arguments of **Launch application**, typed text in a **Hotkey sequence**, the URL, headers, body and login of an **HTTP request**, the value of **Set variable**, the amount of **Add to variable**, the value of a **Condition**, the value of **Set fader**, and the scene, source and filter names of the OBS and Streamlabs actions.
+Placeholders work in the text of **Text to speech**, the program and arguments of **Launch application**, typed text in a **Hotkey sequence**, the URL, headers, body, login and file names of an **HTTP request**, the value of **Set variable**, the amount of **Add to variable**, the value of a **Condition**, the value of **Set fader**, the scene, source and filter names of the OBS and Streamlabs actions, and the entity, service and data of the Home Assistant actions.
 
-Type `{{` in such a field and Lunchpad offers the variables it knows: the built-ins, the variables this button writes, the shared variables and the fader levels.
+Type `{{` in such a field and Lunchpad offers what it knows: the values it provides, the variables this button writes, the shared variables, the fader levels and your [secrets](/guides/secrets/). Names Lunchpad provides are shown in blue, your own in the orange accent colour — in the completion list, and in the field itself once written.
 
 <Aside>
 A placeholder with a name Lunchpad does not know stays in the text as it is. If you see `{{something}}` in a spoken text or a web request, check the spelling of the variable.
 </Aside>
 
-## Built-in values
+## Provided by Lunchpad
 
-Every macro can read these:
+Every macro — and every [button description](/guides/buttons/#description) — can read these. They cannot be changed.
+
+**The press and the button.** Read again for every action, so they are always the press that started this run:
 
 | Placeholder | Value |
 | --- | --- |
 | `{{velocity}}` | How hard the pad was hit, 1 to 127. Models without velocity always report 127. |
 | `{{velocity01}}` | The same as a number from 0 to 1, for example `0.504`. |
-| `{{pressure}}` | The pressure (aftertouch) on the pad while you hold it, 0 to 127. 0 once released or on models without pressure. |
+| `{{pressure}}` | The pressure (aftertouch) on the pad while you hold it, 0 to 127. |
 | `{{pressure01}}` | The same as a number from 0 to 1. |
-| `{{x}}` | The column of the pad, counted from 0 at the left. |
-| `{{y}}` | The row of the pad, counted from 0 at the bottom. |
-| `{{pageId}}` | The id of the page the button is on. |
+| `{{x}}`, `{{y}}` | The column and row of the pad, counted from 0 at the left and 0 at the bottom. |
+| `{{pageId}}`, `{{pageName}}` | The id and the name of the page the button is on. |
+| `{{caption}}` | The button's caption. Empty for an image button. |
+
+**The clock**, from this computer, at the moment the action runs:
+
+| Placeholder | Value |
+| --- | --- |
+| `{{date}}` | Today, like `2026-09-16`. |
+| `{{time}}` | The time, like `14:05`. |
+| `{{datetime}}` | Both, like `2026-09-16 14:05:09`. |
+| `{{timestamp}}` | Seconds since 1970. |
+| `{{weekday}}` | The day of the week, like `Tuesday`. |
+| `{{year}}`, `{{month}}`, `{{day}}` | Four digits, and two digits each. |
+| `{{hour}}`, `{{minute}}`, `{{second}}` | Two digits each; the hour on a 24-hour clock. |
+
+**The run:**
+
+| Placeholder | Value |
+| --- | --- |
+| `{{trigger}}` | Which list is running: `down`, `up`, `hold`, `fader`, `faderTouch` or `faderRelease`. |
+| `{{heldMs}}` | How long the pad has been held, in milliseconds. In the released actions it is the final length of the press. |
+| `{{random}}` | A fresh number from 0 to 1, every time it is used. |
+
+**OBS Studio and Streamlabs Desktop**, read when the action runs. Empty while the integration is off or not connected:
+
+| Placeholder | Value |
+| --- | --- |
+| `{{obs.scene}}`, `{{slobs.scene}}` | The current scene. |
+| `{{obs.streaming}}`, `{{slobs.streaming}}` | `true` while you are live. |
+| `{{obs.recording}}`, `{{slobs.recording}}` | `true` while a recording runs. |
+| `{{obs.connected}}`, `{{slobs.connected}}` | `true` while Lunchpad is connected to the app. |
+
+**The device and the computer.** The device values are empty when nothing is connected; the rest never change while Lunchpad runs:
+
+| Placeholder | Value |
+| --- | --- |
+| `{{model}}` | The connected model, like `Launchpad X`. |
+| `{{port}}` | Its MIDI input port. |
+| `{{firmware}}` | Its firmware version, when known. |
+| `{{virtual}}` | `true` for the pads on screen. |
+| `{{appVersion}}` | The version of Lunchpad. |
+| `{{os}}` | `macos`, `windows` or `linux`. |
+| `{{hostname}}`, `{{username}}` | The computer's name, and the account Lunchpad runs under. |
+| `{{downloadDir}}` | Where [HTTP request](/actions/system/http-request/) keeps downloaded files. |
+| `{{configDir}}` | Where the profile and the settings live. |
 
 A button started by [Run another button](/actions/general/run-another-button/) gets the velocity of the original press.
+
+<Aside type="caution" title="They cannot be overwritten">
+Naming one of these in **Set variable**, **Add to variable** or a **Save to** field does nothing: the field marks itself red, and the macro engine drops the write. A script may assign to them inside its own run, but the value is thrown away afterwards. Pick another name — `myDate` rather than `date`.
+</Aside>
 
 ## Your own variables
 
@@ -43,7 +93,7 @@ These actions store values:
 
 - [Set variable](/actions/system/set-variable/) sets a variable to a text or a placeholder.
 - [Add to variable](/actions/system/add-to-variable/) adds a number, for counters.
-- [HTTP request](/actions/system/http-request/) can save the response body under a name, and the status code under the same name with `.status` added. A request that fails stores an empty body and status `0`.
+- [HTTP request](/actions/system/http-request/) saves the answer, and three more names alongside it: `.status`, `.file` and `.cached`.
 - [Launch application](/actions/system/launch-application/) can save the program's output.
 - [Run script](/actions/system/run-script/) can save its result, and can change variables directly.
 
@@ -58,13 +108,7 @@ When you store a variable, you choose its **Scope**:
 | **This run** | Only this macro, and the buttons it runs with **Run another button**. | Until the macro ends. |
 | **Everywhere** | Every macro on every page. | Across restarts: Lunchpad saves shared variables and loads them again when it starts. |
 
-If a variable exists in both scopes, the **This run** value wins. Avoid the names of the built-in values for your own variables: `{{velocity}}` always means the press.
-
-**Settings → Variables** lists every shared variable with its value and removes what you no longer want: one variable with the **✕** next to it, levels of renamed or removed faders with **Remove stale fader values**, or the whole list with **Remove all**. The same list is in the side panel of [developer mode](/guides/main-window/#developer-mode).
-
-<Aside type="tip">
-A death counter is two buttons: one with **Add to variable** `deaths`, amount `1`, and one with amount `-1`, both with scope **Everywhere**. A third button can say "`{{deaths}}` deaths so far" with **Text to speech**.
-</Aside>
+If a variable exists in both scopes, the **This run** value wins. A name Lunchpad provides always wins over both.
 
 ## Faders as variables
 
@@ -73,6 +117,26 @@ Every [fader](/guides/faders/) keeps its level in a shared variable named `fader
 Writing to that variable with the scope **Everywhere** moves the fader: **Set variable** `fader.volume` to `50`, or **Add to variable** `fader.volume` with `-5`, and the fader's pads and actions follow. With **This run** the value stays a variable of that macro and the fader does not move.
 
 While a fader runs its own actions, it also provides `value`, `percent`, `fraction`, `step`, `steps` and `display`. See [Faders](/guides/faders/#what-the-actions-receive).
+
+## Keys and passwords
+
+An API key is not a variable: put it in **Settings → Secrets** and write `{{secret.name}}`. Secrets live in your system's credential store, never in the profile, and are never listed with the variables. See [Secrets](/guides/secrets/).
+
+## The list in the settings
+
+<AppShot name="settings-variables" alt="The Variables settings tab: the Provided by Lunchpad section listing the built-in names with their live values, the shared variables below it, and the Downloaded files section." />
+
+**Settings → Variables** has three parts:
+
+- **Provided by Lunchpad**: every name above with its meaning and its value right now. The clock ticks while the tab is open.
+- The shared variables, with their values. The **✕** removes one, **Remove stale fader values** drops levels of faders that were renamed or removed, and **Remove all** clears the list.
+- **Downloaded files**: what [HTTP request](/actions/system/http-request/) actions saved and reuse. **Show folder** opens it, **Remove all** empties it — and every such request then runs again.
+
+Variables of a running macro (**This run**) are not listed; they are gone when the macro ends. The same shared list is in the side panel of [developer mode](/guides/main-window/#developer-mode).
+
+<Aside type="tip">
+A death counter is two buttons: one with **Add to variable** `deaths`, amount `1`, and one with amount `-1`, both with scope **Everywhere**. A third button can say "`{{deaths}}` deaths so far" with **Text to speech** — or you put that line in the button's [description](/guides/buttons/#description) and just hover the pad.
+</Aside>
 
 ## Numbers from variables
 

@@ -71,6 +71,8 @@ You can set up actions while OBS or Streamlabs is closed. The fields then take t
 
 Scene, source and filter names also accept [placeholders](/guides/variables/), so a variable like `{{nextScene}}` can pick the scene.
 
+The other way round, every macro can read what the apps are doing, without any set-up: `{{obs.scene}}` and `{{slobs.scene}}` hold the current scene, and `{{obs.streaming}}`, `{{obs.recording}}` and `{{obs.connected}}` (with their `slobs.` twins) are `true` or `false`. They are read the moment the action runs, so a [condition](/actions/flow/condition/) can check whether you are live before a button does something, and a [button description](/guides/buttons/#description) can show the live scene when you hover the pad.
+
 The actions are documented one by one in the action reference:
 
 - [Switch scene](/actions/streaming/switch-scene/)

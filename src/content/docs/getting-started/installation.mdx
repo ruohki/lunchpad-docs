@@ -73,6 +73,11 @@ Inside the settings folder:
 
 Sound files, images for buttons and programs you launch are not copied into this folder. Buttons point to them where they are on your disk, so keep them in a place that does not move.
 
+Two things live outside it:
+
+- **Secrets** are not in any file of yours. API keys you store under [Settings → Secrets](/guides/secrets/) go into your system's credential store — the Keychain on macOS, the Credential Manager on Windows — and the settings file keeps only their names.
+- **Files that [HTTP request](/actions/system/http-request/) actions save** go to a downloads folder of their own. **Settings → Variables → Downloaded files → Show folder** opens it, and macros can read its path as `{{downloadDir}}`.
+
 <Aside>
 Coming from the old Electron version of Lunchpad? Your old configuration can be imported. See [Pages and backup](/guides/pages-and-backup/#import-from-the-old-lunchpad).
 </Aside>

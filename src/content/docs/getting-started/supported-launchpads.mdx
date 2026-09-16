@@ -7,7 +7,7 @@ sidebar:
 
 import { Aside, Badge } from '@astrojs/starlight/components';
 
-Lunchpad drives every Launchpad model listed below. It finds and remembers the right device no matter what the operating system calls its ports.
+Lunchpad drives every Launchpad model listed below, and the Launchkey Mini keyboards. It finds and remembers the right device no matter what the operating system calls its ports.
 
 | Model | Layout in Lunchpad | Colours | Velocity | Status |
 | --- | --- | --- | --- | --- |
@@ -21,15 +21,26 @@ Lunchpad drives every Launchpad model listed below. It finds and remembers the r
 
 "Not yet tested" means the model is built from Novation's programmer manual but nobody has confirmed it on a real device yet. If you own one, a report on [Discord](https://discord.gg/4Ys9TRR) or [GitHub](https://github.com/ruohki/lunchpad/issues) helps a lot.
 
-The round buttons around the grid work like any other pad: you can put buttons and faders on them. The corner where the Launchpad has no button (or its logo LED) holds the settings gear in the window.
+The buttons around the grid work like any other pad: you can put buttons and faders on them. They are drawn the way the hardware looks — a black button whose printed symbol lights up, rather than the whole button — and the corner where the Launchpad has no button (or its logo LED) holds the settings gear in the window.
+
+<Aside title="Telling the third generation apart">
+The Launchpad X, Mini MK3 and Pro MK3 answer the identification request with the same family, so Lunchpad reads the model out of the reply itself. A Mini MK3 or Pro MK3 on a port with an unhelpful name is now recognised as itself instead of as a Launchpad X.
+</Aside>
 
 ## Launchkey keyboards
 
 | Model | Layout in Lunchpad | Colours | Velocity | Status |
 | --- | --- | --- | --- | --- |
-| Launchkey Mini MK3 | 16 pads, scene and transport buttons, 8 knobs, 2 touch strips, 25 keys | RGB pads, white transport | Yes | <Badge text="Not yet tested" variant="caution" /> |
+| Launchkey Mini MK3 | 16 pads, 2 scene buttons, ▶ and ●, Shift, 8 knobs, 2 touch strips, 25 keys | RGB pads, white ▶ and ● | Yes | <Badge text="Not yet tested" variant="caution" /> |
+| Launchkey Mini MK4 | 16 pads, Track ∧ and ∨, ▶ and ●, Arp, Scale, Shift, mode arrows, 8 encoders, 2 touch strips, 25 keys, screen | RGB pads, white ▶ and ● | Yes, plus pressure | <Badge text="Presses tested" variant="caution" /> |
 
 A Launchkey is a keyboard, so it works a little differently: the knobs and touch strips carry faders instead of buttons, and the keys can run macros. See [Launchkey keyboards](/guides/launchkey/).
+
+On the Launchkey Mini MK4, presses are confirmed on real hardware (firmware 1.1.9.92); its LEDs are built from the manual and not confirmed yet. The Launchkey Mini MK3 is built from Novation's reference and has not been on a device at all.
+
+## When a device is not found
+
+Lunchpad asks every MIDI device to identify itself, and falls back to the name of the port. A device that answers neither — an unusual clone, a port renamed by a driver, a device behind a MIDI interface — can still be driven: pick the model and the two MIDI ports yourself under **Not listed? Connect by hand.** in the device list. See [Connect by hand](/getting-started/first-launch/#not-listed-connect-by-hand).
 
 ## Velocity and pressure
 

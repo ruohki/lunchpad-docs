@@ -4,8 +4,11 @@
 //
 // A screenshot scenario tweaks the start state through
 // `window.__LUNCHPAD_SCENARIO__` (set by capture.ts before the page loads).
-import type { Button, DeviceState, Fader, LaunchpadModel, Page, Profile, Settings } from "@app/lib/api";
-import { AUDIO, C, DISCOVERED, FILTERS, INPUTS, MODELS, VOICES, button, demoHomeAssistant, demoObs, demoProfile, demoSettings, demoSlobs, launchkeyPage, layoutFor, peaks } from "./fixtures";
+import type { Button, DeviceState, Fader, LaunchpadModel, Layout, Page, Profile, Settings } from "@app/lib/api";
+import { AUDIO, C, CONFIG_DIR, DISCOVERED, DOWNLOADS, FILTERS, INPUTS, MODELS, VOICES, button, demoHomeAssistant, demoObs, demoProfile, demoSettings, demoSlobs, launchkeyPage, layoutFor, peaks } from "./fixtures";
+
+/** The app's version, as Vite defines it for the real interface (serve.ts). */
+declare const __LUNCHPAD_VERSION__: string;
 
 export interface Scenario {
   /** "picker" starts without a connected Launchpad */
@@ -29,6 +32,8 @@ export interface Scenario {
   outside?: boolean;
   /** which device is connected (default: the Launchpad X) */
   model?: LaunchpadModel;
+  /** the connected device's real layout (as the app's `get_layout` returns it), instead of the mock one */
+  layout?: Layout;
 }
 
 /** Top-left pad of the grid (column 1, row 8): where scenarios put their button. */
@@ -67,7 +72,7 @@ if (scenario.focus) {
 }
 
 // The demo pages are drawn for a Launchpad; a keyboard model gets its own page.
-if (scenario.model === "LaunchkeyMiniMk3") profile.pages[0] = launchkeyPage();
+if (scenario.model === "LaunchkeyMiniMk3" || scenario.model === "LaunchkeyMiniMk4") profile.pages[0] = launchkeyPage(scenario.model);
 
 if (scenario.outside) {
   // Pads 10 and 11 of a Launchpad Pro: no pad for them on the Launchpad X of the demo data.
@@ -83,7 +88,7 @@ let device: DeviceState =
     : connectedState(scenario.model ?? "LaunchpadX", false);
 
 function connectedState(model: LaunchpadModel, virtual: boolean): DeviceState {
-  const layout = layoutFor(model);
+  const layout = scenario.layout ?? layoutFor(model);
   return {
     status: "connected",
     device: { model, modelName: layout.modelName, inputName: virtual ? "" : "LPX MIDI", outputName: virtual ? "" : "LPX MIDI", firmware: virtual ? null : "0.2.3.8", virtual },
@@ -148,7 +153,17 @@ export function handle(cmd: string, a: Args): unknown {
       return layoutFor(a.model);
     case "list_models":
       return MODELS;
+    case "builtin_info":
+      // The shots are taken as Windows (capture.ts), so these read like a Windows machine.
+      return { appVersion: __LUNCHPAD_VERSION__, os: "windows", hostname: "STUDIO-PC", username: "Demo", downloadDir: DOWNLOADS.path, configDir: CONFIG_DIR };
+    case "list_midi_ports": {
+      // The scanned devices plus a port the inquiry does not identify.
+      const names = [...DISCOVERED.map((d) => d.input.name), "Launchkey Mini MK4 DAW", "IAC Driver Bus 1"];
+      const ports = names.map((name, index) => ({ index, name }));
+      return { inputs: ports, outputs: ports };
+    }
     case "press_pad":
+    case "control_pad":
     case "reset_leds":
     case "send_raw_midi":
       return null;
@@ -254,6 +269,20 @@ export function handle(cmd: string, a: Args): unknown {
       return saveSettings({ slobs: a.config });
     case "set_home_assistant_settings":
       return saveSettings({ homeAssistant: a.config });
+    // Only the names reach the interface; a real value goes to the credential store.
+    case "set_secret":
+      return saveSettings({ secrets: [...new Set([...settings.secrets, a.name as string])].sort() });
+    case "delete_secret":
+      return saveSettings({ secrets: settings.secrets.filter((n) => n !== a.name) });
+    case "download_cache_info":
+      return downloads;
+    case "clear_download_cache": {
+      const files = downloads.files;
+      downloads = { ...downloads, files: 0, bytes: 0 };
+      return files;
+    }
+    case "open_download_folder":
+      return null;
     case "check_keyboard_access":
     case "set_tray_labels":
       return null;

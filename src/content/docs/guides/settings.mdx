@@ -18,7 +18,7 @@ The tabs are grouped as in the app: **General**, **Integrations**, **Data** and 
 
 <AppShot name="settings-launchpad" alt="The Launchpad settings tab." />
 
-**Connected device** shows the MIDI ports and firmware of the connected Launchpad.
+**Connected device** names the **Model**, its **Firmware** and the MIDI **Ports** it is on. A device you [connected by hand](/getting-started/first-launch/#not-listed-connect-by-hand) never identified itself, so its firmware shows as unknown.
 
 - **Repaint LEDs** sends every pad's colour to the device again, in case the LEDs got out of step.
 - **Disconnect** releases the Launchpad and goes back to the device list.
@@ -85,13 +85,23 @@ Your pages in a list, page import and export, **Restore previous profile**, and 
 
 <AppShot name="settings-variables" alt="The Variables settings tab: buttons to remove stale fader values and all variables, and a list of shared variables with their values." />
 
-Every shared variable with its current value: what macros wrote with **Set variable** or **Add to variable**, plus the level of every fader as `fader.<name>`. They survive restarts.
+**Provided by Lunchpad** lists every value Lunchpad gives to macros — the press, the clock, the streaming apps, the device, the computer — with its meaning and its value right now. They cannot be changed.
+
+Below it, every shared variable with its current value: what macros wrote with **Set variable** or **Add to variable**, plus the level of every fader as `fader.<name>`. They survive restarts.
 
 - The **✕** next to a variable removes that one.
 - **Remove stale fader values** drops levels of faders that were renamed or removed.
 - **Remove all** clears the list, after a confirmation.
 
+**Downloaded files** at the bottom is what [HTTP request](/actions/system/http-request/) actions saved and reuse while their request is unchanged: the count and the size, **Show folder**, and **Remove all**, which makes every such request run again.
+
 Variables of a running macro (**This run**) are not listed here; they are gone when the macro ends. See [Variables and placeholders](/guides/variables/).
+
+### Secrets
+
+<AppShot name="settings-secrets" alt="The Secrets settings tab: a Name and a masked Value field with an Add button, and a list of two secrets, each showing the placeholder to use and a Replace button." />
+
+API keys and passwords your macros need, kept in your system's credential store instead of the profile. Add a name and a value, use it as `{{secret.name}}`, and replace or remove it here. A value is never shown again once saved. See [Secrets](/guides/secrets/).
 
 ## About
 

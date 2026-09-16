@@ -23,6 +23,7 @@ Sounds overlap. Press three sound buttons in a row and you hear all three at onc
 | Setting | What it does |
 | --- | --- |
 | **Choose sound…** | Picks the file. Lunchpad plays MP3, WAV, FLAC, OGG/OGA, M4A, AAC and AIFF. The file stays where it is; the button remembers its path. Hover the file name to see the full path. |
+| **From a variable** | Plays the file a variable names, instead of one you picked — for example `{{tts.file}}`, the file an [HTTP request](/actions/system/http-request/) saved. The waveform and **Preview** are off, because the file is only known when the macro runs. |
 | **Preview** | Plays the trimmed part on the chosen device at the chosen volume. Click **Stop** to cut it short. |
 | Waveform | Drag the two handles to choose where the sound starts and ends. The numbers below show the start, the full length and the end in seconds. Choosing another file resets the trim. |
 | **Output device** | Where the sound plays. **Default from settings** uses the device picked under [Settings → Sound](/guides/settings/), which is the system default unless you changed it. A device that is not connected shows as "(not found)"; the sound then plays on the default device. |

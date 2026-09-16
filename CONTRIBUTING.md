@@ -65,11 +65,27 @@ share the page of their menu entry.
 
 ### Other devices in a shot
 
-`scenario.model` picks which device is "connected", for example
-`{ model: "LaunchkeyMiniMk3" }`; `fixtures.ts` holds that layout and a page laid out for it.
-When adding a layout, give every control that can hold a button its real note or CC number: a
-control without one is what the app draws as an inert keyboard function (greyed out, no button),
-so pads and keys silently disappear from the shot.
+`scenario.model` picks which device is "connected", for example `{ model: "LaunchkeyMiniMk4" }`;
+`launchkeyPage()` in `fixtures.ts` holds a page laid out for the keyboards.
+
+The surfaces themselves are **not** written by hand any more: `scripts/screenshots/mock/layouts/`
+holds each model's layout exactly as the app's own driver returns it, dumped from the app
+checkout:
+
+```fish
+cd $LUNCHPAD_DIR/src-tauri
+for m in LaunchpadX LaunchpadMiniMk3 LaunchpadProMk3 LaunchkeyMiniMk3 LaunchkeyMiniMk4
+  cargo run --quiet --example layoutdump -- $m > <docs>/scripts/screenshots/mock/layouts/$m.json
+end
+```
+
+Refresh them whenever a driver's layout changes — a new model, a moved button, a new `PadShape` —
+and add the model to `REAL_LAYOUTS` and `MODELS` in `fixtures.ts`. Models without a dump fall back
+to a synthetic 9 × 9 grid, which is fine for the 8 × 8 Launchpads and wrong for anything else.
+
+Hand-written layouts used to drift from the app: a pad whose `note` was missing is what the app
+draws as an inert keyboard function (greyed out, no button), so pads and keys silently disappeared
+from a shot. Dumping them removes that whole class of bug.
 5. `npm run screenshots -- myAction` and look at `src/assets/screenshots/actions/myAction.png`.
 6. Write the page from the template below and put it in the group folder with the right
    `sidebar.order` (its position in the app's submenu). For the release that introduces it,
@@ -78,6 +94,11 @@ so pads and keys silently disappear from the shot.
 
 When an editor changes, re-run its screenshot. When the app renames an action in `en.json`,
 `actions:sync` updates the header of its page; check the prose for the old name.
+
+An action can have more than one shot: `shot("httpRequestFile", …)` writes
+`actions/httpRequestFile.png`, shown with `<ActionShot type="httpRequestFile" …>`. The coverage
+check only asks that every action type has one page and one shot of its own name, so extra shots
+for a second half of an editor are free.
 
 ## Action page template
 

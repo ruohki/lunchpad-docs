@@ -8,6 +8,7 @@ sidebar:
 
 import ActionHeader from '~/components/ActionHeader.astro';
 import ActionShot from '~/components/ActionShot.astro';
+import AppShot from '~/components/AppShot.astro';
 import { Aside } from '@astrojs/starlight/components';
 
 <ActionHeader types={['runScript']} />
@@ -25,6 +26,15 @@ Run script is the glue between actions. When a [condition](/actions/flow/conditi
 | **Scope** | **This run** or **Everywhere**, see [variables](/guides/variables/). |
 | **Run test** | Runs the snippet now and shows the result, how long it took and which shared variables it would change. |
 
+## The editor
+
+<AppShot name="code-maximized" alt="The script editor filling the window: coloured JavaScript with a helper function, and a Done button in the corner." />
+
+- The code is **coloured as you type**, and the field grows with it instead of scrolling.
+- The **⤢** button in the corner opens the code in a window of its own. **Done**, <kbd>Esc</kbd> or a click outside brings you back.
+- Typing `vars.` or `globals.` opens the list of names you can use, under the caret: what Lunchpad provides, what this button writes, the shared variables, the fader levels and your secrets. <kbd>↑</kbd> <kbd>↓</kbd> choose, <kbd>Enter</kbd> or <kbd>Tab</kbd> insert, <kbd>Esc</kbd> closes.
+- A name with a dot is inserted the only way that works in JavaScript: `vars["fader.volume"]`, not `vars.fader.volume`.
+
 ## What the script sees
 
 | Name | Contains |
@@ -38,7 +48,7 @@ All variables are text. Turn them into numbers before doing maths: `Number(vars.
 
 ## How it runs
 
-- The result is the value of the last expression, or what you `return`. As soon as the word `return` appears anywhere in the code, even in a comment or a string, the snippet runs as a function body, so it needs an explicit `return` to have a result.
+- The result is the value of the last expression, or what you `return`. A snippet that declares its own helper functions and ends with a call gets the value of that call, even though the helpers contain `return`.
 - Assigning `vars.name = ...` sets a variable for this run. Assigning `globals.name = ...` sets a shared variable.
 - Text results are saved as they are, whole numbers without decimals, objects and arrays as JSON. No result saves an empty text.
 - The snippet runs in a sandbox: plain JavaScript without a console, network or file access. Loops stop after 2,000,000 rounds and nesting after 256 calls, so a runaway loop ends with an error instead of hanging Lunchpad.

@@ -18,6 +18,21 @@ Find your symptom below. If nothing here helps, see [Get help](#get-help) at the
 
 If the Launchpad shows up as **Identified by port name only**, it did not answer the identification request. That is normal for the Launchpad S. For other models it can mean the port is busy or the device is still starting up; unplug and plug it in again.
 
+If it never appears at all but the computer does see its MIDI ports, use **Not listed? Connect by hand.** at the bottom of the device list: pick the model and the two ports yourself. See [Connect by hand](/getting-started/first-launch/#not-listed-connect-by-hand).
+
+## A Launchkey's keys or touch strips do nothing
+
+The pads and buttons of a [Launchkey](/guides/launchkey/) arrive on its DAW port, but the **keys and the two touch strips use its ordinary MIDI port**, which Lunchpad opens alongside. If that port is busy, everything else works while the keys and strips stay silent.
+
+- Close whatever else holds the port: your DAW, Novation Components, another controller app, a browser tab with Web MIDI. On Windows only one program can hold a MIDI port at a time.
+- Then disconnect and connect again from the device list.
+
+If only *some* keys do nothing, the keyboard is at another octave. Lunchpad knows the keys at the default octave; press **Octave −** or **Octave +** on the device until you are back, since Lunchpad cannot see the shift.
+
+## The Launchkey keeps switching back
+
+While a Launchkey Mini MK4 is connected, the surface belongs to Lunchpad: change the pad layout or the encoder mode at the device, or switch **Arp** or **Scale** on there, and Lunchpad puts it straight back. Disconnect in **Settings → Launchpad** to use the keyboard on its own again.
+
 ## Pads light up on screen but nothing happens on the device, or the other way round
 
 - Open **Settings → Launchpad** and click **Repaint LEDs**.

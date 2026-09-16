@@ -24,6 +24,35 @@ Choose **Text** or **Image**.
 
 Labels only appear in the window. The Launchpad shows the colour.
 
+## Description
+
+A **Description** is a note to yourself about what the button does. Hover the pad in the window and it appears as a tooltip — handy when a page has thirty pads and the captions are four letters each.
+
+<AppShot name="button-description" alt="The tooltip over the Clap pad: a bold first line, two bullet points and a line ending in a highlighted value, rendered from Markdown." />
+
+The field takes **Markdown**, so a description can have structure:
+
+| Write | You get |
+| --- | --- |
+| `**bold**`, `*italic*`, `~~strike~~` | bold, italic, struck-through text. Asterisks only: `_italic_` does nothing. |
+| `` `code` `` | code, in the accent colour. |
+| `#`, `##`, `###` at the start of a line | the three heading sizes. |
+| `-`, `*` or `+` and a space | a bullet list. `1.` or `1)` makes a numbered list. Lists do not nest. |
+| `>` at the start of a line | a quote. |
+| Three or more `-`, `*` or `_` alone on a line | a horizontal rule. |
+| ` ``` ` around lines | a code block, with the language after the opening fence. |
+| `[text](https://…)` | underlined text. The address is dropped: a tooltip cannot be clicked. |
+
+A single newline is a line break, unlike in most Markdown. Tables, images and pictures are not supported, and HTML shows up as text.
+
+Code blocks are coloured for `js` / `javascript`, `css`, `html` / `markup` / `xml` and `md` / `markdown`. Other languages are shown as plain monospace, which is fine for a shell line or a bit of JSON.
+
+<Aside type="tip">
+`{{variable}}` works in a description: it shows the variable's **current value** while the tooltip is open, not when the macro runs. Good for a note like ``Speakers sit at `{{fader.volume}} %``, or a `{{time}}` that ticks while you look at it.
+
+Only shared variables and the values [Lunchpad provides](/guides/variables/#provided-by-lunchpad) can be shown. The press values (`velocity`, `x`, `y` and friends) mean nothing outside a run and stay as written, and `{{secret.…}}` is never shown.
+</Aside>
+
 ## Colour
 
 Click the colour field to open the colour picker. It has four modes:

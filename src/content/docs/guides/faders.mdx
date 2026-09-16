@@ -61,7 +61,7 @@ The actions and the `fader.` variable get the values as the fader shows them, so
 
 ## What the actions receive
 
-The **Actions** tab holds one list, **When the level changes**: the actions that run whenever the level changes. It works like a button's action lists, with the same **+ Add action** menu.
+The **Actions** tab holds one list, **When the level changes**: the actions that run whenever the level changes. It works like a button's action lists, with the same **+ Add action** menu. (A fader on a touch strip has [three lists](/guides/launchkey/#a-touch-strip-has-three-lists) instead.)
 
 <AppShot name="fader-editor-actions" alt="The Actions tab of the fader editor: a hint about the fader's variables and the list When the level changes with a System audio action that sets the speakers from the variable value" />
 
@@ -82,9 +82,13 @@ Every macro, not just the fader's own, can read the level as `fader.` plus the n
 
 ## On a knob or a touch strip
 
-A [Launchkey](/guides/launchkey/) has knobs and touch strips instead of pads for continuous control. Right-click one and choose **Assign a fader…**: it holds exactly one fader, and the hardware supplies the value, so the editor drops **Direction**, **Pads** and the colours and keeps the range, the variable and the actions.
+A [Launchkey](/guides/launchkey/) has knobs, encoders and touch strips instead of pads for continuous control. Right-click one and choose **Assign a fader…** (a plain click on a free knob does the same): it holds exactly one fader, and the hardware supplies the value, so the editor drops **Direction**, **Pads** and the colours and keeps the range, the variable and the actions.
 
-Turning the knob or touching the strip moves the fader and runs its actions, paced to a few runs per second while it moves.
+The level follows your hand at once — the LEDs, the on-screen control and the `fader.` variable are never behind a sweep. The **actions** wait until the movement comes to rest, so sweeping a knob across its range runs them once, with the value you stopped at, instead of hundreds of times on the way.
+
+A **touch strip** has three lists instead of one, because it knows when a finger lands on it and when it leaves: **When touched**, **While moving** and **When let go**. The pitch strip springs back to the middle and its released actions get the value you let go at, not the middle. See [a touch strip has three lists](/guides/launchkey/#a-touch-strip-has-three-lists).
+
+A knob or strip works even without a fader on it: it shows a position and you can drag it, it just has nothing to run.
 
 ## Pads under a fader
 

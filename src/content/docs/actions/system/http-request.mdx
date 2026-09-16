@@ -28,6 +28,7 @@ HTTP request calls a web address. Anything with a web API or webhook can be driv
 | **Body** | What to send and how. Not shown for GET and HEAD, which send no body. |
 | **Save response to** | Stores the answer in this variable. |
 | **Scope** | **This run** or **Everywhere**, see [variables](/guides/variables/). |
+| **Response** | What to do with the answer: keep the text, or save it as a file. See below. |
 | **Timeout (ms)** | How long to wait for an answer, 500 to 120000 ms. The default is 10000. |
 | **Ignore certificate errors** | Accepts self-signed or expired HTTPS certificates, for devices on your own network. |
 
@@ -50,12 +51,44 @@ A text body that is empty is not sent at all.
 - `{{placeholders}}` work in the URL, header values, the body, the password, the bearer token, and the file paths and names. A placeholder with a name Lunchpad does not know is sent as typed.
 - With **Wait** on, the next action starts once the answer is in. Keep it on when the next actions use the saved response.
 - When the macro is stopped, a request that is still waiting is cancelled.
-- The saved variable holds the first 2 KB of the answer. A second variable, named like yours with `.status` added (`lights.status` for `lights`), holds the status code.
+- The saved variable holds the first 2 KB of the answer. Three more are set beside it, named like yours: `.status` holds the status code, `.file` the saved file and `.cached` whether the file was reused (`lights.status`, `lights.file`, `lights.cached` for `lights`).
 - Error codes such as 404 or 500 are saved like any other answer and noted in the log. When there is no answer at all (no connection, timeout, bad address), the variable is emptied and the status is `0`.
 - Lunchpad identifies itself as `Lunchpad/` plus its version in the User-Agent header.
 
 <Aside type="note" title="Testing with placeholders">
-**Send test** fills the trigger values with test values: velocity 127, column and row 0. Your own variables are not filled in during a test, so they are sent as typed.
+**Send test** fills the trigger values with test values: velocity 127, column and row 0. Your own variables are not filled in during a test, so they are sent as typed. Secrets *are* filled in, so a test hits the real service with your real key.
+</Aside>
+
+## Keeping the answer as a file
+
+Some services answer with a file rather than a text: a voice service sends back the spoken audio, an image service a picture. **Response** decides what happens to the answer:
+
+<ActionShot type="httpRequestFile" alt="An HTTP request to a text-to-speech service with the header xi-api-key set to a secret, Response set to Save the body as a file, an automatic file name, and Reuse when unchanged switched on." />
+
+| Response | What Lunchpad does |
+| --- | --- |
+| **Keep the text** | The body goes into the variable, the first 2 KB of it. The normal case. |
+| **Save the body as a file** | The answer *is* the file, for example the audio from a text-to-speech service. |
+| **Decode a base64 field** | A field of the JSON answer holds the file as base64; a `data:` URL works too. |
+| **Download a URL from a field** | A field of the JSON answer holds the address of the file, which Lunchpad then downloads. |
+
+The two field modes add a **Field**: a dotted path into the answer, such as `audioContent` or `data.0.url`. Left empty, the whole body is used.
+
+| Setting | What it does |
+| --- | --- |
+| **File name** | Empty names the file after the request itself. A plain name lands in the download folder; an absolute path is used as it is. The extension comes from the answer unless you give one. |
+| **Reuse when unchanged** | Skips the request entirely when a file for the same address, headers, body and login is already there. With a file name of your own, that name alone decides. |
+
+The saved file's path lands in `<name>.file`, so the next action can use it — [Play sound](/actions/media/play-sound/) with **From a variable** `{{tts.file}}` plays what the service just sent.
+
+The files are kept in a download folder, listed under **Settings → Variables → Downloaded files**, where **Remove all** empties it and makes every reusing request run again.
+
+<Aside type="tip">
+**Reuse when unchanged** turns a paid API into a one-off cost: the same text is fetched once and played from disk ever after, and `{{tts.cached}}` tells you which happened.
+</Aside>
+
+<Aside type="caution" title="Keep the key out of the profile">
+Put API keys in **Settings → Secrets** and write `{{secret.name}}` in the header or the address. The key then lives in your system's credential store instead of your profile, and stays out of the log. See [Secrets](/guides/secrets/).
 </Aside>
 
 ## Example

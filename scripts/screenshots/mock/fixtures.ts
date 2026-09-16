@@ -5,6 +5,7 @@ import type {
   AudioDevices,
   Button,
   DiscoveredLaunchpad,
+  DownloadCacheInfo,
   Fader,
   HaEntity,
   HaState,
@@ -14,8 +15,6 @@ import type {
   ModelInfo,
   ObsState,
   PadColor,
-  PadRegion,
-  PadShape,
   PadSpec,
   PlacedButton,
   Profile,
@@ -23,6 +22,11 @@ import type {
   SlobsState,
   VoiceInfo,
 } from "@app/lib/api";
+import launchkeyMiniMk3 from "./layouts/LaunchkeyMiniMk3.json";
+import launchkeyMiniMk4 from "./layouts/LaunchkeyMiniMk4.json";
+import launchpadMiniMk3 from "./layouts/LaunchpadMiniMk3.json";
+import launchpadProMk3 from "./layouts/LaunchpadProMk3.json";
+import launchpadX from "./layouts/LaunchpadX.json";
 
 // ----- layouts -----------------------------------------------------------------
 
@@ -37,11 +41,29 @@ export const MODELS: ModelInfo[] = [
   { model: "LaunchpadProMk3", name: "Launchpad Pro MK3" },
   { model: "LaunchpadLegacy", name: "Launchpad (first generation)" },
   { model: "LaunchkeyMiniMk3", name: "Launchkey Mini MK3" },
+  { model: "LaunchkeyMiniMk4", name: "Launchkey Mini MK4" },
 ];
 
-/** The 9 × 9 layout of the X (and, close enough for screenshots, every 8 × 8 model). */
+/**
+ * Real layouts dumped from the app's drivers, so a shot shows the surface exactly as the app
+ * draws it. Refresh them whenever a driver's layout changes, from `src-tauri`:
+ *
+ *   for m in LaunchpadX LaunchpadMiniMk3 LaunchpadProMk3 LaunchkeyMiniMk3 LaunchkeyMiniMk4
+ *     cargo run --quiet --example layoutdump -- $m > <docs>/scripts/screenshots/mock/layouts/$m.json
+ *   end
+ */
+const REAL_LAYOUTS: Partial<Record<LaunchpadModel, Layout>> = {
+  LaunchpadX: launchpadX as Layout,
+  LaunchpadMiniMk3: launchpadMiniMk3 as Layout,
+  LaunchpadProMk3: launchpadProMk3 as Layout,
+  LaunchkeyMiniMk3: launchkeyMiniMk3 as Layout,
+  LaunchkeyMiniMk4: launchkeyMiniMk4 as Layout,
+};
+
+/** The model's real layout when one is dumped here, else the 9 × 9 layout of the X (close enough for screenshots of every other 8 × 8 model). */
 export function layoutFor(model: LaunchpadModel): Layout {
-  if (model === "LaunchkeyMiniMk3") return launchkeyLayout();
+  const real = REAL_LAYOUTS[model];
+  if (real) return real;
   const pads: PadSpec[] = [];
   for (let y = 0; y < 9; y++) {
     for (let x = 0; x < 9; x++) {
@@ -61,58 +83,6 @@ export function layoutFor(model: LaunchpadModel): Layout {
     pads,
     limitedColor: model === "LaunchpadLegacy",
     velocitySensitive: model === "LaunchpadX" || model === "LaunchpadProMk2" || model === "LaunchpadProMk3",
-  };
-}
-
-/**
- * Launchkey Mini MK3: keys, pads, knobs and the two touch strips, mirroring
- * src-tauri/src/midi/models/launchkey_mini_mk3.rs (15 × 7, each pad row two
- * half-rows). Used to look at the keyboard models in the harness.
- */
-function launchkeyLayout(): Layout {
-  const pads: PadSpec[] = [];
-  // A control without a note sends nothing (the printed keyboard functions); the app draws
-  // those greyed out, so everything that can hold a button needs its real note or CC here.
-  const at = (x: number, y: number, shape: PadShape, region: PadRegion, label: string | null, rows = 1, led: PadSpec["led"] = "none", note: number | null = null, cc = false, centred = false) =>
-    pads.push({ x, y, shape, region, label, note, cc, led, rows, centred });
-  const blackAfter = (x: number) => [0, 1, 3, 4, 5].includes(x % 7) && x + 1 < 15;
-  const WHITE_OFFSETS = [0, 2, 4, 5, 7, 9, 11];
-  const whiteNote = (i: number) => 48 + 12 * Math.floor(i / 7) + WHITE_OFFSETS[i % 7];
-
-  for (let y = 6; y >= 0; y--) {
-    for (let x = 0; x < 15; x++) {
-      // The pitch strip springs back to the middle: drawn as a bar, not a fill.
-      if (y === 6 && x === 0) at(x, y, "strip", "left", "Pitch", 5, "none", null, false, true);
-      else if (y === 6 && x === 1) at(x, y, "strip", "left", "Modulation", 5);
-      else if ((x === 0 || x === 1) && y >= 2 && y <= 5) continue; // covered by the strips
-      else if (x === 2 && y === 6) at(x, y, "rect", "left", "Shift", 1, "none", 108, true);
-      else if (x === 2 && y === 5) at(x, y, "rect", "left", "Transpose");
-      else if (x === 2 && y === 3) at(x, y, "rect", "left", "+");
-      else if (x === 2 && y === 2) at(x, y, "rect", "left", "−");
-      else if (x >= 4 && x <= 11 && y === 6) at(x, y, "knob", "top", null);
-      else if (x >= 4 && x <= 11 && y === 5) at(x, y, "pad", "grid", null, 2, "rgb", 96 + (x - 4));
-      else if (x >= 4 && x <= 11 && y === 3) at(x, y, "pad", "grid", null, 2, "rgb", 112 + (x - 4));
-      else if (x === 12 && y === 5) at(x, y, "pad", "right", ">", 2, "rgb", 104, true);
-      else if (x === 12 && y === 3) at(x, y, "pad", "right", "Stop Solo Mute", 2, "rgb", 105, true);
-      else if (x >= 4 && x <= 12 && (y === 2 || y === 4)) continue; // lower halves of the pad rows
-      else if (x === 13 && y === 4) at(x, y, "rect", "right", "Arp");
-      else if (x === 14 && y === 4) at(x, y, "rect", "right", "Fixed Chord");
-      else if (x === 13 && y === 2) at(x, y, "rect", "right", "▶", 1, "white", 115, true);
-      else if (x === 14 && y === 2) at(x, y, "rect", "right", "●", 1, "white", 117, true);
-      else if (y === 0) at(x, y, "keyWhite", "bottom", null, 1, "none", whiteNote(x));
-      else if (y === 1 && blackAfter(x)) at(x, y, "keyBlack", "bottom", null, 1, "none", whiteNote(x) + 1);
-      else at(x, y, "empty", "other", null);
-    }
-  }
-  return {
-    model: "LaunchkeyMiniMk3",
-    modelName: "Launchkey Mini MK3",
-    width: 15,
-    height: 7,
-    rowWeights: [1.6, 1.1, 0.46, 0.46, 0.46, 0.46, 0.8],
-    pads,
-    limitedColor: false,
-    velocitySensitive: true,
   };
 }
 
@@ -168,6 +138,7 @@ export function button(caption: string, color: PadColor, extra: Partial<Button> 
     holdMs: 500,
     holdWait: true,
     stateLink: null,
+    description: "",
     ...extra,
   };
 }
@@ -192,6 +163,7 @@ const sound = (file: string, caption: string, color: PadColor) =>
 const volumeFader: Fader = {
   id: "fader-volume",
   name: "volume",
+  variable: "",
   x: 7,
   y: 0,
   direction: "up",
@@ -206,6 +178,8 @@ const volumeFader: Fader = {
   value: 75,
   display: null,
   onChange: [{ id: id(), wait: true, type: "setSystemVolume", target: "output", mode: "set", volume: 50, volumeFrom: "value" }],
+  onTouch: [],
+  onRelease: [],
 };
 
 export function demoProfile(): Profile {
@@ -232,7 +206,11 @@ export function demoProfile(): Profile {
           at(7, 6, button("Replay", C.orange)),
           at(0, 5, sound("airhorn.wav", "Horn", C.amber)),
           at(1, 5, sound("drumroll.mp3", "Drums", C.orange)),
-          at(2, 5, sound("applause.ogg", "Clap", C.green)),
+          at(2, 5, {
+            ...sound("applause.ogg", "Clap", C.green),
+            // Shown as a tooltip over the pad; Markdown, with the shared variables filled in.
+            description: "Crowd applause, **4 seconds**.\n\n- Hit it harder to play it louder\n- Held: the long version\n\nPlays on `{{fader.volume}} %` of the speakers.",
+          }),
           at(3, 5, sound("boo.wav", "Boo", C.red)),
           at(4, 5, sound("laugh.mp3", "Haha", C.pink)),
           at(5, 5, sound("wow.wav", "Wow", C.teal)),
@@ -254,30 +232,59 @@ export function demoProfile(): Profile {
   };
 }
 
-/** A page laid out for the Launchkey: buttons on the pads, the scene buttons, transport and one key, a fader on a knob. */
-export function launchkeyPage(): Page {
+/**
+ * A page laid out for a Launchkey: buttons on the pads, the buttons beside them, transport and
+ * one key, and a fader on the first knob. The two models put their controls in different cells
+ * (see the dumped layouts), so each gets its own placement.
+ */
+export function launchkeyPage(model: LaunchpadModel): Page {
   const pad = (x: number, y: number, caption: string, color: PadColor) => at(x, y, button(caption, color));
+  const mk4 = model === "LaunchkeyMiniMk4";
+  // Pads: MK3 runs x 4..11 with the scene buttons at x 12; MK4 runs x 5..12 with ∧ / ∨ at x 4.
+  const x0 = mk4 ? 5 : 4;
+  const top = (i: number) => x0 + i;
+  const knob = mk4 ? { x: 5, y: 7 } : { x: 4, y: 6 };
+  const side = mk4 ? [{ x: 4, y: 5 }, { x: 4, y: 3 }] : [{ x: 12, y: 5 }, { x: 12, y: 3 }];
+  const play = mk4 ? { x: 2, y: 4 } : { x: 13, y: 2 };
   return {
     id: "default",
     name: "Keys",
     faders: [
-      { ...volumeFader, id: "fader-filter", name: "filter", variable: "", x: 4, y: 6, direction: "up", length: 1, min: 0, max: 100, unit: "%", value: 40 },
+      { ...volumeFader, id: "fader-filter", name: "filter", variable: "", ...knob, direction: "up", length: 1, min: 0, max: 100, unit: "%", value: 40 },
+      // The modulation strip, with all three of a touch strip's lists in use.
+      {
+        ...volumeFader,
+        id: "fader-mic",
+        name: "mic",
+        variable: "",
+        x: 1,
+        y: mk4 ? 7 : 6,
+        direction: "up",
+        length: 1,
+        min: 0,
+        max: 100,
+        unit: "%",
+        value: 0,
+        onTouch: [{ id: id(), wait: true, type: "obsSetAudio", scene: "", collection: "", source: "Mic/Aux", muted: false, muteMode: "unmute", volumeDb: 0, volumeFrom: null, volumeUnit: "db", setVolume: false }],
+        onChange: [{ id: id(), wait: true, type: "obsSetAudio", scene: "", collection: "", source: "Mic/Aux", muted: false, muteMode: "leave", volumeDb: 0, volumeFrom: "percent", volumeUnit: "percent", setVolume: true }],
+        onRelease: [{ id: id(), wait: true, type: "obsSetAudio", scene: "", collection: "", source: "Mic/Aux", muted: true, muteMode: "mute", volumeDb: 0, volumeFrom: null, volumeUnit: "db", setVolume: false }],
+      },
     ],
     buttons: [
-      pad(5, 5, "Start", C.teal),
-      pad(6, 5, "Game", C.green),
-      pad(7, 5, "Chat", C.blue),
-      pad(8, 5, "BRB", C.violet),
-      pad(9, 5, "End", C.pink),
-      pad(11, 5, "Live", C.red),
-      pad(5, 3, "Horn", C.amber),
-      pad(6, 3, "Drums", C.orange),
-      pad(7, 3, "Clap", C.green),
-      pad(8, 3, "Boo", C.red),
-      pad(11, 3, "Clip", C.orange),
-      pad(12, 5, "Next", C.white),
-      pad(12, 3, "Stop", C.dim),
-      pad(13, 2, "▶", C.green),
+      pad(top(1), 5, "Start", C.teal),
+      pad(top(2), 5, "Game", C.green),
+      pad(top(3), 5, "Chat", C.blue),
+      pad(top(4), 5, "BRB", C.violet),
+      pad(top(5), 5, "End", C.pink),
+      pad(top(7), 5, "Live", C.red),
+      pad(top(1), 3, "Horn", C.amber),
+      pad(top(2), 3, "Drums", C.orange),
+      pad(top(3), 3, "Clap", C.green),
+      pad(top(4), 3, "Boo", C.red),
+      pad(top(7), 3, "Clip", C.orange),
+      pad(side[0].x, side[0].y, "Next", C.white),
+      pad(side[1].x, side[1].y, "Stop", C.dim),
+      pad(play.x, play.y, "▶", C.green),
       pad(0, 0, "Horn", C.amber),
     ],
   };
@@ -298,6 +305,8 @@ export function demoSettings(): Settings {
     homeAssistant: { enabled: true, url: "http://homeassistant.local:8123", token: "demo-long-lived-token", ignoreTlsErrors: false },
     window: { stayOnTop: false, minimizeToTray: true, runAtStartup: true, startHidden: false },
     developerMode: false,
+    // Only the names live in the settings; the values are in the credential store.
+    secrets: ["twitch", "hue_bridge"],
   };
 }
 
@@ -372,6 +381,10 @@ export const AUDIO: AudioDevices = {
   devices: ["Speakers (Realtek(R) Audio)", "Headphones (Arctis 7 Game)", "CABLE Input (VB-Audio Virtual Cable)"],
 };
 export const INPUTS = ["Microphone (Shure MV7)", "Line In (Realtek(R) Audio)", "Headset Microphone (Arctis 7 Chat)"];
+
+/** Where the demo computer keeps its files, and what HTTP request actions have saved there. */
+export const CONFIG_DIR = "C:\\Users\\Demo\\AppData\\Roaming\\com.lunchpad.app";
+export const DOWNLOADS: DownloadCacheInfo = { path: `${CONFIG_DIR}\\downloads`, files: 3, bytes: 481_920 };
 
 export const VOICES: VoiceInfo[] = [
   { id: "aria", name: "Microsoft Aria", language: "en-US" },

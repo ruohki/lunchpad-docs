@@ -29,9 +29,31 @@ If nothing shows up, plug the Launchpad in and wait a moment: the list updates o
 
 ## No Launchpad? Use the pads on screen
 
-Below the device list, **No Launchpad? Use the pads on screen.** lets you pick a **Layout** (any supported model) and click **Start without a Launchpad**. The pads in the window then run your macros when you click them, and you can switch to a real Launchpad any time.
+Below the device list, **No Launchpad? Use the pads on screen.** lets you pick a **Layout** (any supported model, including the Launchkey keyboards) and click **Start without a Launchpad**. The pads in the window then run your macros when you click them, and you can switch to a real Launchpad any time.
 
 This is also handy for building pages for a friend's Launchpad model.
+
+## Not listed? Connect by hand
+
+Some devices never answer the identification request, and some ports carry a name nothing can guess. For those, the last box of the device list lets you say what to connect to:
+
+<AppShot name="connect-by-hand" alt="The Connect by hand box in the device list: a Model dropdown, an Input port and an Output port dropdown listing every MIDI port, and a Connect button." />
+
+<Steps>
+
+1. Pick the **Model**. This decides which surface Lunchpad draws and which language it speaks to the device; nothing is checked against the hardware, so pick the model you actually have.
+
+2. Pick an **Input port** and an **Output port**. Both lists hold every MIDI port on the computer, not only the ones that look like a Launchpad. Lunchpad preselects a remembered port, else the first port whose name contains "launch".
+
+3. Click **Connect**.
+
+</Steps>
+
+A device connected this way is remembered like any other, and comes back on the next start. Because it never identified itself, **Settings → Launchpad** shows its firmware as unknown.
+
+<Aside>
+The lists are read again after every scan, so plugging a device in while the picker is open fills them in. If the computer has no MIDI ports at all, the dropdowns are empty and read **No MIDI ports**.
+</Aside>
 
 ## Make your first button
 
