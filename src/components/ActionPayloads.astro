@@ -1,0 +1,239 @@
+---
+// The JSON of every action, generated from the app's own action model by
+// `npm run actions:sync` (see scripts/actions.ts). Nothing here is written by
+// hand, so a renamed field or a new action shows up after the next sync.
+import { actions, groups, payloads, types, type FieldInfo, type TypeInfo } from '~/lib/actions';
+
+const anchor = (name: string) => `type-${name.toLowerCase()}`;
+
+/** A believable value for a field, for the minimal example. */
+function value(type: string, depth = 0): unknown {
+	if (type === 'text') return '…';
+	if (type === 'number') return 0;
+	if (type === 'true or false') return true;
+	const t: TypeInfo | undefined = types[type];
+	if (!t || depth > 1) return '…';
+	if (t.kind === 'enum') return t.values?.find((v) => v.default)?.value ?? t.values?.[0]?.value ?? '';
+	if (t.kind === 'object') return Object.fromEntries((t.fields ?? []).filter((f) => !f.optional).map((f) => [f.name, field(f, depth + 1)]));
+	const variant = t.variants?.find((v) => v.fields.length) ?? t.variants?.[0];
+	return { [t.tag ?? 'type']: variant?.value ?? '', ...Object.fromEntries((variant?.fields ?? []).map((f) => [f.name, field(f, depth + 1)])) };
+}
+
+const field = (f: FieldInfo, depth = 0): unknown => (f.list ? [value(f.type, depth)] : value(f.type, depth));
+
+/** The smallest object the engine accepts: the type plus every field without a default. */
+function example(type: string): string {
+	const required = payloads[type].fields.filter((f) => !f.optional);
+	return JSON.stringify({ type, ...Object.fromEntries(required.map((f) => [f.name, field(f)])) }, null, 1).replace(/\n\s*/g, ' ').replace(/ \}$/, ' }');
+}
+
+/** "text", "number", "one of â€¦" â€” with a link when the type is defined below. */
+function typeCell(f: FieldInfo) {
+	const known = f.type in types;
+	const label = f.list ? `list of ${f.type}` : f.type;
+	return { known, label, href: known ? `#${anchor(f.type)}` : undefined, nullable: f.nullable };
+}
+
+const used = new Set<string>();
+for (const p of Object.values(payloads)) for (const f of p.fields) if (f.type in types) used.add(f.type);
+for (const name of [...used]) {
+	const t = types[name];
+	for (const f of [...(t.fields ?? []), ...(t.variants ?? []).flatMap((v) => v.fields)]) if (f.type in types) used.add(f.type);
+}
+const shared = [...used].sort();
+---
+
+{
+	groups.map((group) => (
+		<section class="lp-payloads">
+			<h2 id={`group-${group.id}`}>{group.name}</h2>
+			{group.types
+				.filter((type) => payloads[type])
+				.map((type) => {
+					const info = payloads[type];
+					return (
+						<div class="action">
+							<h3 id={type}>
+								{actions[type]?.name ?? type} <code>{type}</code>
+							</h3>
+							{info.doc && <p class="doc">{info.doc}</p>}
+							<pre class="example"><code>{example(type)}</code></pre>
+							{info.fields.length > 0 && (
+								<table>
+									<thead>
+										<tr>
+											<th>Field</th>
+											<th>Value</th>
+											<th>What it is</th>
+										</tr>
+									</thead>
+									<tbody>
+										{info.fields.map((f) => {
+											const cell = typeCell(f);
+											return (
+												<tr>
+													<td>
+														<code>{f.name}</code>
+														{!f.optional && <span class="req" title="Required: leave it out and the action is skipped">*</span>}
+													</td>
+													<td>
+														{cell.href ? <a href={cell.href}>{cell.label}</a> : cell.label}
+														{cell.nullable && <span class="nullable"> or null</span>}
+													</td>
+													<td>{f.doc ?? ''}</td>
+												</tr>
+											);
+										})}
+									</tbody>
+								</table>
+							)}
+						</div>
+					);
+				})}
+		</section>
+	))
+}
+
+<section class="lp-payloads">
+	<h2 id="shared-types">The types they use</h2>
+	{
+		shared.map((name) => {
+			const t = types[name];
+			return (
+				<div class="action">
+					<h3 id={anchor(name)}>
+						<code>{name}</code>
+					</h3>
+					{t.doc && <p class="doc">{t.doc}</p>}
+					{t.kind === 'enum' && (
+						<table>
+							<thead>
+								<tr>
+									<th>Value</th>
+									<th>What it means</th>
+								</tr>
+							</thead>
+							<tbody>
+								{t.values?.map((v) => (
+									<tr>
+										<td>
+											<code>"{v.value}"</code>
+											{v.default && <span class="req" title="The default">*</span>}
+										</td>
+										<td>{v.doc ?? ''}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					)}
+					{t.kind === 'object' && (
+						<table>
+							<thead>
+								<tr>
+									<th>Field</th>
+									<th>Value</th>
+									<th>What it is</th>
+								</tr>
+							</thead>
+							<tbody>
+								{t.fields?.map((f) => {
+									const cell = typeCell(f);
+									return (
+										<tr>
+											<td>
+												<code>{f.name}</code>
+												{!f.optional && <span class="req">*</span>}
+											</td>
+											<td>
+												{cell.href ? <a href={cell.href}>{cell.label}</a> : cell.label}
+												{cell.nullable && <span class="nullable"> or null</span>}
+											</td>
+											<td>{f.doc ?? ''}</td>
+										</tr>
+									);
+								})}
+							</tbody>
+						</table>
+					)}
+					{t.kind === 'union' && (
+						<>
+							<p class="doc">
+								An object whose <code>{t.tag}</code> says which one it is:
+							</p>
+							<table>
+								<thead>
+									<tr>
+										<th>
+											<code>{t.tag}</code>
+										</th>
+										<th>With</th>
+										<th>What it means</th>
+									</tr>
+								</thead>
+								<tbody>
+									{t.variants?.map((v) => (
+										<tr>
+											<td>
+												<code>"{v.value}"</code>
+												{v.default && <span class="req" title="The default">*</span>}
+											</td>
+											<td>{v.fields.length ? v.fields.map((f) => <code class="inline">{f.name}</code>) : <span class="nullable">nothing else</span>}</td>
+											<td>{v.doc ?? ''}</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</>
+					)}
+				</div>
+			);
+		})
+	}
+</section>
+
+<style>
+	.lp-payloads {
+		margin-top: 2rem;
+	}
+	.lp-payloads h2 {
+		border-bottom: 1px solid var(--sl-color-gray-5);
+		padding-bottom: 0.3rem;
+	}
+	.action {
+		margin-top: 1.6rem;
+	}
+	.action h3 {
+		margin-bottom: 0.3rem;
+	}
+	.action h3 code {
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-2);
+		font-weight: 400;
+	}
+	.doc {
+		margin: 0.2rem 0 0.6rem;
+		color: var(--sl-color-gray-3);
+	}
+	.example {
+		margin: 0 0 0.6rem;
+	}
+	.req {
+		color: var(--sl-color-accent-high);
+		font-weight: 700;
+		margin-left: 0.15rem;
+	}
+	.nullable {
+		color: var(--sl-color-gray-3);
+	}
+	code.inline + code.inline::before {
+		content: ', ';
+		color: var(--sl-color-gray-3);
+	}
+	table {
+		margin-bottom: 0.4rem;
+	}
+	td,
+	th {
+		vertical-align: top;
+	}
+</style>

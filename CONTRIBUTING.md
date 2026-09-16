@@ -16,7 +16,7 @@ Node 22.18 or newer runs the TypeScript scripts in `scripts/` directly.
 
 | Script | What it does |
 | --- | --- |
-| `npm run actions:sync` | Reads the app and writes `src/data/actions.json` (names, descriptions, icons, menu groups, Wait switch), then checks coverage |
+| `npm run actions:sync` | Reads the app and writes `src/data/actions.json` (names, descriptions, icons, menu groups, Wait switch, and the JSON each action is), then checks coverage |
 | `npm run actions:check` | Only the check: every action has a page (`actionTypes`) and a screenshot, no page names a removed action |
 | `npm run screenshots` | Takes every screenshot; `npm run screenshots -- playSound app/settings` takes only the ones whose name contains a word |
 | `npm run app:demo` | Serves the app's interface with demo data at http://localhost:1430, to look around before writing a scenario |
@@ -99,6 +99,28 @@ An action can have more than one shot: `shot("httpRequestFile", …)` writes
 `actions/httpRequestFile.png`, shown with `<ActionShot type="httpRequestFile" …>`. The coverage
 check only asks that every action type has one page and one shot of its own name, so extra shots
 for a second half of an editor are free.
+
+## The action JSON reference
+
+`/actions/json/` lists the JSON object of every action, because `Lunchpad.run()` in a script
+takes exactly what the engine deserialises. None of it is written by hand: `actions:sync` reads
+the app's `src-tauri/src/macros/model.rs` and writes two more sections into `src/data/actions.json`.
+
+| Section | What it holds |
+| --- | --- |
+| `payloads` | One entry per action: its doc comment, and each field with its name (as serde renames it), its type, whether null is allowed, and whether it has a `#[serde(default)]` |
+| `types` | The types those fields refer to — `ButtonRef`, `PadColor`, `Keystroke`, and the string enums — as `enum`, `object` or a tagged `union` |
+
+`src/components/ActionPayloads.astro` renders both, grouped like the "Add action" menu, each
+action with a heading id of its type (`/actions/json/#playSound`), so a page can link straight
+to one. Only actions in the menu are listed: the flow markers are skipped when a script queues
+them, so they have nothing to document.
+
+The required / optional split is the part that matters, and it comes from the Rust attributes
+rather than a guess: a field without a default that is left out makes the whole action fail to
+deserialise, and the engine logs "script queued an action the engine does not understand" and
+skips it. If `ActionKind` ever changes shape enough that the parser misses an action, the sync
+fails with the action's name rather than writing a half reference.
 
 ## Action page template
 

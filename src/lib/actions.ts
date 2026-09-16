@@ -11,9 +11,48 @@ export interface ActionInfo {
 	partOf?: string;
 }
 
+/** One field of an action's JSON, as the engine reads it. */
+export interface FieldInfo {
+	name: string;
+	/** "text", "number", "true or false", or the name of an entry in `types` */
+	type: string;
+	/** null is allowed */
+	nullable?: boolean;
+	/** a list of `type` */
+	list?: boolean;
+	/** may be left out: the engine fills in a default */
+	optional?: boolean;
+	doc?: string;
+}
+export interface PayloadInfo {
+	doc?: string;
+	fields: FieldInfo[];
+}
+export interface TypeInfo {
+	kind: 'enum' | 'object' | 'union';
+	doc?: string;
+	values?: { value: string; doc?: string; default?: boolean }[];
+	fields?: FieldInfo[];
+	tag?: string;
+	variants?: { value: string; doc?: string; default?: boolean; fields: FieldInfo[] }[];
+}
+
 export const groups = data.groups;
 export const actions = data.actions as Record<string, ActionInfo>;
 export const icons = data.icons as Record<string, { viewBox: string; body: string }>;
+/** The JSON each action is, for `Lunchpad.run()` — generated from the app's action model. */
+export const payloads = data.payloads as Record<string, PayloadInfo>;
+/** The types those payloads refer to (`ButtonRef`, `PadColor`, the string enums …). */
+export const types = data.types as Record<string, TypeInfo>;
+
+export function payload(type: string): PayloadInfo {
+	const info = payloads[type];
+	if (!info) throw new Error(`No JSON payload for action "${type}". Run "npm run actions:sync" after the app gained or renamed actions.`);
+	return info;
+}
+
+/** Whether a field's type is one of the generated `types` rather than a primitive. */
+export const isTypeRef = (field: FieldInfo) => field.type in types;
 
 export function action(type: string): ActionInfo {
 	const info = actions[type];

@@ -1,0 +1,35 @@
+---
+title: Action JSON
+description: The JSON object of every action, for Lunchpad.run() in a script.
+sidebar:
+  order: 0.5
+  badge:
+    text: New
+    variant: tip
+---
+
+import ActionPayloads from '~/components/ActionPayloads.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+[`Lunchpad.run()`](/actions/system/run-script/#the-lunchpad-object) in a [script](/actions/system/run-script/) takes an action as a JSON object. This page is that object, for every action a script can run.
+
+```js
+Lunchpad.run({ type: "playSound", file: "C:\\Sounds\\airhorn.wav", volume: 0.8 });
+```
+
+The `type` says which action it is; the rest are its fields.
+
+- A field marked <span style="color: var(--sl-color-accent-high); font-weight: 700">*</span> is **required**. An action missing one is skipped, and the reason goes to the log.
+- Every other field may be left out: the engine fills in its default.
+- Placeholders work in text fields, exactly as they do in the editor: `{{velocity}}`, `{{secret.key}}`, and the rest. See [Variables and placeholders](/guides/variables/).
+- The example under each action is the smallest object that runs.
+
+<Aside type="note">
+This page is generated from the app itself, so it says what this version of Lunchpad actually accepts. The field names are the same ones a page file uses, so an exported page is a good place to copy a working object from.
+</Aside>
+
+<Aside type="caution" title="What is not here">
+The flow markers — **Condition**, **Otherwise**, **Flip flop**, **Push-to-talk** and their ends — only mean something inside an action list. A script that queues one has it skipped and logged, so they are left out of this list. [Run script](/actions/system/run-script/) itself is here and works, but a snippet cannot see what a script it queued did.
+</Aside>
+
+<ActionPayloads />

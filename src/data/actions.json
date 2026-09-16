@@ -532,5 +532,1361 @@
       "viewBox": "0 0 24 24",
       "body": "<path fill=\"currentColor\" d=\"M4 5a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2H6v12h3a1 1 0 1 1 0 2H5a1 1 0 0 1-1-1V5Zm16 0v14a1 1 0 0 1-1 1h-4a1 1 0 1 1 0-2h3V6h-3a1 1 0 1 1 0-2h4a1 1 0 0 1 1 1Zm-9.5 3.2a1 1 0 0 1 1.3.4L12 9.8l.2-.2a1 1 0 0 1 1.7 1.1L13.2 12l1 1.6a1 1 0 0 1-1.7 1L12 14.2l-.5.8a1 1 0 0 1-1.7-1.1l1-1.5-1-1.6a1 1 0 0 1 .4-1.4Z\"/>"
     }
+  },
+  "payloads": {
+    "playSound": {
+      "doc": "Play an audio file on an output device (`None` = app default device).",
+      "fields": [
+        {
+          "name": "file",
+          "type": "text"
+        },
+        {
+          "name": "volume",
+          "type": "number",
+          "optional": true,
+          "doc": "1.0 = 100 %; legacy allowed up to 20.0"
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "optional": true,
+          "doc": "Trim start, 0.0..1.0 of the file"
+        },
+        {
+          "name": "end",
+          "type": "number",
+          "optional": true,
+          "doc": "Trim end, 0.0..1.0 of the file"
+        },
+        {
+          "name": "outputDevice",
+          "type": "text",
+          "nullable": true,
+          "optional": true
+        },
+        {
+          "name": "volumeFromVelocity",
+          "type": "true or false",
+          "optional": true,
+          "doc": "Scale the volume by the trigger velocity (velocity-sensitive pads)"
+        }
+      ]
+    },
+    "textToSpeech": {
+      "fields": [
+        {
+          "name": "text",
+          "type": "text"
+        },
+        {
+          "name": "voice",
+          "type": "text",
+          "nullable": true,
+          "optional": true
+        },
+        {
+          "name": "volume",
+          "type": "number",
+          "optional": true
+        }
+      ]
+    },
+    "launchApplication": {
+      "fields": [
+        {
+          "name": "executable",
+          "type": "text"
+        },
+        {
+          "name": "arguments",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "hidden",
+          "type": "true or false",
+          "optional": true
+        },
+        {
+          "name": "killOnStop",
+          "type": "true or false",
+          "optional": true
+        },
+        {
+          "name": "saveOutputTo",
+          "type": "text",
+          "nullable": true,
+          "optional": true,
+          "doc": "Store the program's standard output in this variable (needs `wait`)"
+        },
+        {
+          "name": "saveScope",
+          "type": "VarScope",
+          "optional": true
+        }
+      ]
+    },
+    "hotkey": {
+      "fields": [
+        {
+          "name": "keystrokes",
+          "type": "Keystroke",
+          "list": true
+        },
+        {
+          "name": "restoreAllAtEnd",
+          "type": "true or false",
+          "optional": true
+        }
+      ]
+    },
+    "delay": {
+      "fields": [
+        {
+          "name": "ms",
+          "type": "number"
+        },
+        {
+          "name": "msFrom",
+          "type": "text",
+          "nullable": true,
+          "optional": true,
+          "doc": "A variable (or `{{template}}`) holding the milliseconds; `ms` when it is missing or not a number."
+        }
+      ]
+    },
+    "switchPage": {
+      "fields": [
+        {
+          "name": "pageId",
+          "type": "text"
+        }
+      ]
+    },
+    "setColor": {
+      "doc": "Change and persist the colour of a button: this one (no target) or any other button on any page.",
+      "fields": [
+        {
+          "name": "color",
+          "type": "PadColor"
+        },
+        {
+          "name": "target",
+          "type": "ButtonRef",
+          "nullable": true,
+          "optional": true
+        }
+      ]
+    },
+    "setFader": {
+      "doc": "Move a fader (by name) to a value, as if its pad had been pressed: LEDs, `fader.<name>` and, unless `run_actions` is off, its actions.",
+      "fields": [
+        {
+          "name": "fader",
+          "type": "text"
+        },
+        {
+          "name": "value",
+          "type": "text",
+          "doc": "Number or placeholder, clamped to the fader's range"
+        },
+        {
+          "name": "runActions",
+          "type": "true or false",
+          "optional": true
+        }
+      ]
+    },
+    "runButton": {
+      "doc": "Run another button's actions as part of this chain. With `wait` the runner waits for the other button's macro to finish.",
+      "fields": [
+        {
+          "name": "target",
+          "type": "ButtonRef"
+        },
+        {
+          "name": "trigger",
+          "type": "ButtonTrigger",
+          "optional": true
+        }
+      ]
+    },
+    "stopAllMacros": {
+      "fields": []
+    },
+    "stopThisMacro": {
+      "fields": []
+    },
+    "restartThisMacro": {
+      "fields": []
+    },
+    "pushToTalkStart": {
+      "fields": [
+        {
+          "name": "endId",
+          "type": "text"
+        }
+      ]
+    },
+    "pushToTalkEnd": {
+      "fields": [
+        {
+          "name": "startId",
+          "type": "text"
+        }
+      ]
+    },
+    "flipFlopStart": {
+      "doc": "Actions between Start and Middle run on \"A\" presses, between Middle and End on \"B\" presses; `is_a` alternates and is persisted.",
+      "fields": [
+        {
+          "name": "middleId",
+          "type": "text"
+        },
+        {
+          "name": "endId",
+          "type": "text"
+        },
+        {
+          "name": "isA",
+          "type": "true or false",
+          "optional": true
+        }
+      ]
+    },
+    "flipFlopMiddle": {
+      "fields": [
+        {
+          "name": "startId",
+          "type": "text"
+        },
+        {
+          "name": "endId",
+          "type": "text"
+        }
+      ]
+    },
+    "flipFlopEnd": {
+      "fields": [
+        {
+          "name": "startId",
+          "type": "text"
+        },
+        {
+          "name": "middleId",
+          "type": "text"
+        }
+      ]
+    },
+    "obsSwitchScene": {
+      "fields": [
+        {
+          "name": "scene",
+          "type": "text"
+        },
+        {
+          "name": "collection",
+          "type": "text",
+          "optional": true
+        }
+      ]
+    },
+    "obsToggleSource": {
+      "fields": [
+        {
+          "name": "scene",
+          "type": "text"
+        },
+        {
+          "name": "collection",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "source",
+          "type": "text"
+        },
+        {
+          "name": "visible",
+          "type": "true or false"
+        },
+        {
+          "name": "mode",
+          "type": "VisibilityMode",
+          "nullable": true,
+          "optional": true,
+          "doc": "Show / hide / toggle; `None` falls back to `visible`"
+        }
+      ]
+    },
+    "obsSetAudio": {
+      "fields": [
+        {
+          "name": "scene",
+          "type": "text"
+        },
+        {
+          "name": "collection",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "source",
+          "type": "text"
+        },
+        {
+          "name": "muted",
+          "type": "true or false"
+        },
+        {
+          "name": "muteMode",
+          "type": "MuteMode",
+          "nullable": true,
+          "optional": true,
+          "doc": "Mute / unmute / toggle / keep; `None` falls back to `muted`"
+        },
+        {
+          "name": "volumeDb",
+          "type": "number",
+          "doc": "Volume in `volume_unit` (dB: -100..26, percent: 0..2000 like OBS's advanced audio properties)"
+        },
+        {
+          "name": "volumeFrom",
+          "type": "text",
+          "nullable": true,
+          "optional": true,
+          "doc": "Variable or placeholder that overrides `volume_db` when it holds a number (faders write `value`)"
+        },
+        {
+          "name": "volumeUnit",
+          "type": "VolumeUnit",
+          "optional": true
+        },
+        {
+          "name": "setVolume",
+          "type": "true or false",
+          "optional": true,
+          "doc": "Whether the volume is applied at all (a pure mute button leaves it alone)"
+        }
+      ]
+    },
+    "obsToggleFilter": {
+      "fields": [
+        {
+          "name": "source",
+          "type": "text"
+        },
+        {
+          "name": "filter",
+          "type": "text"
+        },
+        {
+          "name": "enabled",
+          "type": "true or false"
+        }
+      ]
+    },
+    "obsStream": {
+      "fields": [
+        {
+          "name": "target",
+          "type": "ObsTarget"
+        },
+        {
+          "name": "mode",
+          "type": "ObsMode"
+        }
+      ]
+    },
+    "obsSaveReplay": {
+      "fields": []
+    },
+    "obsStudioMode": {
+      "doc": "Studio mode on/off, or push the preview scene to the program.",
+      "fields": [
+        {
+          "name": "mode",
+          "type": "StudioMode"
+        }
+      ]
+    },
+    "slobsSwitchScene": {
+      "doc": "Streamlabs Desktop: the same controls as OBS, by name.",
+      "fields": [
+        {
+          "name": "scene",
+          "type": "text"
+        },
+        {
+          "name": "collection",
+          "type": "text",
+          "optional": true
+        }
+      ]
+    },
+    "slobsToggleSource": {
+      "fields": [
+        {
+          "name": "scene",
+          "type": "text"
+        },
+        {
+          "name": "collection",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "source",
+          "type": "text"
+        },
+        {
+          "name": "visible",
+          "type": "true or false"
+        },
+        {
+          "name": "mode",
+          "type": "VisibilityMode",
+          "nullable": true,
+          "optional": true
+        }
+      ]
+    },
+    "slobsSetAudio": {
+      "fields": [
+        {
+          "name": "scene",
+          "type": "text"
+        },
+        {
+          "name": "collection",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "source",
+          "type": "text"
+        },
+        {
+          "name": "muted",
+          "type": "true or false"
+        },
+        {
+          "name": "muteMode",
+          "type": "MuteMode",
+          "nullable": true,
+          "optional": true
+        },
+        {
+          "name": "volumeDb",
+          "type": "number",
+          "doc": "Volume in `volume_unit`: dB mapped onto the mixer fader, or percent as the fader position"
+        },
+        {
+          "name": "volumeFrom",
+          "type": "text",
+          "nullable": true,
+          "optional": true
+        },
+        {
+          "name": "volumeUnit",
+          "type": "VolumeUnit",
+          "optional": true
+        },
+        {
+          "name": "setVolume",
+          "type": "true or false",
+          "optional": true
+        }
+      ]
+    },
+    "stopAllSounds": {
+      "doc": "Stop every sound Lunchpad is playing.",
+      "fields": []
+    },
+    "setAudioDevice": {
+      "doc": "Make a device the system default output (speakers) or input (microphone).",
+      "fields": [
+        {
+          "name": "target",
+          "type": "SystemVolumeTarget"
+        },
+        {
+          "name": "device",
+          "type": "text",
+          "doc": "Device name as the system lists it (placeholders allowed)"
+        }
+      ]
+    },
+    "addToVariable": {
+      "doc": "Add a number to a variable (counters); missing or non-numeric values count as 0.",
+      "fields": [
+        {
+          "name": "name",
+          "type": "text"
+        },
+        {
+          "name": "amount",
+          "type": "text",
+          "doc": "Number or placeholder, negative to subtract"
+        },
+        {
+          "name": "scope",
+          "type": "VarScope",
+          "optional": true
+        }
+      ]
+    },
+    "setSystemVolume": {
+      "doc": "Volume or mute of the default output or input device. `volume` is the level (0-100 %) for `Set`, the step for `Adjust`, unused for the mutes.",
+      "fields": [
+        {
+          "name": "target",
+          "type": "SystemVolumeTarget"
+        },
+        {
+          "name": "mode",
+          "type": "SystemVolumeMode",
+          "optional": true
+        },
+        {
+          "name": "volume",
+          "type": "number"
+        },
+        {
+          "name": "volumeFrom",
+          "type": "text",
+          "nullable": true,
+          "optional": true,
+          "doc": "Variable or placeholder that overrides `volume` when it holds a number"
+        },
+        {
+          "name": "device",
+          "type": "text",
+          "nullable": true,
+          "optional": true,
+          "doc": "A specific device by name; `None` = the system's default device"
+        }
+      ]
+    },
+    "slobsToggleFilter": {
+      "fields": [
+        {
+          "name": "source",
+          "type": "text"
+        },
+        {
+          "name": "filter",
+          "type": "text"
+        },
+        {
+          "name": "enabled",
+          "type": "true or false"
+        }
+      ]
+    },
+    "slobsStream": {
+      "fields": [
+        {
+          "name": "target",
+          "type": "ObsTarget"
+        },
+        {
+          "name": "mode",
+          "type": "ObsMode"
+        }
+      ]
+    },
+    "slobsSaveReplay": {
+      "fields": []
+    },
+    "slobsStudioMode": {
+      "doc": "Studio mode on/off, or push the preview live.",
+      "fields": [
+        {
+          "name": "mode",
+          "type": "StudioMode"
+        }
+      ]
+    },
+    "homeAssistantTurn": {
+      "doc": "Home Assistant: turn an entity on or off (or toggle it)",
+      "fields": [
+        {
+          "name": "entity",
+          "type": "text"
+        },
+        {
+          "name": "mode",
+          "type": "HaPower",
+          "optional": true
+        }
+      ]
+    },
+    "homeAssistantSetValue": {
+      "doc": "Home Assistant: set a numeric property, fixed or from a variable / fader",
+      "fields": [
+        {
+          "name": "entity",
+          "type": "text"
+        },
+        {
+          "name": "kind",
+          "type": "HaValueKind",
+          "optional": true
+        },
+        {
+          "name": "value",
+          "type": "number"
+        },
+        {
+          "name": "valueFrom",
+          "type": "text",
+          "nullable": true,
+          "optional": true,
+          "doc": "Variable or placeholder that overrides `value` when it holds a number"
+        }
+      ]
+    },
+    "homeAssistantCallService": {
+      "doc": "Home Assistant: call any service; `data` is JSON and may contain placeholders",
+      "fields": [
+        {
+          "name": "domain",
+          "type": "text"
+        },
+        {
+          "name": "service",
+          "type": "text"
+        },
+        {
+          "name": "entity",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "data",
+          "type": "text",
+          "optional": true
+        }
+      ]
+    },
+    "httpRequest": {
+      "doc": "Any HTTP call. URL, headers, body and auth may contain `{{velocity}}`, `{{x}}`, `{{y}}` and `{{pageId}}`.",
+      "fields": [
+        {
+          "name": "method",
+          "type": "HttpMethod"
+        },
+        {
+          "name": "url",
+          "type": "text"
+        },
+        {
+          "name": "headers",
+          "type": "HttpHeader",
+          "list": true,
+          "optional": true
+        },
+        {
+          "name": "contentType",
+          "type": "text",
+          "nullable": true,
+          "optional": true,
+          "doc": "Content-Type for the body (`None` sends none / lets the mode decide)"
+        },
+        {
+          "name": "body",
+          "type": "text",
+          "optional": true,
+          "doc": "Text body, or `name=value` lines for a multipart form"
+        },
+        {
+          "name": "bodyMode",
+          "type": "HttpBodyMode",
+          "optional": true
+        },
+        {
+          "name": "bodyFile",
+          "type": "text",
+          "nullable": true,
+          "optional": true,
+          "doc": "File whose bytes are sent as the body (`body_mode = File`)"
+        },
+        {
+          "name": "files",
+          "type": "HttpFilePart",
+          "list": true,
+          "optional": true,
+          "doc": "File parts of a multipart form (`body_mode = Multipart`)"
+        },
+        {
+          "name": "auth",
+          "type": "HttpAuth",
+          "optional": true
+        },
+        {
+          "name": "timeoutMs",
+          "type": "number",
+          "optional": true
+        },
+        {
+          "name": "ignoreTlsErrors",
+          "type": "true or false",
+          "optional": true
+        },
+        {
+          "name": "saveTo",
+          "type": "text",
+          "nullable": true,
+          "optional": true,
+          "doc": "Store the response body in this variable (`<name>.status` gets the status code, `<name>.file` the saved file, `<name>.cached` whether the file was reused)"
+        },
+        {
+          "name": "saveScope",
+          "type": "VarScope",
+          "optional": true
+        },
+        {
+          "name": "response",
+          "type": "HttpResponse",
+          "optional": true,
+          "doc": "What becomes of the response: text only, or a file in the download folder made from the body, a base64 field or a URL in a field"
+        },
+        {
+          "name": "responseField",
+          "type": "text",
+          "optional": true,
+          "doc": "JSON field (dot path, `data.0.url`) for the field modes; empty = the whole body"
+        },
+        {
+          "name": "fileName",
+          "type": "text",
+          "optional": true,
+          "doc": "File name (placeholders allowed) in the download folder, or an absolute path; empty = a name derived from the request"
+        },
+        {
+          "name": "reuse",
+          "type": "true or false",
+          "optional": true,
+          "doc": "Skip the request when a file (or stored text) for the same inputs exists"
+        }
+      ]
+    },
+    "ifStart": {
+      "doc": "Branch: actions up to `IfElse` run when the condition holds, actions between `IfElse` and `IfEnd` when it does not.",
+      "fields": [
+        {
+          "name": "variable",
+          "type": "text"
+        },
+        {
+          "name": "op",
+          "type": "CompareOp"
+        },
+        {
+          "name": "value",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "elseId",
+          "type": "text"
+        },
+        {
+          "name": "endId",
+          "type": "text"
+        }
+      ]
+    },
+    "ifElse": {
+      "fields": [
+        {
+          "name": "startId",
+          "type": "text"
+        },
+        {
+          "name": "endId",
+          "type": "text"
+        }
+      ]
+    },
+    "ifEnd": {
+      "fields": [
+        {
+          "name": "startId",
+          "type": "text"
+        },
+        {
+          "name": "elseId",
+          "type": "text"
+        }
+      ]
+    },
+    "setVariable": {
+      "doc": "Set a variable to a value (placeholders allowed).",
+      "fields": [
+        {
+          "name": "name",
+          "type": "text"
+        },
+        {
+          "name": "value",
+          "type": "text"
+        },
+        {
+          "name": "scope",
+          "type": "VarScope",
+          "optional": true
+        }
+      ]
+    },
+    "runScript": {
+      "doc": "Run a JavaScript snippet with access to the variables; its result can be stored in a variable.",
+      "fields": [
+        {
+          "name": "code",
+          "type": "text"
+        },
+        {
+          "name": "saveTo",
+          "type": "text",
+          "nullable": true,
+          "optional": true
+        },
+        {
+          "name": "saveScope",
+          "type": "VarScope",
+          "optional": true
+        }
+      ]
+    }
+  },
+  "types": {
+    "CompareOp": {
+      "kind": "enum",
+      "values": [
+        {
+          "value": "equals"
+        },
+        {
+          "value": "notEquals"
+        },
+        {
+          "value": "contains"
+        },
+        {
+          "value": "startsWith"
+        },
+        {
+          "value": "endsWith"
+        },
+        {
+          "value": "greaterThan"
+        },
+        {
+          "value": "lessThan"
+        },
+        {
+          "value": "isEmpty"
+        },
+        {
+          "value": "isNotEmpty"
+        },
+        {
+          "value": "matches",
+          "doc": "Regular expression match"
+        }
+      ]
+    },
+    "VarScope": {
+      "kind": "enum",
+      "doc": "Where a variable lives: `Local` registers belong to one macro run (and the buttons it calls), `Global` variables are shared by every macro.",
+      "values": [
+        {
+          "value": "local",
+          "default": true
+        },
+        {
+          "value": "global"
+        }
+      ]
+    },
+    "HttpMethod": {
+      "kind": "enum",
+      "values": [
+        {
+          "value": "get"
+        },
+        {
+          "value": "post"
+        },
+        {
+          "value": "put"
+        },
+        {
+          "value": "patch"
+        },
+        {
+          "value": "delete"
+        },
+        {
+          "value": "head"
+        }
+      ]
+    },
+    "HttpResponse": {
+      "kind": "enum",
+      "doc": "What an HTTP action does with the response body.",
+      "values": [
+        {
+          "value": "text",
+          "doc": "Keep the text in the variable only",
+          "default": true
+        },
+        {
+          "value": "file",
+          "doc": "The body is the file"
+        },
+        {
+          "value": "base64Field",
+          "doc": "A field holds base64 data (a data URL prefix is fine)"
+        },
+        {
+          "value": "urlField",
+          "doc": "A field holds a URL to download"
+        }
+      ]
+    },
+    "HttpHeader": {
+      "kind": "object",
+      "fields": [
+        {
+          "name": "name",
+          "type": "text"
+        },
+        {
+          "name": "value",
+          "type": "text"
+        }
+      ]
+    },
+    "HttpBodyMode": {
+      "kind": "enum",
+      "values": [
+        {
+          "value": "text",
+          "doc": "`body` text with `content_type`",
+          "default": true
+        },
+        {
+          "value": "file",
+          "doc": "The bytes of `body_file`"
+        },
+        {
+          "value": "multipart",
+          "doc": "multipart/form-data: `body` lines as text fields, `files` as file parts"
+        }
+      ]
+    },
+    "HttpFilePart": {
+      "kind": "object",
+      "fields": [
+        {
+          "name": "field",
+          "type": "text",
+          "doc": "Form field name, e.g. \"file\""
+        },
+        {
+          "name": "path",
+          "type": "text"
+        },
+        {
+          "name": "filename",
+          "type": "text",
+          "nullable": true,
+          "optional": true,
+          "doc": "Filename sent to the server; defaults to the file's own name"
+        },
+        {
+          "name": "contentType",
+          "type": "text",
+          "nullable": true,
+          "optional": true,
+          "doc": "Content type of the part; guessed from the extension when empty"
+        }
+      ]
+    },
+    "HttpAuth": {
+      "kind": "union",
+      "tag": "type",
+      "variants": [
+        {
+          "value": "none",
+          "default": true,
+          "fields": []
+        },
+        {
+          "value": "basic",
+          "fields": [
+            {
+              "name": "username",
+              "type": "text"
+            },
+            {
+              "name": "password",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "value": "bearer",
+          "fields": [
+            {
+              "name": "token",
+              "type": "text"
+            }
+          ]
+        }
+      ]
+    },
+    "ButtonRef": {
+      "kind": "object",
+      "doc": "Reference to a button; `page_id: None` means the page of the calling button.",
+      "fields": [
+        {
+          "name": "pageId",
+          "type": "text",
+          "nullable": true,
+          "optional": true
+        },
+        {
+          "name": "x",
+          "type": "number"
+        },
+        {
+          "name": "y",
+          "type": "number"
+        }
+      ]
+    },
+    "ButtonTrigger": {
+      "kind": "enum",
+      "doc": "Which list of another button to run.",
+      "values": [
+        {
+          "value": "press",
+          "doc": "The `down` actions",
+          "default": true
+        },
+        {
+          "value": "release",
+          "doc": "The `up` actions"
+        },
+        {
+          "value": "tap",
+          "doc": "`down` then `up`"
+        },
+        {
+          "value": "hold",
+          "doc": "The long-press (`hold`) actions"
+        }
+      ]
+    },
+    "Keystroke": {
+      "kind": "union",
+      "tag": "type",
+      "variants": [
+        {
+          "value": "key",
+          "fields": [
+            {
+              "name": "event",
+              "type": "KeyEvent"
+            },
+            {
+              "name": "key",
+              "type": "text"
+            },
+            {
+              "name": "modifiers",
+              "type": "text",
+              "list": true,
+              "optional": true
+            }
+          ]
+        },
+        {
+          "value": "delay",
+          "fields": [
+            {
+              "name": "ms",
+              "type": "number"
+            }
+          ]
+        },
+        {
+          "value": "text",
+          "fields": [
+            {
+              "name": "text",
+              "type": "text"
+            },
+            {
+              "name": "delayMs",
+              "type": "number",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    "KeyEvent": {
+      "kind": "enum",
+      "values": [
+        {
+          "value": "down"
+        },
+        {
+          "value": "up"
+        },
+        {
+          "value": "tap"
+        }
+      ]
+    },
+    "ObsTarget": {
+      "kind": "enum",
+      "values": [
+        {
+          "value": "stream"
+        },
+        {
+          "value": "record"
+        },
+        {
+          "value": "replay"
+        }
+      ]
+    },
+    "ObsMode": {
+      "kind": "enum",
+      "values": [
+        {
+          "value": "start"
+        },
+        {
+          "value": "stop"
+        },
+        {
+          "value": "toggle"
+        }
+      ]
+    },
+    "VisibilityMode": {
+      "kind": "enum",
+      "values": [
+        {
+          "value": "show"
+        },
+        {
+          "value": "hide"
+        },
+        {
+          "value": "toggle"
+        }
+      ]
+    },
+    "MuteMode": {
+      "kind": "enum",
+      "values": [
+        {
+          "value": "mute"
+        },
+        {
+          "value": "unmute"
+        },
+        {
+          "value": "toggle"
+        },
+        {
+          "value": "keep",
+          "doc": "Leave the mute state alone"
+        }
+      ]
+    },
+    "VolumeUnit": {
+      "kind": "enum",
+      "doc": "How a volume number is meant: decibels, or percent of the app's own scale.",
+      "values": [
+        {
+          "value": "db",
+          "default": true
+        },
+        {
+          "value": "percent"
+        }
+      ]
+    },
+    "SystemVolumeMode": {
+      "kind": "enum",
+      "values": [
+        {
+          "value": "set",
+          "doc": "Set the level",
+          "default": true
+        },
+        {
+          "value": "adjust",
+          "doc": "Change the level by the amount (negative = quieter)"
+        },
+        {
+          "value": "mute"
+        },
+        {
+          "value": "unmute"
+        },
+        {
+          "value": "toggleMute"
+        }
+      ]
+    },
+    "SystemVolumeTarget": {
+      "kind": "enum",
+      "values": [
+        {
+          "value": "output",
+          "doc": "Speakers / headphones"
+        },
+        {
+          "value": "input",
+          "doc": "Microphone"
+        }
+      ]
+    },
+    "StudioMode": {
+      "kind": "enum",
+      "values": [
+        {
+          "value": "enable"
+        },
+        {
+          "value": "disable"
+        },
+        {
+          "value": "toggle"
+        },
+        {
+          "value": "transition",
+          "doc": "Make the preview scene live (studio mode must be on)"
+        }
+      ]
+    },
+    "PadColor": {
+      "kind": "union",
+      "doc": "What a pad's LED shows. Palette indices refer to Novation's 128 colours.",
+      "tag": "mode",
+      "variants": [
+        {
+          "value": "palette",
+          "fields": [
+            {
+              "name": "index",
+              "type": "number"
+            }
+          ]
+        },
+        {
+          "value": "flashing",
+          "fields": [
+            {
+              "name": "index",
+              "type": "number"
+            },
+            {
+              "name": "alt",
+              "type": "number"
+            }
+          ]
+        },
+        {
+          "value": "pulsing",
+          "fields": [
+            {
+              "name": "index",
+              "type": "number"
+            }
+          ]
+        },
+        {
+          "value": "rgb",
+          "fields": [
+            {
+              "name": "r",
+              "type": "number"
+            },
+            {
+              "name": "g",
+              "type": "number"
+            },
+            {
+              "name": "b",
+              "type": "number"
+            }
+          ]
+        }
+      ]
+    },
+    "HaPower": {
+      "kind": "enum",
+      "doc": "On / off / toggle through the `homeassistant` domain, which works for every entity kind.",
+      "values": [
+        {
+          "value": "on",
+          "default": true
+        },
+        {
+          "value": "off"
+        },
+        {
+          "value": "toggle"
+        }
+      ]
+    },
+    "HaValueKind": {
+      "kind": "enum",
+      "doc": "Numeric things an entity can be set to.",
+      "values": [
+        {
+          "value": "brightness",
+          "doc": "Light brightness, 0–100 %",
+          "default": true
+        },
+        {
+          "value": "colorTemperature",
+          "doc": "Light colour temperature in Kelvin"
+        },
+        {
+          "value": "position",
+          "doc": "Cover position, 0 (closed) – 100 (open)"
+        },
+        {
+          "value": "fanSpeed",
+          "doc": "Fan speed, 0–100 %"
+        },
+        {
+          "value": "volume",
+          "doc": "Media player volume, 0–100 %"
+        },
+        {
+          "value": "number",
+          "doc": "`number` / `input_number` value, in the entity's own unit"
+        },
+        {
+          "value": "temperature",
+          "doc": "Climate target temperature"
+        }
+      ]
+    }
   }
 }

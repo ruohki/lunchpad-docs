@@ -29,10 +29,188 @@ interface ActionInfo {
   /** the menu entry a marker belongs to */
   partOf?: string;
 }
+/** One field of an action's JSON, as serde reads it. */
+interface FieldInfo {
+  name: string;
+  /** "text", "number", "true or false", or the name of an entry in `types` */
+  type: string;
+  /** `Option<T>`: null is allowed */
+  nullable?: boolean;
+  /** `Vec<T>`: a list of `type` */
+  list?: boolean;
+  /** has a `#[serde(default)]`, so a script may leave it out */
+  optional?: boolean;
+  doc?: string;
+}
+interface PayloadInfo {
+  doc?: string;
+  fields: FieldInfo[];
+}
+/** A type an action's field refers to: a set of strings, an object, or a tagged union. */
+interface TypeInfo {
+  kind: "enum" | "object" | "union";
+  doc?: string;
+  values?: { value: string; doc?: string; default?: boolean }[];
+  fields?: FieldInfo[];
+  tag?: string;
+  variants?: { value: string; doc?: string; default?: boolean; fields: FieldInfo[] }[];
+}
+
 interface ActionData {
   groups: { id: string; name: string; icon: string; types: string[] }[];
   actions: Record<string, ActionInfo>;
   icons: Record<string, { viewBox: string; body: string }>;
+  /** The JSON each action is, for `Lunchpad.run()` in a script. */
+  payloads: Record<string, PayloadInfo>;
+  /** The types those payloads refer to. */
+  types: Record<string, TypeInfo>;
+}
+
+// ----- the JSON an action is, read from the Rust model --------------------------
+//
+// `Lunchpad.run({ … })` hands the engine exactly the JSON it deserialises into
+// `ActionKind`, so this is generated from that enum rather than written by hand:
+// the field names as serde renames them, which fields carry a `#[serde(default)]`
+// (those a script may leave out), and the doc comments as their description.
+// An action missing a field that has no default is logged and skipped, so the
+// required / optional split is the part that matters most.
+
+/** Types the action payloads refer to, and where they live. */
+const TYPE_SOURCES: Record<string, string> = {
+  "src-tauri/src/macros/model.rs":
+    "CompareOp VarScope HttpMethod HttpResponse HttpHeader HttpBodyMode HttpFilePart HttpAuth ButtonRef ButtonTrigger Keystroke KeyEvent ObsTarget ObsMode VisibilityMode MuteMode VolumeUnit SystemVolumeMode SystemVolumeTarget StudioMode",
+  "src-tauri/src/profile/model.rs": "PadColor",
+  "src-tauri/src/homeassistant/mod.rs": "HaPower HaValueKind",
+};
+
+const camel = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+const snakeToCamel = (s: string) => s.replace(/_([a-z])/g, (_, c: string) => c.toUpperCase());
+
+/** A Rust type as the docs name it: a primitive, or a type in `types`. */
+function fieldType(rust: string): Pick<FieldInfo, "type" | "nullable" | "list"> {
+  const option = /^Option<(.+)>$/.exec(rust);
+  if (option) return { ...fieldType(option[1]), nullable: true };
+  const vec = /^Vec<(.+)>$/.exec(rust);
+  if (vec) return { ...fieldType(vec[1]), list: true };
+  if (rust === "String") return { type: "text" };
+  if (rust === "bool") return { type: "true or false" };
+  if (/^(u8|u16|u32|u64|usize|i8|i16|i32|i64|f32|f64)$/.test(rust)) return { type: "number" };
+  return { type: rust };
+}
+
+/** `name: Type,` lines of a block, with their doc comments and serde defaults. */
+function parseFields(block: string): FieldInfo[] {
+  const fields: FieldInfo[] = [];
+  let doc: string[] = [];
+  let defaulted = false;
+  for (const raw of block.split("\n")) {
+    const line = raw.trim();
+    if (line.startsWith("///")) {
+      doc.push(line.slice(3).trim());
+      continue;
+    }
+    if (line.startsWith("#[serde(default")) {
+      defaulted = true;
+      continue;
+    }
+    if (line.startsWith("#[")) continue;
+    const m = /^(?:pub )?([a-z_0-9]+):\s*(.+?),?$/.exec(line);
+    if (!m) continue;
+    fields.push({
+      name: snakeToCamel(m[1]),
+      ...fieldType(m[2].replace(/,$/, "").trim()),
+      ...(defaulted ? { optional: true } : {}),
+      ...(doc.length ? { doc: doc.join(" ") } : {}),
+    });
+    doc = [];
+    defaulted = false;
+  }
+  return fields;
+}
+
+/** Walk an enum body, yielding each variant with its inline or block fields. */
+function parseVariants(body: string): { name: string; doc?: string; default?: boolean; fields: FieldInfo[] }[] {
+  const out: { name: string; doc?: string; default?: boolean; fields: FieldInfo[] }[] = [];
+  const lines = body.split("\n");
+  let doc: string[] = [];
+  let isDefault = false;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line.startsWith("///")) {
+      doc.push(line.slice(3).trim());
+      continue;
+    }
+    if (line === "#[default]") {
+      isDefault = true;
+      continue;
+    }
+    if (line.startsWith("#[")) continue;
+    const inline = /^([A-Z][A-Za-z0-9]*)\s*\{(.*)\}\s*,?$/.exec(line);
+    const block = /^([A-Z][A-Za-z0-9]*)\s*\{$/.exec(line);
+    const bare = /^([A-Z][A-Za-z0-9]*)\s*,$/.exec(line);
+    if (!inline && !block && !bare) continue;
+    const name = (inline ?? block ?? bare)![1];
+    let fields: FieldInfo[] = [];
+    if (inline) fields = parseFields(inline[2].split(";").join("\n").replace(/,\s*(?=[a-z_]+:)/g, ",\n"));
+    if (block) {
+      const collected: string[] = [];
+      let depth = 1;
+      while (++i < lines.length) {
+        const inner = lines[i];
+        depth += (inner.match(/\{/g)?.length ?? 0) - (inner.match(/\}/g)?.length ?? 0);
+        if (depth === 0) break;
+        collected.push(inner);
+      }
+      fields = parseFields(collected.join("\n"));
+    }
+    out.push({ name, ...(doc.length ? { doc: doc.join(" ") } : {}), ...(isDefault ? { default: true } : {}), fields });
+    doc = [];
+    isDefault = false;
+  }
+  return out;
+}
+
+/** The `ActionKind` variants, and every type their fields refer to. */
+function schema(): { payloads: Record<string, PayloadInfo>; types: Record<string, TypeInfo> } {
+  const model = read("src-tauri/src/macros/model.rs");
+  const body = /pub enum ActionKind \{\n([\s\S]*?)\n\}\n/.exec(model)![1];
+  const payloads: Record<string, PayloadInfo> = {};
+  for (const variant of parseVariants(body)) {
+    payloads[camel(variant.name)] = { ...(variant.doc ? { doc: variant.doc } : {}), fields: variant.fields };
+  }
+
+  const types: Record<string, TypeInfo> = {};
+  for (const [file, names] of Object.entries(TYPE_SOURCES)) {
+    const source = read(file);
+    for (const name of names.split(" ")) {
+      // The attributes above the definition say how it is tagged.
+      const at = new RegExp(`((?:^\\s*(?:///|#\\[).*\\n)*)pub (enum|struct) ${name} \\{\\n([\\s\\S]*?)\\n\\}`, "m").exec(source);
+      if (!at) continue;
+      const [, attrs, kind, block] = at;
+      const doc = [...attrs.matchAll(/^\s*\/\/\/ ?(.*)$/gm)].map((m) => m[1].trim()).join(" ");
+      const tag = /#\[serde\([^)]*tag = "(\w+)"/.exec(attrs)?.[1];
+      if (kind === "struct") {
+        types[name] = { kind: "object", ...(doc ? { doc } : {}), fields: parseFields(block) };
+        continue;
+      }
+      const variants = parseVariants(block);
+      if (tag) {
+        types[name] = {
+          kind: "union",
+          ...(doc ? { doc } : {}),
+          tag,
+          variants: variants.map((v) => ({ value: camel(v.name), ...(v.doc ? { doc: v.doc } : {}), ...(v.default ? { default: true } : {}), fields: v.fields })),
+        };
+      } else {
+        types[name] = {
+          kind: "enum",
+          ...(doc ? { doc } : {}),
+          values: variants.map((v) => ({ value: camel(v.name), ...(v.doc ? { doc: v.doc } : {}), ...(v.default ? { default: true } : {}) })),
+        };
+      }
+    }
+  }
+  return { payloads, types };
 }
 
 const read = (path: string) => readFileSync(join(LUNCHPAD, path), "utf8");
@@ -94,13 +272,19 @@ function sync(): ActionData {
     if (wanted.has(m[1])) icons[m[1]] = { viewBox: m[2], body: JSON.parse(m[3]) };
   }
 
+  const { payloads, types } = schema();
+  const missing = Object.keys(actions).filter((t) => !payloads[t]);
+  if (missing.length) throw new Error(`No JSON payload found for ${missing.join(", ")}. Did ActionKind in src-tauri/src/macros/model.rs change shape?`);
+
   const data: ActionData = {
     groups: menu.map((g) => ({ id: g.id, name: en.actions.groups[g.id] ?? g.id, icon: groupIcon[g.id] ?? "Circle", types: g.types })),
     actions,
     icons,
+    payloads,
+    types,
   };
   writeFileSync(DATA, JSON.stringify(data, null, 2) + "\n");
-  console.log(`synced ${Object.keys(actions).length} actions from ${LUNCHPAD}`);
+  console.log(`synced ${Object.keys(actions).length} actions from ${LUNCHPAD}, with ${Object.keys(payloads).length} payloads and ${Object.keys(types).length} types`);
   return data;
 }
 

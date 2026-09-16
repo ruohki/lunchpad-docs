@@ -77,7 +77,7 @@ These describe the moment the snippet starts.
 | `Lunchpad.setFader(name, value, runActions?)` | [Set fader](/actions/general/set-fader/). The `name` is the fader's **Variable name**, its **Name** or its id; the value is clamped to the fader's range. `runActions` defaults to `true`. |
 | `Lunchpad.delay(ms)` | A [Delay](/actions/general/delay/) between the queued actions. The snippet itself never sleeps. |
 | `Lunchpad.stopAllMacros()` | [Stop all macros](/actions/stop/stop-all-macros/), this one included, so nothing queued after it runs. |
-| `Lunchpad.run(action)` | Any action at all, as the object the [action reference](/actions/) describes: `{ type: "playSound", file: "…" }`, `{ type: "textToSpeech", text: "…" }`, and so on. Fields you leave out take their defaults. |
+| `Lunchpad.run(action)` | Any action at all, as a JSON object: `{ type: "playSound", file: "…" }`, `{ type: "textToSpeech", text: "…" }`, and so on. Every action's fields are listed in [Action JSON](/actions/json/). |
 | `Lunchpad.log(…values)` | Nothing — it writes a line to the log and to the test output. Objects are written as JSON. |
 
 <Aside type="note" title="Actions queue, they do not run inline">
@@ -85,6 +85,21 @@ Every function above **queues** an action. Nothing runs while the snippet is sti
 </Aside>
 
 The flow markers (**Condition**, **Flip flop**, **Push-to-talk**) only mean something inside an action list. Queued through `Lunchpad.run`, they are skipped and noted in the log.
+
+### The object `Lunchpad.run` takes
+
+`{ type: "…" }` and the action's fields, named exactly as [Action JSON](/actions/json/) lists them — one entry per action, with an example you can copy.
+
+Two rules are worth knowing before you write one:
+
+- **A field that has no default is required.** Leave it out and the engine cannot read the action at all: it is skipped, and the log says *"script queued an action the engine does not understand"*. `{ type: "playSound" }` without a `file` does nothing.
+- **Everything else may be left out** and takes its default — `volume` is 1, `wait` is on, a scope is **This run**.
+
+```js
+// The whole object, or just the parts you care about.
+Lunchpad.run({ type: "setColor", color: { mode: "rgb", r: 255, g: 122, b: 26 } });
+Lunchpad.run({ type: "httpRequest", method: "post", url: "https://example.com/hook", body: "{}" });
+```
 
 ## Run test
 

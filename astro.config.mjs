@@ -31,6 +31,7 @@ export default defineConfig({
 					// these folders shows up on its own; see CONTRIBUTING.md.
 					items: [
 						{ label: 'Overview', slug: 'actions' },
+						{ label: 'Action JSON (for scripts)', slug: 'actions/json' },
 						folder('Media', 'actions/media'),
 						folder('General', 'actions/general'),
 						folder('Flow', 'actions/flow'),
