@@ -20,7 +20,16 @@ Delay pauses the macro before the next action. Use it to time things: switch the
 
 | Setting | What it does |
 | --- | --- |
-| **Milliseconds** | How long to wait. 1000 is one second. Whole numbers only. |
+| **Milliseconds** | How long to wait. 1000 is one second. Either a plain number, or a `{{variable}}` — type `{{` to pick one. |
+
+## A wait that changes
+
+The field takes an expression as well as a number, so a delay can follow a variable: `{{wait}}` for a length another action worked out, or `{{heldMs}}` to wait as long as the pad was held.
+
+It is worked out afresh every time the action runs, including on each round of a [repeating button](/guides/action-lists/#repeat-while-held).
+
+- When the expression does not come out as a number — the variable is empty, missing or holds text — the **last plain number you typed** is used instead, and the reason goes to the log.
+- A negative result waits not at all, and fractions are rounded to the nearest millisecond.
 
 ## How it runs
 

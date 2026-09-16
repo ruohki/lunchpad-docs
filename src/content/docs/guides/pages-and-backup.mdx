@@ -36,6 +36,30 @@ Sound files, programs and scripts are referenced by their path, not copied into 
 
 Everything you typed into a button travels with it, including its [description](/guides/buttons/#description). [Secrets](/guides/secrets/) do not: an action keeps the `{{secret.name}}` reference, and whoever opens the page needs a secret of that name of their own.
 
+## Check before importing
+
+A page file is not a settings file: it holds actions, and an action can start a program, press keys, run a script or call a web address. So when you import a page that has anything of that kind in it, Lunchpad shows you what it found first.
+
+<AppShot name="import-review" alt="The Check before importing dialog: a summary of pages, buttons and actions, findings grouped under Needs a close look and Worth checking, each naming the page, column, row and action, and an Import button that stays disabled until the box is ticked." />
+
+**Nothing is imported while you read it.** The file has only been looked at; your pages are untouched until you tick **I have checked these and want to import them** and click **Import**. **Cancel** or <kbd>Esc</kbd> throws the file away.
+
+Findings come in three groups:
+
+| Group | What it means |
+| --- | --- |
+| **Needs a close look** | A secret of yours is used, a file from this computer is uploaded, or a program is started. |
+| **Worth checking** | A web address is called, a script runs, keys are pressed, Home Assistant is controlled, a login is written into the action, or certificate checks are switched off. |
+| **Good to know** | A sound is played, something is spoken, a downloaded file is written, OBS or Streamlabs is controlled. |
+
+Each line says what the action does and where it sits: the page, the column and row of the pad, and which action it is.
+
+<Aside type="caution" title="Why a secret is worth a close look">
+An action that uses `{{secret.name}}` is filled in from **your** credential store when the pad is pressed. A page made by someone else can name a secret you have and send its value wherever that action points. That is why any use of a secret is listed under **Needs a close look**, together with the destination.
+</Aside>
+
+A file with nothing worth reporting imports straight away, without the extra step. The review reads the file and lists what it recognises — it is there so you can decide, not a guarantee that anything it does not list is harmless. Import pages from people you trust.
+
 ## Restore the previous profile
 
 Lunchpad saves your pages after every change and keeps the version before the last change as a backup. **Restore previous profile** brings that version back.

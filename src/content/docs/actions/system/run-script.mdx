@@ -1,6 +1,6 @@
 ---
 title: Run script
-description: Run a small JavaScript snippet that reads and changes variables and returns a result.
+description: Run a small JavaScript snippet that reads and changes variables, and drives Lunchpad itself.
 actionTypes: [runScript]
 sidebar:
   order: 4
@@ -13,9 +13,9 @@ import { Aside } from '@astrojs/starlight/components';
 
 <ActionHeader types={['runScript']} />
 
-<ActionShot type="runScript" alt="Run script with a snippet that counts deaths in a shared variable and returns a message. The result is saved to the variable message, and the Run test result is shown below the code." />
+<ActionShot type="runScript" alt="Run script with a snippet that counts deaths in a shared variable, speaks every fifth one through Lunchpad.run and logs the press. Below the code, the test result reads Death #5 with the log line and the action it would run." />
 
-Run script is the glue between actions. When a [condition](/actions/flow/condition/) is not enough, a few lines of JavaScript can do maths, format text, pick a value out of a JSON answer or keep a counter.
+Run script is the glue between actions. When a [condition](/actions/flow/condition/) is not enough, a few lines of JavaScript can do maths, format text, pick a value out of a JSON answer, keep a counter — and through the `Lunchpad` object, switch pages, press other buttons and run any action you like.
 
 ## Settings
 
@@ -24,7 +24,8 @@ Run script is the glue between actions. When a [condition](/actions/flow/conditi
 | Code | The JavaScript to run. |
 | **Save result to** | Stores the result in this variable. |
 | **Scope** | **This run** or **Everywhere**, see [variables](/guides/variables/). |
-| **Run test** | Runs the snippet now and shows the result, how long it took and which shared variables it would change. |
+| **Run test** | Runs the snippet now and shows what it would do. See [Run test](#run-test). |
+| **Scripting reference** | Opens this page. |
 
 ## The editor
 
@@ -32,32 +33,77 @@ Run script is the glue between actions. When a [condition](/actions/flow/conditi
 
 - The code is **coloured as you type**, and the field grows with it instead of scrolling.
 - The **⤢** button in the corner opens the code in a window of its own. **Done**, <kbd>Esc</kbd> or a click outside brings you back.
-- Typing `vars.` or `globals.` opens the list of names you can use, under the caret: what Lunchpad provides, what this button writes, the shared variables, the fader levels and your secrets. <kbd>↑</kbd> <kbd>↓</kbd> choose, <kbd>Enter</kbd> or <kbd>Tab</kbd> insert, <kbd>Esc</kbd> closes.
+- Typing `vars.`, `globals.` or `Lunchpad.` opens the list of names you can use, under the caret. <kbd>↑</kbd> <kbd>↓</kbd> choose, <kbd>Enter</kbd> or <kbd>Tab</kbd> insert, <kbd>Esc</kbd> closes. `Lunchpad.button.`, `Lunchpad.device.` and `Lunchpad.activePage.` complete their fields too, and picking a function puts the caret between its brackets.
 - A name with a dot is inserted the only way that works in JavaScript: `vars["fader.volume"]`, not `vars.fader.volume`.
 
 ## What the script sees
 
 | Name | Contains |
 | --- | --- |
-| `vars.name` | Every variable the macro can see: the trigger values, shared variables and this run's variables (this run's win over shared ones). |
+| `vars.name` | Every variable the macro can see: the values Lunchpad provides, the shared variables and this run's variables. This run's win over shared ones, which win over the provided values. |
 | `globals.name` | Only the shared variables. |
-| `velocity`, `velocity01`, `pressure`, `pressure01`, `x`, `y` | The trigger values, as numbers. |
-| `pageId` | The page of the button, as text. |
+| `velocity`, `x`, `y`, `heldMs`, `date`, … | The [provided values](/guides/variables/#provided-by-lunchpad) as bare names: numbers where the value is a number, text otherwise. Ids stay text. |
+| `Lunchpad` | The app itself, see below. |
 
-All variables are text. Turn them into numbers before doing maths: `Number(vars.count) + 1`.
+A name with a dot, such as `obs.scene`, has no bare name — read it as `vars["obs.scene"]`.
+
+Assigning `vars.name = …` sets a variable for this run, `globals.name = …` a shared one. Assigning to a provided name does nothing: the write is dropped when the snippet ends. All variables are text, so turn them into numbers before doing maths: `Number(vars.count) + 1`.
+
+<Aside type="caution">
+[Secrets](/guides/secrets/) are never visible to a script, in neither `vars` nor `globals`. Use them as `{{secret.name}}` in the action that needs them.
+</Aside>
+
+## The `Lunchpad` object
+
+`Lunchpad` is a frozen object that describes the app and lets a snippet drive it.
+
+### What it knows
+
+| Property | Value |
+| --- | --- |
+| `Lunchpad.pages` | Every page of the profile, in order, as `{ id, name }`. |
+| `Lunchpad.activePage` | The page on the Launchpad right now, as `{ id, name }`, or `null`. |
+| `Lunchpad.device` | The connected device as `{ model, port, firmware, virtual }`, or `null` when nothing is connected. `virtual` is `true` for the pads on screen. |
+| `Lunchpad.button` | The button whose macro is running, as `{ pageId, x, y, caption }`. The caption is empty for an image button and for a fader. |
+
+These describe the moment the snippet starts.
+
+### What it can do
+
+| Function | What it runs |
+| --- | --- |
+| `Lunchpad.switchPage(page)` | [Switch page](/actions/general/switch-page/). Takes a page id **or a page name** — an exact name first, then ignoring capitals. A name that matches nothing is left as it is and switches nothing. |
+| `Lunchpad.runButton(x, y, options?)` | [Run another button](/actions/general/run-another-button/) at column `x`, row `y`, counted from 0 at the left and 0 at the bottom. `options.page` is a page id (default: this button's page), `options.trigger` is `"press"` (the default), `"release"`, `"tap"` (press then release) or `"hold"`. |
+| `Lunchpad.setFader(name, value, runActions?)` | [Set fader](/actions/general/set-fader/). The `name` is the fader's **Variable name**, its **Name** or its id; the value is clamped to the fader's range. `runActions` defaults to `true`. |
+| `Lunchpad.delay(ms)` | A [Delay](/actions/general/delay/) between the queued actions. The snippet itself never sleeps. |
+| `Lunchpad.stopAllMacros()` | [Stop all macros](/actions/stop/stop-all-macros/), this one included, so nothing queued after it runs. |
+| `Lunchpad.run(action)` | Any action at all, as the object the [action reference](/actions/) describes: `{ type: "playSound", file: "…" }`, `{ type: "textToSpeech", text: "…" }`, and so on. Fields you leave out take their defaults. |
+| `Lunchpad.log(…values)` | Nothing — it writes a line to the log and to the test output. Objects are written as JSON. |
+
+<Aside type="note" title="Actions queue, they do not run inline">
+Every function above **queues** an action. Nothing runs while the snippet is still going: the queue runs in order once the snippet ends, with the variables the snippet just wrote. A snippet therefore cannot read back what an action it queued did, and `Lunchpad.delay()` does not pause the snippet — it spaces out the actions that follow it.
+</Aside>
+
+The flow markers (**Condition**, **Flip flop**, **Push-to-talk**) only mean something inside an action list. Queued through `Lunchpad.run`, they are skipped and noted in the log.
+
+## Run test
+
+**Run test** runs the snippet with a sample press (full velocity at the first pad of the default page), your real shared variables and the real surroundings. It shows:
+
+- the result and how long it took,
+- the shared variables the snippet would change,
+- the lines written with `Lunchpad.log`,
+- **the actions it would queue — without running any of them.**
+
+So a snippet that switches pages and plays sounds can be tried out without switching a page or making a sound.
 
 ## How it runs
 
 - The result is the value of the last expression, or what you `return`. A snippet that declares its own helper functions and ends with a call gets the value of that call, even though the helpers contain `return`.
-- Assigning `vars.name = ...` sets a variable for this run. Assigning `globals.name = ...` sets a shared variable.
 - Text results are saved as they are, whole numbers without decimals, objects and arrays as JSON. No result saves an empty text.
 - The snippet runs in a sandbox: plain JavaScript without a console, network or file access. Loops stop after 2,000,000 rounds and nesting after 256 calls, so a runaway loop ends with an error instead of hanging Lunchpad.
-- An error is noted in the log and the macro goes on. The **Save result to** variable is not changed.
-- With **Wait** on, the next actions see the result and the changed variables.
-
-<Aside type="note" title="Run test does not change anything">
-**Run test** uses test values (velocity 127, column and row 0, the page `default`) and your current shared variables. It lists the shared variables the snippet would change, but it does not change them.
-</Aside>
+- An error is noted in the log and the macro goes on. The **Save result to** variable is not changed, and nothing the snippet queued runs.
+- With **Wait** on, the next actions see the result, the changed variables and everything the snippet queued.
 
 ## Examples
 
@@ -68,6 +114,30 @@ globals.deaths = Number(globals.deaths || 0) + 1;
 return globals.deaths === 1 ? "First death!" : `Death number ${globals.deaths}`;
 ```
 
+Go to the page named after today, and fall back to a page called "Default":
+
+```js
+const names = Lunchpad.pages.map((p) => p.name);
+Lunchpad.switchPage(names.includes(vars.weekday) ? vars.weekday : "Default");
+```
+
+Press the first four pads of the bottom row, a quarter of a second apart:
+
+```js
+for (let x = 0; x < 4; x++) {
+  Lunchpad.runButton(x, 0, { trigger: "tap" });
+  Lunchpad.delay(250);
+}
+```
+
+Dim a light to a fader's level, but only on a real Launchpad:
+
+```js
+if (Lunchpad.device && !Lunchpad.device.virtual) {
+  Lunchpad.run({ type: "homeAssistantSetValue", entity: "light.desk", kind: "brightness", value: Number(vars["fader.desk"]) });
+}
+```
+
 Pick a value out of an [HTTP request](/actions/system/http-request/) answer saved as `weather`:
 
 ```js
@@ -75,11 +145,11 @@ return JSON.parse(vars.weather).main.temp > 25 ? "hot" : "fine";
 ```
 
 <Aside type="caution">
-A saved HTTP answer holds only its first 2 KB. `JSON.parse` fails on a longer answer that was cut off, so ask the service for a short answer if you can.
+A saved HTTP answer holds only its first 2 KB. `JSON.parse` fails on a longer answer that was cut off, so ask the service for a short answer if you can — or save it [as a file](/actions/system/http-request/#keeping-the-answer-as-a-file) instead.
 </Aside>
 
 ## Related
 
 - [Set variable](/actions/system/set-variable/) and [Add to variable](/actions/system/add-to-variable/) — simple cases without code
 - [Condition](/actions/flow/condition/) — branch on the result
-- [Variables and placeholders](/guides/variables/)
+- [Variables and placeholders](/guides/variables/) — what the provided names hold

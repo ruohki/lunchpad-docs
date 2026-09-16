@@ -27,7 +27,7 @@ Connect Lunchpad to Home Assistant first, under Settings → **Home Assistant**.
 | **Domain** | The part of the service before the dot, for example `light`, `scene` or `notify`. |
 | **Service** | The service itself, for example `turn_on`. Together: `light.turn_on`. |
 | **Entity (optional)** | An entity to act on, with the same suggestions as the other actions. It is added to the data as `entity_id`. Leave it empty for services without an entity, or to set `entity_id` in the data yourself. |
-| **Service data (JSON)** | Optional. A JSON object with the service's fields, for example `{ "rgb_color": [255, 122, 26] }`. Empty sends no fields. |
+| **Service data (JSON)** | Optional. A JSON object with the service's fields, for example `{ "rgb_color": [255, 122, 26] }`. Empty sends no fields. The field colours the JSON as you type, and shows the placeholders in it, like the body of an [HTTP request](/actions/system/http-request/). |
 
 To find a service and its fields, open **Developer tools** in Home Assistant and go to the **Actions** tab. It lists every service with a description of each field, and can show the data as YAML, which translates directly into JSON.
 

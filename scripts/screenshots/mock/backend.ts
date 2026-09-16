@@ -28,6 +28,10 @@ export interface Scenario {
   running?: [number, number][];
   /** what "Run test" in the script editor reports */
   scriptResult?: string;
+  /** actions the tested snippet would queue through `Lunchpad.*` (a test runs none) */
+  scriptActions?: { type?: string }[];
+  /** lines the tested snippet wrote with `Lunchpad.log` */
+  scriptLogs?: string[];
   /** put two buttons on pads the connected Launchpad does not have (the "Out of sight" panel) */
   outside?: boolean;
   /** which device is connected (default: the Launchpad X) */
@@ -153,6 +157,21 @@ export function handle(cmd: string, a: Args): unknown {
       return layoutFor(a.model);
     case "list_models":
       return MODELS;
+    case "review_import_file":
+    case "review_import_json":
+      return {
+        pages: 1,
+        buttons: 3,
+        actions: 7,
+        findings: [
+          { level: "danger", kind: "secret", page: "Shared page", x: 0, y: 7, action: "httpRequest", detail: "openaiKey" },
+          { level: "danger", kind: "upload", page: "Shared page", x: 0, y: 7, action: "httpRequest", detail: "/Users/demo/Documents/notes.txt → https://example.com/upload" },
+          { level: "danger", kind: "program", page: "Shared page", x: 1, y: 7, action: "launchApplication", detail: "/bin/sh -c 'curl …'" },
+          { level: "warning", kind: "request", page: "Shared page", x: 0, y: 7, action: "httpRequest", detail: "https://example.com/upload" },
+          { level: "warning", kind: "script", page: "Shared page", x: 2, y: 7, action: "runScript", detail: "Lunchpad.switchPage(\"Scenes\")" },
+          { level: "info", kind: "sound", page: "Shared page", x: 2, y: 7, action: "playSound", detail: "/Users/demo/Music/horn.mp3" },
+        ],
+      };
     case "builtin_info":
       // The shots are taken as Windows (capture.ts), so these read like a Windows machine.
       return { appVersion: __LUNCHPAD_VERSION__, os: "windows", hostname: "STUDIO-PC", username: "Demo", downloadDir: DOWNLOADS.path, configDir: CONFIG_DIR };
@@ -351,7 +370,7 @@ export function handle(cmd: string, a: Args): unknown {
     case "test_http_request":
       return { status: 200, ok: true, elapsedMs: 142, bodyPreview: '{\n  "ok": true,\n  "viewers": 128\n}' };
     case "test_script":
-      return { result: scenario.scriptResult ?? "ok", locals: {}, globals: {}, elapsedMs: 3 };
+      return { result: scenario.scriptResult ?? "ok", locals: {}, globals: {}, elapsedMs: 3, actions: scenario.scriptActions ?? [], logs: scenario.scriptLogs ?? [] };
     case "get_variables":
       return variables;
     case "delete_variables":

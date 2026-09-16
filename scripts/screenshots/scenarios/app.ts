@@ -228,6 +228,22 @@ export const appShots: Shot[] = [
     },
   },
 
+  {
+    // Importing a page made elsewhere: the review says what its actions would do before
+    // anything is imported. The findings come from the fake backend (mock/backend.ts).
+    name: "app/import-review",
+    viewport: TALL,
+    scenario: { dialogPath: "C:\\Users\\Demo\\Downloads\\stream-deck-page.json" },
+    run: async (page) => {
+      await openSettings(page, "Pages & backup");
+      await page.getByRole("button", { name: "Import page…" }).click();
+      const review = page.getByRole("dialog").filter({ hasText: "Check before importing" });
+      await review.waitFor();
+      await settle(page, 600);
+      return review;
+    },
+  },
+
   ...settingsTabs.map(([name, label]): Shot => ({ name: `app/settings-${name}`, viewport: TALL, run: (page) => openSettings(page, label) })),
 
   {

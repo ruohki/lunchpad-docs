@@ -182,12 +182,21 @@ export const actionShots: Shot[] = [
     [
       act({
         type: "runScript",
-        code: "const deaths = Number(globals.deaths ?? 0) + 1\nglobals.deaths = deaths\nreturn deaths >= 10 ? 'Time for a break' : `Death #${deaths}`",
+        // Reads a shared variable, writes one, and drives the app through Lunchpad.
+        code: "const deaths = Number(globals.deaths ?? 0) + 1;\nglobals.deaths = deaths;\n\n// Every fifth death gets said out loud.\nif (deaths % 5 === 0) {\n  Lunchpad.run({ type: \"textToSpeech\", text: `${deaths} deaths already` });\n}\n\nLunchpad.log(\"death\", deaths, \"on\", Lunchpad.button.caption);\nreturn `Death #${deaths}`;",
         saveTo: "message",
         saveScope: "local",
       }),
     ],
-    { then: async (_page, dialog) => dialog.getByRole("button", { name: "Run test" }).click(), scenario: { scriptResult: "Death #4" } },
+    {
+      then: async (_page, dialog) => dialog.getByRole("button", { name: "Run test" }).click(),
+      // The fifth death: the snippet speaks it, so the test lists the action it would run.
+      scenario: {
+        scriptResult: "Death #5",
+        scriptLogs: ["death 5 on Deaths +1"],
+        scriptActions: [{ type: "textToSpeech" }],
+      },
+    },
   ),
   shot("setVariable", [act({ type: "setVariable", name: "lastPress", value: "{{x}},{{y}} on {{pageId}}", scope: "global" })]),
   shot("addToVariable", [act({ type: "addToVariable", name: "deaths", amount: "1", scope: "global" })]),
