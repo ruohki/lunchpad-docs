@@ -96,6 +96,9 @@ These actions store values:
 - [HTTP request](/actions/system/http-request/) saves the answer, and three more names alongside it: `.status`, `.file` and `.cached`.
 - [Launch application](/actions/system/launch-application/) can save the program's output.
 - [Run script](/actions/system/run-script/) can save its result, and can change variables directly.
+- [Get window](/actions/window/get-window/) remembers a window as a JSON object, with `.handle`, `.title`, `.app`, `.x`, `.y`, `.width`, `.height`, `.screen` and `.minimized` alongside it.
+- [Get screen](/actions/window/get-screen/) remembers a display as a JSON object, with `.number`, `.x`, `.y`, `.width`, `.height`, `.scale`, `.dpi`, `.primary` and `.count` alongside it.
+- [Get mouse position](/actions/input/mouse-position/) stores the pointer as `x,y`, with `.x` and `.y` alongside.
 
 [Condition](/actions/flow/condition/) reads a variable and runs different actions depending on its value.
 

@@ -233,6 +233,21 @@ export function handle(cmd: string, a: Args): unknown {
       const ports = names.map((name, index) => ({ index, name }));
       return { inputs: ports, outputs: ports };
     }
+    case "list_windows":
+      return [
+        { handle: "window:1", title: "OBS 31.0.2 - Profile: Untitled - Scenes: Stream", app: "obs64", x: 120, y: 80, width: 1600, height: 900, screen: 1, minimized: false },
+        { handle: "window:2", title: "Discord", app: "Discord", x: 40, y: 40, width: 1200, height: 800, screen: 1, minimized: false },
+        { handle: "window:3", title: "Spotify Premium", app: "Spotify", x: 2560, y: 0, width: 1000, height: 700, screen: 2, minimized: true },
+      ];
+    case "list_screens":
+      return [
+        { number: 1, x: 0, y: 0, width: 2560, height: 1440, scale: 1, dpi: 109, primary: true },
+        { number: 2, x: 2560, y: 0, width: 1920, height: 1080, scale: 1.25, dpi: 92, primary: false },
+      ];
+    case "debug_text":
+      return { id: a.id, title: "Debug", text: "velocity = 96\npage = Stream" };
+    case "foreground_window":
+      return { handle: "window:1", title: "OBS 31.0.2 - Profile: Untitled - Scenes: Stream", app: "obs64", x: 120, y: 80, width: 1600, height: 900, screen: 1, minimized: false };
     case "press_pad":
     case "control_pad":
     case "reset_leds":

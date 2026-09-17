@@ -1,0 +1,50 @@
+---
+title: Get screen
+description: Remember a screen's size, position, scale and DPI in a variable, to place windows and the pointer by them.
+actionTypes: [getScreen]
+sidebar:
+  order: 3
+  badge: { text: New, variant: tip }
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['getScreen']} />
+
+<ActionShot type="getScreen" alt="Get screen set to The foreground window's screen, remembering it as the variable screen with the scope This run; a line under the setting lists the screens right now: 1: 2560 × 1440 at 1× (main) · 2: 1920 × 1080 at 1.25×." />
+
+Get screen looks up one display and stores what it knows about it: where it sits, how big it is, how many pixels it packs into a point, and how fine it is. A macro then places windows and the pointer relative to the screen it is on, whatever the monitor setup.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Which screen** | **The main screen**, **A screen by number**, **The foreground window's screen** or **The screen under the pointer**. |
+| **Number** | For **A screen by number**: its 1-based number. Placeholders work. |
+| **Remember as** | The variable's name, see below. |
+| **Scope** | **This run** keeps the variable to this macro, **Everywhere** shares it with all macros. See [variables](/guides/variables/). |
+
+The editor lists the screens as they are right now, with their sizes and scales, so you know which number is which.
+
+## How it runs
+
+- The variable gets the screen as a JSON object, and each field alongside it: `name.number`, `name.x`, `name.y` (its top-left corner, in the coordinates [Set window](/actions/window/set-window/) and [Mouse sequence](/actions/input/mouse-sequence/) use), `name.width`, `name.height`, `name.scale` (pixels per point: `2` on a Retina display, `1.5` at 150 % on Windows), `name.dpi` (physical pixels per inch, `0` when the system does not say), `name.primary` (`true` or `false`) and `name.count` (how many screens there are).
+- Screens are numbered as Windows' display settings number them; on macOS the main display is 1 and the others follow left to right, top to bottom.
+- A screen that does not exist (a number too high, no foreground window) is logged and the variable and its fields are set to an empty text.
+- The action is instant.
+
+## Example
+
+Put the pointer in the middle of whichever screen the pointer is on, then click:
+
+1. **Get screen**, **The screen under the pointer**, **Remember as** `s`.
+2. [Run script](/actions/system/run-script/): `vars.cx = String(Number(vars["s.x"]) + Number(vars["s.width"]) / 2); vars.cy = String(Number(vars["s.y"]) + Number(vars["s.height"]) / 2);`
+3. [Mouse sequence](/actions/input/mouse-sequence/): **Move to** `{{cx}}`, `{{cy}}`; **Click**.
+
+## Related
+
+- [Set window](/actions/window/set-window/) — place a window on a screen
+- [Get window](/actions/window/get-window/) — a window's own position, size and screen
+- [Variables and placeholders](/guides/variables/)

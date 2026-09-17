@@ -1,0 +1,42 @@
+---
+title: Get mouse position
+description: Remember where the pointer is, to come back to it or to compute from it.
+actionTypes: [mousePosition]
+sidebar:
+  order: 3
+  badge: { text: New, variant: tip }
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+
+<ActionHeader types={['mousePosition']} />
+
+<ActionShot type="mousePosition" alt="Get mouse position remembering the pointer as the variable before, with the scope This run." />
+
+Get mouse position reads where the pointer is and stores it in a variable. A macro that moves the mouse around can put it back afterwards, and a script can compute a target from it.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Remember as** | The variable's name. It gets the position as `x,y`, and `name.x` and `name.y` hold the two numbers on their own. |
+| **Scope** | **This run** keeps the variable to this macro, **Everywhere** shares it with all macros. See [variables](/guides/variables/). |
+
+## How it runs
+
+- The action is instant. Coordinates are pixels from the top-left corner of the main display, the same ones [Mouse sequence](/actions/input/mouse-sequence/) takes.
+- When the position cannot be read, the action logs it and the variable keeps its old value.
+
+## Example
+
+Keep the pointer where the user left it while a macro clicks around:
+
+1. **Get mouse position**, **Remember as** `before`.
+2. A [Mouse sequence](/actions/input/mouse-sequence/) with the clicks, ending in **Move to** `{{before.x}}`, `{{before.y}}`.
+
+## Related
+
+- [Mouse sequence](/actions/input/mouse-sequence/)
+- [Get window](/actions/window/get-window/) — the position of a program's window, as `name.x` and `name.y`
+- [Variables and placeholders](/guides/variables/)

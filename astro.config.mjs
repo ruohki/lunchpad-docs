@@ -36,6 +36,8 @@ export default defineConfig({
 						folder('General', 'actions/general'),
 						folder('Flow', 'actions/flow'),
 						folder('System', 'actions/system'),
+						folder('Keyboard & mouse', 'actions/input'),
+						folder('Window', 'actions/window'),
 						folder('Stop', 'actions/stop'),
 						folder('OBS Studio & Streamlabs', 'actions/streaming'),
 						folder('Home Assistant', 'actions/home-assistant'),

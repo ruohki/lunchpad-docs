@@ -1,0 +1,56 @@
+---
+title: Get window
+description: Find a program's window, the one in front or by title, and remember its handle, position, size and screen in a variable.
+actionTypes: [getWindow]
+sidebar:
+  order: 1
+  badge: { text: New, variant: tip }
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['getWindow']} />
+
+<ActionShot type="getWindow" alt="Get window set to Foreground window, remembering it as the variable before with the scope This run." />
+
+Get window looks up one window of another program and stores it in a variable. Later actions and other buttons can then point at exactly that window, even after its title has changed: a [Set window](/actions/window/set-window/) can bring it back to the front, and a [Mouse sequence](/actions/input/mouse-sequence/) can click inside it using its position.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Foreground window** / **By title** | Which window is meant. **Foreground window** takes the one that has the focus at that moment, whatever it is. **By title** searches the open windows. |
+| **Title** | What to look for in the window's title. Placeholders work; the comparison ignores upper and lower case. |
+| **Current windows** | The windows that are open right now. Picking one fills in its exact title and program and sets **Match** to **is exactly**. The arrow button reads the list again. |
+| **Match** | How the title is compared: **contains** (the default), **starts with**, **is exactly**, or **matches a pattern** (a regular expression, also case-insensitive). |
+| **Program** | Only windows of this program count, matched by a part of its name (`obs`, `Discord`). Leave it empty for any program. |
+| **Remember as** | The variable's name, see below. |
+| **Scope** | **This run** keeps the variable to this macro, **Everywhere** shares it with all macros. See [variables](/guides/variables/). |
+
+## How it runs
+
+- The variable gets the whole window as a JSON object, and each field alongside it: `name.handle`, `name.title`, `name.app`, `name.x`, `name.y`, `name.width`, `name.height`, `name.screen` and `name.minimized`. Position and size are in pixels from the top-left corner of the main display; the screen is the 1-based number of the display the window is on.
+- The handle stays valid while the window exists, even when its title changes. Use `{{name}}` as the **Title** of a Set window action to mean that window, and `{{name.x}}`, `{{name.width}}`, `{{name.screen}}` and friends in its fields to put a window back where it was.
+- In a [script](/actions/system/run-script/), `JSON.parse(vars.name)` gives the object, for example to compute a new position from it.
+- The first window that matches wins. On Windows the list is in stacking order, so the frontmost matching window is taken; on macOS the windows are listed program by program.
+- Only windows that appear in the taskbar or the Dock count: visible, top-level windows with a title. Lunchpad's own window is among them.
+- When no window matches, the action logs it, sets the variable and its six companions to an empty text so a [Condition](/actions/flow/condition/) can check it, and the macro goes on.
+- The action is instant.
+
+<Aside type="note" title="macOS">
+Reading windows uses the Accessibility permission, the same one [Hotkey sequence](/actions/input/hotkey-sequence/) needs. Without it the action logs the missing permission and the variable is left alone. Positions are in points, from the top-left corner of the main display.
+</Aside>
+
+## Examples
+
+**Put a window back.** **Get window** with **By title** `Discord`, **Remember as** `w`; later a [Set window](/actions/window/set-window/) with **Title** `{{w}}`, **Do** **Move and resize**, **X** `{{w.x}}`, **Y** `{{w.y}}`, **Width** `{{w.width}}`, **Height** `{{w.height}}`.
+
+**Return to where you were.** At the start of a macro that raises other windows, **Get window** with **Foreground window**, **Remember as** `before`. At the end, a [Set window](/actions/window/set-window/) with **By title**, **Title** `{{before}}` and **Do** **Bring to front**.
+
+## Related
+
+- [Set window](/actions/window/set-window/) — change the window you found
+- [Mouse sequence](/actions/input/mouse-sequence/) — click inside it with `{{name.x}}` and `{{name.y}}`
+- [Variables and placeholders](/guides/variables/)

@@ -79,8 +79,10 @@ interface ActionData {
 /** Types the action payloads refer to, and where they live. */
 const TYPE_SOURCES: Record<string, string> = {
   "src-tauri/src/macros/model.rs":
-    "CompareOp VarScope HttpMethod HttpResponse HttpHeader HttpBodyMode HttpFilePart HttpAuth ButtonRef ButtonTrigger Keystroke KeyEvent ObsTarget ObsMode VisibilityMode MuteMode VolumeUnit SystemVolumeMode SystemVolumeTarget StudioMode",
+    "CompareOp VarScope HttpMethod HttpResponse HttpHeader HttpBodyMode HttpFilePart HttpAuth ButtonRef ButtonTrigger Keystroke KeyEvent ObsTarget ObsMode VisibilityMode MuteMode VolumeUnit SystemVolumeMode SystemVolumeTarget StudioMode WindowTarget WindowOp MouseStep ScrollAxis",
   "src-tauri/src/profile/model.rs": "PadColor",
+  "src-tauri/src/desktop/mod.rs": "TitleMatch",
+  "src-tauri/src/input/mod.rs": "MouseButton",
   "src-tauri/src/homeassistant/mod.rs": "HaPower HaValueKind",
 };
 

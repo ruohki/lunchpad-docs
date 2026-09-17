@@ -1,0 +1,56 @@
+---
+title: Debug window
+description: Show a window with a text of your choosing, placeholders filled in, to watch what a macro's variables hold.
+actionTypes: [debug]
+sidebar:
+  order: 6
+  badge: { text: New, variant: tip }
+---
+
+import ActionHeader from '~/components/ActionHeader.astro';
+import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
+
+<ActionHeader types={['debug']} />
+
+<ActionShot type="debug" alt="Debug window with the Window title Debug, a text of three lines: velocity = {{velocity}}, page = {{pageName}}, window = {{before}}, and Keep on top switched on." />
+
+Debug window opens a small window with a text. Placeholders are filled in when the action runs, so the window shows what a variable holds at that point of the macro. Put one after a [Get window](/actions/window/get-window/), an [HTTP request](/actions/system/http-request/) or a [Run script](/actions/system/run-script/) to see what they wrote.
+
+## Settings
+
+| Setting | What it does |
+| --- | --- |
+| **Window title** | The title of the window. Placeholders work. Empty means "Debug". The pad the macro runs for is added after it, as "column 1, row 8", so several debug windows can be told apart. |
+| **Text** | What the window shows, as many lines as you like. Type `{{` to pick a variable. |
+| **Keep on top** | On (the default): the window stays above the other windows, so it is visible while you use the program the macro controls. |
+
+## How it runs
+
+- Every Debug window action has a window of its own. The first run opens it; every later run replaces its text and title, so a macro that runs again and again shows its values changing in one place.
+- Close the window and the next run opens it again.
+- The window is a plain text view: select and copy from it as you would from any text.
+- The action is instant, and the macro does not wait for anything.
+
+<Aside type="tip">
+Switch on developer mode (Settings → Interface) to also see the shared variables next to the pads. A Debug window is for the values of one run: locals, a window you looked up, the answer of a request.
+</Aside>
+
+## Example
+
+See what a Get window found:
+
+1. [Get window](/actions/window/get-window/), **Foreground window**, **Remember as** `w`.
+2. **Debug window** with the text:
+
+```
+{{w.app}} — {{w.title}}
+at {{w.x}}, {{w.y}} on screen {{w.screen}}
+{{w.width}} × {{w.height}}
+```
+
+## Related
+
+- [Set variable](/actions/system/set-variable/)
+- [Run script](/actions/system/run-script/) — `Lunchpad.log` writes to the app's log instead
+- [Variables and placeholders](/guides/variables/)

@@ -200,6 +200,24 @@ export const actionShots: Shot[] = [
   ),
   shot("setVariable", [act({ type: "setVariable", name: "lastPress", value: "{{x}},{{y}} on {{pageId}}", scope: "global" })]),
   shot("addToVariable", [act({ type: "addToVariable", name: "deaths", amount: "1", scope: "global" })]),
+  shot("debug", [act({ type: "debug", title: "Debug", text: "velocity = {{velocity}}\npage = {{pageName}}\nwindow = {{before}}", alwaysOnTop: true })]),
+
+  // keyboard & mouse, window
+  shot("mouse", [
+    act({
+      type: "mouse",
+      steps: [
+        { type: "move", x: "640", y: "1010", relative: false },
+        { type: "click", button: "left", clicks: 1 },
+        { type: "delay", ms: 200 },
+        { type: "scroll", amount: "-5", axis: "vertical" },
+      ],
+    }),
+  ]),
+  shot("mousePosition", [act({ type: "mousePosition", saveTo: "before", saveScope: "local" })]),
+  shot("getWindow", [act({ type: "getWindow", target: "foreground", title: "", matching: "contains", app: "", saveTo: "before", saveScope: "local" })]),
+  shot("getScreen", [act({ type: "getScreen", pick: "foreground", number: "", saveTo: "screen", saveScope: "local" })]),
+  shot("setWindow", [act({ type: "setWindow", target: "title", title: "Discord", matching: "contains", app: "", op: "bounds", x: "0", y: "0", width: "960", height: "1080", screen: "2" })]),
 
   // stop
   shot("stopThisMacro", [sound("siren.wav")], { open: [], wholeTab: true, button: { loop: true, up: [act({ type: "stopThisMacro" })] } }),
