@@ -233,6 +233,7 @@ export const actionShots: Shot[] = [
   ...streaming("Stream", (type) => ({ type, target: "replay", mode: "toggle" }) as ActionKind),
   ...["obs", "slobs"].map((p) => shot(`${p}SaveReplay`, [act({ type: `${p}SaveReplay` } as ActionKind), sound("clip.wav")], { open: [] })),
   ...streaming("StudioMode", (type) => ({ type, mode: "transition" }) as ActionKind),
+  shot("obsTriggerHotkey", [act({ type: "obsTriggerHotkey", by: "name", name: "OBSBasic.SaveReplayBuffer", context: "", key: "", shift: false, control: false, alt: false, command: false })]),
 
   // Home Assistant (entities come from mock/fixtures.ts)
   shot("homeAssistantTurn", [act({ type: "homeAssistantTurn", entity: "light.desk_lamp", mode: "toggle" })]),

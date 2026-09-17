@@ -88,7 +88,8 @@
         "obsToggleFilter",
         "obsStream",
         "obsSaveReplay",
-        "obsStudioMode"
+        "obsStudioMode",
+        "obsTriggerHotkey"
       ]
     },
     {
@@ -387,6 +388,14 @@
     "obsStudioMode": {
       "name": "OBS: studio mode",
       "desc": "Turn studio mode on or off, or transition the preview scene to the program.",
+      "group": "obs",
+      "icon": "Video",
+      "menu": true,
+      "wait": false
+    },
+    "obsTriggerHotkey": {
+      "name": "OBS: trigger hotkey",
+      "desc": "Fire one of OBS Studio's hotkeys over the websocket, without giving OBS the focus.",
       "group": "obs",
       "icon": "Video",
       "menu": true,
@@ -1173,6 +1182,51 @@
         {
           "name": "mode",
           "type": "StudioMode"
+        }
+      ]
+    },
+    "obsTriggerHotkey": {
+      "doc": "Fire an OBS hotkey over the websocket, without giving OBS the focus: by its name (`OBSBasic.StartStreaming`; `context` names the source for per-source ones such as `libobs.mute`) or by the key combination bound in OBS (`key` is an OBS key id such as `OBS_KEY_F5`).",
+      "fields": [
+        {
+          "name": "by",
+          "type": "ObsHotkeyBy",
+          "optional": true
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "context",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "key",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "shift",
+          "type": "true or false",
+          "optional": true
+        },
+        {
+          "name": "control",
+          "type": "true or false",
+          "optional": true
+        },
+        {
+          "name": "alt",
+          "type": "true or false",
+          "optional": true
+        },
+        {
+          "name": "command",
+          "type": "true or false",
+          "optional": true
         }
       ]
     },

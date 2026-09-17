@@ -420,6 +420,8 @@ export function handle(cmd: string, a: Args): unknown {
       return demoObs(connected);
     case "obs_disconnect":
       return demoObs(false);
+    case "obs_hotkeys":
+      return ["OBSBasic.StartStreaming", "OBSBasic.StopStreaming", "OBSBasic.StartRecording", "OBSBasic.StopRecording", "OBSBasic.PauseRecording", "OBSBasic.SaveReplayBuffer", "OBSBasic.SelectScene", "OBSBasic.Screenshot", "libobs.mute", "libobs.unmute", "libobs.push-to-mute", "libobs.push-to-talk", "MediaSource.Restart", "MediaSource.Stop"];
     case "obs_filters":
     case "slobs_filters":
       return FILTERS;
