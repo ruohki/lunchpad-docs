@@ -1,4 +1,5 @@
 {
+  "app": "1.1.0",
   "groups": [
     {
       "id": "media",
@@ -340,7 +341,7 @@
     },
     "obsSwitchScene": {
       "name": "OBS: switch scene",
-      "desc": "",
+      "desc": "Make a scene live, optionally in another scene collection.",
       "group": "obs",
       "icon": "Video",
       "menu": true,
@@ -348,7 +349,7 @@
     },
     "obsToggleSource": {
       "name": "OBS: show or hide source",
-      "desc": "",
+      "desc": "Show or hide a source in a scene.",
       "group": "obs",
       "icon": "Video",
       "menu": true,
@@ -356,7 +357,7 @@
     },
     "obsSetAudio": {
       "name": "OBS: set audio",
-      "desc": "",
+      "desc": "Mute or unmute an audio source and set its volume.",
       "group": "obs",
       "icon": "Video",
       "menu": true,
@@ -364,7 +365,7 @@
     },
     "obsToggleFilter": {
       "name": "OBS: toggle filter",
-      "desc": "",
+      "desc": "Turn a filter of a source on or off.",
       "group": "obs",
       "icon": "Video",
       "menu": true,
@@ -372,7 +373,7 @@
     },
     "obsStream": {
       "name": "OBS: stream, record, replay",
-      "desc": "",
+      "desc": "Start, stop or toggle the stream, the recording or the replay buffer.",
       "group": "obs",
       "icon": "Video",
       "menu": true,
@@ -380,7 +381,7 @@
     },
     "obsSaveReplay": {
       "name": "OBS: save replay",
-      "desc": "",
+      "desc": "Save the replay buffer to a file.",
       "group": "obs",
       "icon": "Video",
       "menu": true,
@@ -800,7 +801,7 @@
         },
         {
           "name": "matching",
-          "type": "crate::desktop::TitleMatch",
+          "type": "TitleMatch",
           "optional": true
         },
         {
@@ -834,7 +835,7 @@
         },
         {
           "name": "matching",
-          "type": "crate::desktop::TitleMatch",
+          "type": "TitleMatch",
           "optional": true
         },
         {
@@ -2283,6 +2284,44 @@
         }
       ]
     },
+    "ObsHotkeyBy": {
+      "kind": "enum",
+      "doc": "How an OBS hotkey is picked.",
+      "values": [
+        {
+          "value": "name",
+          "doc": "By the hotkey's name in OBS",
+          "default": true
+        },
+        {
+          "value": "keys",
+          "doc": "By the key combination bound in OBS"
+        }
+      ]
+    },
+    "ScreenPick": {
+      "kind": "enum",
+      "doc": "Which screen a get-screen action means.",
+      "values": [
+        {
+          "value": "primary",
+          "doc": "The main display",
+          "default": true
+        },
+        {
+          "value": "number",
+          "doc": "By its number"
+        },
+        {
+          "value": "foreground",
+          "doc": "The one the foreground window is on"
+        },
+        {
+          "value": "pointer",
+          "doc": "The one under the pointer"
+        }
+      ]
+    },
     "MouseStep": {
       "kind": "union",
       "doc": "One step of a mouse sequence. Coordinates and amounts are strings so they take placeholders.",
@@ -2315,7 +2354,7 @@
           "fields": [
             {
               "name": "button",
-              "type": "crate::input::MouseButton",
+              "type": "MouseButton",
               "optional": true
             },
             {
@@ -2331,7 +2370,7 @@
           "fields": [
             {
               "name": "button",
-              "type": "crate::input::MouseButton",
+              "type": "MouseButton",
               "optional": true
             }
           ]
@@ -2341,7 +2380,7 @@
           "fields": [
             {
               "name": "button",
-              "type": "crate::input::MouseButton",
+              "type": "MouseButton",
               "optional": true
             }
           ]
@@ -2378,7 +2417,7 @@
             },
             {
               "name": "button",
-              "type": "crate::input::MouseButton",
+              "type": "MouseButton",
               "optional": true
             }
           ]
@@ -2404,6 +2443,38 @@
         },
         {
           "value": "horizontal"
+        }
+      ]
+    },
+    "LoopMode": {
+      "kind": "enum",
+      "doc": "What makes a loop go round.",
+      "values": [
+        {
+          "value": "count",
+          "doc": "From a first to a last value, in steps: a counted loop."
+        },
+        {
+          "value": "until",
+          "doc": "Until the check holds.",
+          "default": true
+        },
+        {
+          "value": "forever",
+          "doc": "Until the macro is stopped (or the time limit hits)."
+        }
+      ]
+    },
+    "LoopCheck": {
+      "kind": "enum",
+      "doc": "Where an `Until` loop checks: before a round (the body may never run) or after it (the body runs at least once).",
+      "values": [
+        {
+          "value": "head",
+          "default": true
+        },
+        {
+          "value": "tail"
         }
       ]
     },

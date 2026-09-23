@@ -1,0 +1,68 @@
+# When Lunchpad is released, its release workflow sends a "lunchpad-release" event here
+# (see SYNC_TOKEN in the app's release.yml). This fetches the release's action contract
+# (actions.json), writes it to src/data/actions.json and opens a pull request that says
+# what the docs still lack for it: a page or a screenshot per new action. It can also be
+# run by hand for any released version.
+name: Sync with Lunchpad
+
+on:
+  repository_dispatch:
+    types: [lunchpad-release]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Lunchpad version to sync with, for example 1.1.1"
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.event.client_payload.version || inputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun install --frozen-lockfile
+
+      - name: Fetch the action contract of the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release download "v$VERSION" --repo ruohki/lunchpad --pattern actions.json --output actions.json --clobber
+
+      - name: Sync the action data and see what the docs still lack
+        run: |
+          node scripts/actions.ts --from actions.json > sync.log 2>&1 || true
+          cat sync.log
+          {
+            echo "Lunchpad **$VERSION** was released. This pull request carries its action data (\`src/data/actions.json\`)."
+            echo
+            echo "What \`actions:check\` says with it:"
+            echo
+            echo '```'
+            cat sync.log
+            echo '```'
+            echo
+            echo "A new action needs a page and a screenshot before this can merge; see CONTRIBUTING.md → \"When a new action ships\"."
+          } > pull-request.md
+
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          # A token of a person lets the docs workflow run on the pull request; the
+          # repository token cannot trigger other workflows.
+          token: ${{ secrets.SYNC_TOKEN || secrets.GITHUB_TOKEN }}
+          branch: sync/lunchpad-${{ env.VERSION }}
+          commit-message: "Sync the action data with Lunchpad ${{ env.VERSION }}"
+          title: "Sync with Lunchpad ${{ env.VERSION }}"
+          body-path: pull-request.md
+          add-paths: src/data/actions.json
+          delete-branch: true

@@ -16,15 +16,9 @@ Node 22.18 or newer runs the TypeScript scripts in `scripts/` directly.
 
 | Script | What it does |
 | --- | --- |
-| `npm run actions:sync` | Reads the app and writes `src/data/actions.json` (names, descriptions, icon names, menu groups, Wait switch, and the JSON each action is), then checks coverage |
+| `npm run actions:sync` | Runs the app's `tools/actions-contract.ts` on the checkout next door and writes what it returns to `src/data/actions.json` (names, descriptions, menu groups, icons with their drawings, the Wait switch, and the JSON each action is), then checks coverage. `-- --from actions.json` syncs from the contract a Lunchpad release carries instead |
 
-The app draws its icons with [lucide-react](https://lucide.dev) and `actionUtils.ts` names them
-(`Volume2`, `MousePointerClick`, …). The site cannot import React components, so `actions:sync`
-looks each name up in `lucide-static` here — `MousePointerClick` becomes `mouse-pointer-click.svg`
-— and stores the drawing in `actions.json` for `ActionIcon.astro`. Lucide draws with strokes and
-normally keeps those attributes on its own `<svg>`; the component renders only the body, so the
-sync wraps it in a `<g>` that carries them. Without that, every icon comes out invisible. A name
-the app uses that Lucide does not have fails the sync by name rather than writing a blank icon.
+The icons come with the contract: the app names them after lucide-react components and embeds the drawings from `lucide-static`, so `ActionIcon.astro` only renders what it is given.
 | `npm run actions:check` | Only the check: every action has a page (`actionTypes`) and a screenshot, no page names a removed action |
 | `npm run screenshots` | Takes every screenshot; `npm run screenshots -- playSound app/settings` takes only the ones whose name contains a word |
 | `npm run app:demo` | Serves the app's interface with demo data at http://localhost:1430, to look around before writing a scenario |
@@ -51,8 +45,10 @@ share the page of their menu entry.
 ## When a new action ships
 
 1. In the app, follow `docs/ADDING_ACTIONS.md` of the Lunchpad repository.
-2. `npm run actions:sync`. The action now appears on the Actions overview, greyed out until it
-   has a page, and the check lists what is missing.
+2. When the app is released, the *Sync with Lunchpad* workflow opens a pull request with the
+   release's action data; locally, `npm run actions:sync` does the same from the checkout next
+   door. The action now appears on the Actions overview, greyed out until it has a page, and
+   the check lists what is missing.
 3. Add a scenario: one line in `scripts/screenshots/scenarios/actions.ts`, for example
    `shot("myAction", [act({ type: "myAction", … })])`. The action lands in the "When pressed"
    list of the button at column 1, row 8, the first row is unfolded and the list is captured.
@@ -111,8 +107,8 @@ for a second half of an editor are free.
 ## The action JSON reference
 
 `/actions/json/` lists the JSON object of every action, because `Lunchpad.run()` in a script
-takes exactly what the engine deserialises. None of it is written by hand: `actions:sync` reads
-the app's `src-tauri/src/macros/model.rs` and writes two more sections into `src/data/actions.json`.
+takes exactly what the engine deserialises. None of it is written by hand: the app's
+`tools/actions-contract.ts` reads `src-tauri/src/macros/model.rs`, and the sync writes two more sections into `src/data/actions.json`.
 
 | Section | What it holds |
 | --- | --- |
