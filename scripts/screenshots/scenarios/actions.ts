@@ -56,6 +56,7 @@ const markers = <T extends string>(...names: T[]) => Object.fromEntries(names.ma
 const ff = markers("s", "m", "e");
 const ptt = markers("s", "e");
 const cond = markers("s", "o", "e");
+const loop = markers("s", "t", "e");
 
 /** OBS and Streamlabs twins share their editor; one shot each. */
 function streaming(suffix: string, kind: (type: string) => ActionKind, o: Options = {}): Shot[] {
@@ -84,6 +85,16 @@ export const actionShots: Shot[] = [
     { ...act({ type: "ifElse", startId: cond.s, endId: cond.e }), id: cond.o },
     act({ type: "addToVariable", name: "deaths", amount: "1", scope: "global" }),
     { ...act({ type: "ifEnd", startId: cond.s, elseId: cond.o }), id: cond.e },
+  ] as Action[]),
+  shot("loopStart", [
+    {
+      ...act({ type: "loopStart", mode: "until", variable: "obs.streaming", op: "equals", value: "true", check: "head", from: "1", to: "10", step: "1", intervalMs: 500, timeoutMs: 20000, timeoutId: loop.t, endId: loop.e }),
+      id: loop.s,
+    },
+    act({ type: "getWindow", target: "title", title: "", matching: "contains", app: "OBS", saveTo: "obs", saveScope: "local" }),
+    { ...act({ type: "loopTimeout", startId: loop.s, endId: loop.e }), id: loop.t },
+    act({ type: "textToSpeech", text: "OBS did not go live.", voice: null, volume: 1 }),
+    { ...act({ type: "loopEnd", startId: loop.s, timeoutId: loop.t }), id: loop.e },
   ] as Action[]),
   shot(
     "flipFlopStart",

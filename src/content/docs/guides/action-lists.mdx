@@ -73,6 +73,7 @@ To play a sound and switch a scene at the same moment, turn **Wait** off on the 
 Some actions come as a set of markers that wrap other actions:
 
 - [Condition](/actions/flow/condition/): **Condition**, **Otherwise** and **End condition**.
+- [Loop](/actions/flow/loop/): **Loop**, **If it takes too long** and **End loop**.
 - [Flip flop](/actions/flow/flip-flop/): **Flip flop: A**, **Flip flop: B** and **Flip flop: end**.
 - [Push-to-talk](/actions/flow/push-to-talk/): **Push-to-talk on** and **Push-to-talk off**.
 
@@ -80,11 +81,15 @@ Markers have a dashed outline. Put the actions they control between them. Marker
 
 The actions inside a block are **indented**, so you can see what belongs to it at a glance; **Otherwise** and the end marker line up with the marker that opened the block, and a block inside a block indents again. It is only a way of drawing the list — dragging a row in or out of a block moves it, and the indentation follows.
 
+A marker with nothing to show folds to a single line: an **Otherwise**, **If it takes too long** or **Flip flop: B** whose branch is empty, and every end marker. While you drag a row they open up to full size so you can drop into them, and fold back afterwards.
+
 ## Repeat while held
 
 **Repeat while held** runs the pressed actions again and again for as long as you hold the pad. When you switch it on, Lunchpad adds [Stop this macro](/actions/stop/stop-this-macro/) to the released actions, so letting go ends the loop.
 
 A loop without any delay still gets a tiny pause between rounds, so it cannot freeze your computer. Add a [Delay](/actions/general/delay/) to set the pace yourself.
+
+To repeat only part of a list, a set number of times or until a variable passes a check, use a [Loop](/actions/flow/loop/) block instead.
 
 ## Pressing a button that is still running
 

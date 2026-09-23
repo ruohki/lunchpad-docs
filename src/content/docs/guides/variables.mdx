@@ -127,12 +127,13 @@ An API key is not a variable: put it in **Settings → Secrets** and write `{{se
 
 ## The list in the settings
 
-<AppShot name="settings-variables" alt="The Variables settings tab: the Provided by Lunchpad section listing the built-in names with their live values, the shared variables below it, and the Downloaded files section." />
+<AppShot name="settings-variables" alt="The Variables settings tab: the Provided by Lunchpad section listing the built-in names with their live values, the New variable row, the shared variables with a pencil and a cross each, and the Downloaded files section." />
 
-**Settings → Variables** has three parts:
+**Settings → Variables** has four parts:
 
 - **Provided by Lunchpad**: every name above with its meaning and its value right now. The clock ticks while the tab is open.
-- The shared variables, with their values. The **✕** removes one, **Remove stale fader values** drops levels of faders that were renamed or removed, and **Remove all** clears the list.
+- **New variable**: a name and a value, for a macro to read before anything has written it. Names Lunchpad provides, names that exist already and names that cannot be a placeholder (spaces, braces) are refused with a hint.
+- The shared variables, with their values. Click a value (or its pencil) to change it: <kbd>Enter</kbd> or leaving the field keeps the change, <kbd>Esc</kbd> drops it. Setting a `fader.<name>` value moves that fader without running its actions. The **✕** removes one, **Remove stale fader values** drops levels of faders that were renamed or removed, and **Remove all** clears the list.
 - **Downloaded files**: what [HTTP request](/actions/system/http-request/) actions saved and reuse. **Show folder** opens it, **Remove all** empties it — and every such request then runs again.
 
 Variables of a running macro (**This run**) are not listed; they are gone when the macro ends. The same shared list is in the side panel of [developer mode](/guides/main-window/#developer-mode).

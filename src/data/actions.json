@@ -30,6 +30,7 @@
       "icon": "Workflow",
       "types": [
         "ifStart",
+        "loopStart",
         "flipFlopStart",
         "pushToTalkStart"
       ]
@@ -530,6 +531,32 @@
       "menu": false,
       "wait": false,
       "partOf": "ifStart"
+    },
+    "loopStart": {
+      "name": "Loop",
+      "desc": "Repeats the actions up to “If it takes too long”, with a pause between rounds.",
+      "group": "flow",
+      "icon": "RefreshCw",
+      "menu": true,
+      "wait": false
+    },
+    "loopTimeout": {
+      "name": "If it takes too long",
+      "desc": "Actions up to “End loop” run when the loop reaches its time limit.",
+      "group": "flow",
+      "icon": "Timer",
+      "menu": false,
+      "wait": false,
+      "partOf": "loopStart"
+    },
+    "loopEnd": {
+      "name": "End loop",
+      "desc": "Everything after this runs either way.",
+      "group": "flow",
+      "icon": "RefreshCw",
+      "menu": false,
+      "wait": false,
+      "partOf": "loopStart"
     }
   },
   "icons": {
@@ -604,6 +631,10 @@
     "Radio": {
       "viewBox": "0 0 24 24",
       "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M16.247 7.761a6 6 0 0 1 0 8.478\" /> <path d=\"M19.075 4.933a10 10 0 0 1 0 14.134\" /> <path d=\"M4.925 19.067a10 10 0 0 1 0-14.134\" /> <path d=\"M7.753 16.239a6 6 0 0 1 0-8.478\" /> <circle cx=\"12\" cy=\"12\" r=\"2\" /></g>"
+    },
+    "RefreshCw": {
+      "viewBox": "0 0 24 24",
+      "body": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\" /> <path d=\"M21 3v5h-5\" /> <path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\" /> <path d=\"M8 16H3v5\" /></g>"
     },
     "RotateCcw": {
       "viewBox": "0 0 24 24",
@@ -1642,6 +1673,97 @@
         }
       ]
     },
+    "loopStart": {
+      "doc": "Loop: the actions up to `LoopTimeout` repeat, with a pause between rounds. `Count` runs the body once per value from `from` to `to` in steps of `step` (`loop.value`); `Until` repeats until the check holds, checked before or after each round; `Forever` repeats until the macro is stopped. When `timeout_ms` has passed, the actions between `LoopTimeout` and `LoopEnd` run instead. Everything after the end runs either way.",
+      "fields": [
+        {
+          "name": "mode",
+          "type": "LoopMode",
+          "optional": true
+        },
+        {
+          "name": "variable",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "op",
+          "type": "CompareOp",
+          "optional": true
+        },
+        {
+          "name": "value",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "check",
+          "type": "LoopCheck",
+          "optional": true,
+          "doc": "`Until` only: where the check runs."
+        },
+        {
+          "name": "from",
+          "type": "text",
+          "optional": true,
+          "doc": "`Count` only: first value, last value and step; placeholders allowed."
+        },
+        {
+          "name": "to",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "step",
+          "type": "text",
+          "optional": true
+        },
+        {
+          "name": "intervalMs",
+          "type": "number",
+          "optional": true,
+          "doc": "Pause between two rounds, in milliseconds (never below `LOOP_MIN_INTERVAL_MS`)."
+        },
+        {
+          "name": "timeoutMs",
+          "type": "number",
+          "optional": true,
+          "doc": "Time limit counted from the first round; 0 = none."
+        },
+        {
+          "name": "timeoutId",
+          "type": "text"
+        },
+        {
+          "name": "endId",
+          "type": "text"
+        }
+      ]
+    },
+    "loopTimeout": {
+      "fields": [
+        {
+          "name": "startId",
+          "type": "text"
+        },
+        {
+          "name": "endId",
+          "type": "text"
+        }
+      ]
+    },
+    "loopEnd": {
+      "fields": [
+        {
+          "name": "startId",
+          "type": "text"
+        },
+        {
+          "name": "timeoutId",
+          "type": "text"
+        }
+      ]
+    },
     "setVariable": {
       "doc": "Set a variable to a value (placeholders allowed).",
       "fields": [
@@ -1686,7 +1808,8 @@
       "kind": "enum",
       "values": [
         {
-          "value": "equals"
+          "value": "equals",
+          "default": true
         },
         {
           "value": "notEquals"

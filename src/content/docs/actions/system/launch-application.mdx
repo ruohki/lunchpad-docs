@@ -20,23 +20,23 @@ Launch application starts a program, the same way you would from a terminal. Ope
 
 | Setting | What it does |
 | --- | --- |
-| **Program or script** | The path of the program, or the name of a program on the PATH, such as `powershell.exe` or `python`. **Choose…** opens a file picker. |
+| **Program or script** | The path of the program, or the name of a program on the PATH, such as `powershell.exe` or `python`. On macOS an app works too: `/Applications/Spotify.app`, or just `Spotify`. **Choose…** opens a file picker. |
 | **Arguments** | Passed to the program. They are split like in a shell: quotes keep words with spaces together, as in `-File "C:\My Scripts\lights.ps1"`. |
-| **Stop the program when the macro stops** | On: stopping the macro closes the program (on macOS its child processes too). Off: the program keeps running on its own. |
-| **Start without a window** | Windows only. Starts console programs and scripts without opening a console window. |
+| **Stop the program when the macro stops** | On: stopping the macro closes the program (on macOS its child processes too; an app is asked to quit the way the Dock would), and the macro counts as running for as long as the program does. Off: the program keeps running on its own and the macro does not wait for it. |
+| **Start without a window** | Windows: starts console programs and scripts without opening a console window. macOS: starts an app hidden and in the background. |
 | **Save output to variable** | Stores what the program prints (its standard output) in this variable once it exits. Trailing spaces and line breaks are trimmed. |
 | **Scope** | **This run** keeps the variable to this macro, **Everywhere** shares it with all macros. See [variables](/guides/variables/). |
 
 ## How it runs
 
 - Lunchpad starts the program directly, not through a shell. Pipes, redirects, `&&` and variables like `%APPDATA%` do not work in the fields. Run a shell when you need them: `cmd.exe` with `/c ...`, `powershell.exe` with `-Command ...`, or `/bin/sh` with `-c "..."` on macOS.
-- With **Wait** on, the macro waits until the program exits. With **Wait** off, the next actions start straight away, but the macro still counts as running until the program has exited.
+- With **Wait** on, the macro waits until the program exits. With **Wait** off, the program is started and left alone: the next actions start straight away and the macro ends without it. Only **Stop the program when the macro stops** or **Save output to variable** keep the macro running while the program runs.
 - `{{placeholders}}` work in **Program or script** and **Arguments**, for example to pass `{{velocity}}` to a script.
 - Only standard output is saved, not error output, and only once the program exits. Keep **Wait** on so the next actions can read the variable. If the macro is stopped before the program exits, the variable is not set.
 - A program that cannot be started (wrong path, no permission) is noted in the log and the macro goes on.
 
 <Aside type="tip" title="Apps on macOS">
-An `.app` is a folder, not a program. Use `open` as the program with `-a "OBS"` as arguments, or point at the binary inside the bundle. With `open`, Lunchpad only starts `open` itself, which exits at once, so **Stop the program when the macro stops** cannot close the app.
+An `.app` is a folder, not a program, so Lunchpad starts it through Launch Services, the way the Finder does: an app that is already running comes forward instead of starting twice, and the arguments reach it after `--args`. A name without a path, such as `Spotify`, is tried as a command first and as an app second. With **Wait** on, the macro waits until the app quits.
 </Aside>
 
 ## Example

@@ -161,6 +161,7 @@ export function handle(cmd: string, a: Args): unknown {
       return MODELS;
     // A delivery from the hub is read with the very same review as a file.
     case "hub_review_delivery":
+    case "review_button_file":
     case "review_import_file":
     case "review_import_json": {
       const shared = {
@@ -330,6 +331,8 @@ export function handle(cmd: string, a: Args): unknown {
     case "import_page_json":
     case "import_page_file":
       return { pages: 1, buttons: 12, actions: 30, warnings: [] };
+    case "import_button_file":
+      return { pages: 0, buttons: 1, actions: 5, warnings: [] };
     case "restore_profile_backup":
       return structuredClone(profile);
     case "read_image_data_uri":
@@ -445,6 +448,9 @@ export function handle(cmd: string, a: Args): unknown {
     case "delete_variables":
       (a.names as string[]).forEach((name) => delete variables[name]);
       return variables;
+    case "set_variable":
+      variables[String(a.name).trim()] = String(a.value);
+      return { ...variables };
     case "clear_variables":
       Object.keys(variables).forEach((name) => delete variables[name]);
       return variables;
