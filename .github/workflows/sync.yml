@@ -37,7 +37,18 @@ jobs:
       - name: Fetch the action contract of the release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release download "v$VERSION" --repo ruohki/lunchpad --pattern actions.json --output actions.json --clobber
+        # A release's assets take a few minutes to show up under its tag after they are
+        # uploaded, so a run right after a release retries a while before giving up.
+        run: |
+          for attempt in $(seq 1 12); do
+            if gh release download "v$VERSION" --repo ruohki/lunchpad --pattern actions.json --output actions.json --clobber; then
+              exit 0
+            fi
+            echo "actions.json is not on release v$VERSION yet (attempt $attempt of 12); waiting 30 s"
+            sleep 30
+          done
+          echo "Release v$VERSION has no actions.json. Releases before Lunchpad 1.1.1 carry none; run the app's tools/actions-contract.ts and sync by hand."
+          exit 1
 
       - name: Sync the action data and see what the docs still lack
         run: |
