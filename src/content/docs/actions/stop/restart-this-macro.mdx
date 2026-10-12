@@ -8,12 +8,17 @@ sidebar:
 
 import ActionHeader from '~/components/ActionHeader.astro';
 import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
 
 <ActionHeader types={['restartThisMacro']} />
 
 <ActionShot type="restartThisMacro" alt="When pressed list with Restart this macro first, followed by a Play sound action." />
 
-Every press of a pad starts its own run, so pressing quickly layers the runs on top of each other: a sound plays twice, a countdown runs twice. Restart this macro makes a new press replace the older ones instead. The action has no settings.
+A button set to **Run alongside** starts a run of its own on every press, so pressing quickly layers the runs on top of each other: a sound plays twice, a countdown runs twice. Restart this macro makes a new press replace the older ones instead. The action has no settings.
+
+<Aside type="tip">
+For the plain case, a new press replacing the old one, set the button's **Pressed again while still running** to **Start over** instead: it needs no action. See [Action lists](/guides/action-lists/#pressing-a-button-that-is-still-running). Restart this macro is for the cases that setting does not cover: it stops the runs of every list of the button, and only once the run has reached it.
+</Aside>
 
 ## How it runs
 

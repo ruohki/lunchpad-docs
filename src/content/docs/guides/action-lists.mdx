@@ -1,6 +1,6 @@
 ---
 title: Action lists
-description: When pressed, when released and when held, the order of actions, the Wait switch, looping and stopping.
+description: When pressed, when released and when held, the order of actions, the Wait switch, looping, stopping, and what a press does while the button is still running.
 sidebar:
   order: 3
 ---
@@ -93,12 +93,34 @@ To repeat only part of a list, a set number of times or until a variable passes 
 
 ## Pressing a button that is still running
 
-Pressing a button whose macro is still running starts a second run next to the first. That is often what you want for a sound board, where the same sound can overlap.
+A button whose actions take a while (a long sound, a countdown, a chain with delays) can be pressed again before it has finished. **Pressed again while still running**, at the top of the Actions tab, says what that press does.
 
-When it is not, use:
+<AppShot name="run-mode" alt="The top of the Actions tab: Pressed again while still running is set to Wait in line, and three presses can wait." />
 
-- [Restart this macro](/actions/stop/restart-this-macro/) as the first action: a new press stops the older runs and only the newest continues.
-- [Stop this macro](/actions/stop/stop-this-macro/) on another list, for example the released list, to end every run of this button.
+| Choice | A press while the button is still running… |
+| --- | --- |
+| **Run alongside** | starts its own run next to the ones still going. This is the default, and what you want for a sound board where the same sound may overlap. |
+| **Start over** | stops the run in progress and starts the actions from the top. The stopped run ends the way [Stop this macro](/actions/stop/stop-this-macro/) ends it: its sounds stop, its waits end. |
+| **Wait in line** | waits until the run before it has finished, then runs. **Presses that can wait** (1 to 99, 1 to begin with) is how long the line may get; a press that finds it full is ignored. |
+| **Ignore** | does nothing. The button takes a press again once the run has finished. |
+
+A few things follow from how Lunchpad counts:
+
+- **Each list is counted on its own.** The released actions still run when you let go while the pressed actions are going, and a tap on a busy button set to **Ignore** skips the pressed actions but not the released ones.
+- **A press that waits is a run of the button.** The pad stays lit while presses wait, and [Stop this macro](/actions/stop/stop-this-macro/) and **Stop all macros** clear the line along with the run.
+- **The choice also holds when another button runs this one** with [Run another button](/actions/general/run-another-button/).
+- **Repeat while held** never finishes by itself, so with **Wait in line** or **Ignore** the next press only gets its turn after the repeat has been stopped.
+
+Faders have no such choice: a fader runs its actions once per movement, when the movement comes to rest.
+
+Buttons made before Lunchpad 1.1.2 are set to **Run alongside**, which is how every button used to behave.
+
+### Stopping from inside a list
+
+Two actions do the same job from within the lists, whatever the choice above:
+
+- [Restart this macro](/actions/stop/restart-this-macro/): the run it is in stops every other run of this button, from any of its lists.
+- [Stop this macro](/actions/stop/stop-this-macro/) on another list, for example the released list, ends every run of this button.
 
 To stop everything that is running, right-click any pad and choose **Stop all macros**, or use the tray menu.
 

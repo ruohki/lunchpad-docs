@@ -32,6 +32,8 @@ Run another button runs the actions of a different button as if it were part of 
 - Stopping this macro also stops the other button's actions.
 - If there is no button at that position, or it has no actions in the chosen list, nothing happens.
 - If the other button has **Repeat while held** on and you run its pressed actions, they repeat until this macro is stopped.
+- The other button's **Pressed again while still running** choice holds here too. While that button is busy, **Ignore** means nothing happens, **Wait in line** means its actions wait their turn (and this macro with them, when **Wait** is on) or are skipped when the line is full, and **Start over** stops its run in progress. See [Action lists](/guides/action-lists/#pressing-a-button-that-is-still-running).
+- A button that runs itself is never held up by the run it is part of.
 - Buttons that run each other are cut off after 8 levels, so a button that runs itself cannot loop forever.
 
 ## Example

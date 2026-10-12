@@ -147,6 +147,8 @@ export function button(caption: string, color: PadColor, extra: Partial<Button> 
     holdWait: true,
     stateLink: null,
     description: "",
+    runMode: "parallel",
+    queueSize: 1,
     ...extra,
   };
 }

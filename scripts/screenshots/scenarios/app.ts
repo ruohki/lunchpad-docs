@@ -99,6 +99,27 @@ export const appShots: Shot[] = [
   },
 
   {
+    // What a press does while the button is still running: the choice above the lists.
+    name: "app/run-mode",
+    viewport: TALL,
+    margin: 14,
+    scenario: {
+      focus: {
+        look: { type: "text", caption: "Intro", size: 16, face: "sans", color: "#ffffff" },
+        color: { mode: "rgb", r: 96, g: 72, b: 255 },
+        down: [act({ type: "playSound", file: "C:\\Users\\Demo\\Sounds\\intro.mp3", volume: 1, start: 0, end: 1, outputDevice: null, volumeFromVelocity: false })],
+        runMode: "queue",
+        queueSize: 3,
+      },
+    },
+    run: async (page) => {
+      await openEditor(page);
+      const dialog = await openActionsTab(page);
+      return dialog.getByText("Pressed again while still running").locator("xpath=../..");
+    },
+  },
+
+  {
     name: "app/add-action-menu",
     viewport: { width: 1000, height: 900 },
     run: async (page) => {

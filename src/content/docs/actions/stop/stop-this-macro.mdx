@@ -18,7 +18,8 @@ Stop this macro ends everything this button is doing. Its most common job is end
 
 ## How it runs
 
-- Every press of a pad starts its own run, so pressing a button that is still busy starts a second run next to the first. Stop this macro stops all runs of this button: from the pressed, released and held lists alike.
+- A button can have several runs going at once: one per list, and with **Run alongside** one per press. Stop this macro stops all runs of this button: from the pressed, released and held lists alike.
+- Presses that [wait in line](/guides/action-lists/#pressing-a-button-that-is-still-running) are dropped along with them.
 - The run the action is in stops too, so actions after it in the same list do not run.
 - Other buttons keep running.
 - Stopping ends waits and delays at once, stops the sounds and speech of the stopped runs, ends a hotkey sequence after its current step, cancels HTTP requests still waiting for an answer, and closes programs started with **Stop the program when the macro stops**.

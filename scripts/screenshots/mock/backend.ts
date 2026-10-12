@@ -72,7 +72,7 @@ if (scenario.focus) {
   const page = profile.pages[0];
   const base = page.buttons.find((b) => b.x === FOCUS_PAD.x && b.y === FOCUS_PAD.y);
   page.buttons = page.buttons.filter((b) => b !== base);
-  page.buttons.push({ ...(base ?? {}), down: [], up: [], hold: [], ...(base ? {} : { look: { type: "text", caption: "", size: 15, face: "sans", color: "#ffffff" }, color: { mode: "palette", index: 9 }, activeColor: null, loop: false, holdMs: 500, holdWait: true, stateLink: null }), ...scenario.focus, ...FOCUS_PAD } as Page["buttons"][number]);
+  page.buttons.push({ ...(base ?? {}), down: [], up: [], hold: [], ...(base ? {} : { look: { type: "text", caption: "", size: 15, face: "sans", color: "#ffffff" }, color: { mode: "palette", index: 9 }, activeColor: null, loop: false, holdMs: 500, holdWait: true, stateLink: null, description: "", runMode: "parallel", queueSize: 1 }), ...scenario.focus, ...FOCUS_PAD } as Page["buttons"][number]);
 }
 
 // The demo pages are drawn for a Launchpad; a keyboard model gets its own page.
