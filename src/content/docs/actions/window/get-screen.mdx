@@ -17,6 +17,10 @@ import { Aside } from '@astrojs/starlight/components';
 
 Get screen looks up one display and stores what it knows about it: where it sits, how big it is, how many pixels it packs into a point, and how fine it is. A macro then places windows and the pointer relative to the screen it is on, whatever the monitor setup.
 
+<Aside type="caution" title="Windows and macOS only">
+Lunchpad cannot list the displays on Linux: Wayland does not allow it, and for X11 it is not built. On Linux it is left out of the menu, and one that came with a profile from another computer is faded and does nothing. See [Platforms](/getting-started/platforms/).
+</Aside>
+
 ## Settings
 
 | Setting | What it does |

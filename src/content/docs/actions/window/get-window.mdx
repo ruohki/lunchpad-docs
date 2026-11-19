@@ -17,6 +17,10 @@ import { Aside } from '@astrojs/starlight/components';
 
 Get window looks up one window of another program and stores it in a variable. Later actions and other buttons can then point at exactly that window, even after its title has changed: a [Set window](/actions/window/set-window/) can bring it back to the front, and a [Mouse sequence](/actions/input/mouse-sequence/) can click inside it using its position.
 
+<Aside type="caution" title="Windows and macOS only">
+Lunchpad cannot reach other programs' windows on Linux: Wayland does not allow it, and for X11 it is not built. On Linux it is left out of the menu, and one that came with a profile from another computer is faded and does nothing. See [Platforms](/getting-started/platforms/).
+</Aside>
+
 ## Settings
 
 | Setting | What it does |

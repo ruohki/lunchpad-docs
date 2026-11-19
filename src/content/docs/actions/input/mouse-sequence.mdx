@@ -17,6 +17,10 @@ import { Aside } from '@astrojs/starlight/components';
 
 Mouse sequence runs a list of mouse steps in order: put the pointer somewhere, click, hold or release a button, turn the wheel, drag, wait. It operates a program that has no keyboard shortcut for what you want, the way [Hotkey sequence](/actions/input/hotkey-sequence/) does with keys.
 
+<Aside type="caution" title="Not in a Wayland session">
+Wayland does not let one program move the pointer or click in another, so on Linux this action works in an X11 session only. Under Wayland it is left out of the menu, and one that came with a profile from another computer is faded and does nothing. See [Platforms](/getting-started/platforms/).
+</Aside>
+
 ## Steps
 
 Add steps with the buttons under the list and drag the handle on the left to reorder them.

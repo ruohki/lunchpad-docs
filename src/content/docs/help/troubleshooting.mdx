@@ -47,6 +47,15 @@ Hotkeys, push-to-talk, the mouse actions and the window actions need the Accessi
 2. Switch Lunchpad on. If it is already on, switch it off and on again after an update.
 3. In Lunchpad, click **Check again** on the notice, or **Settings → Keyboard & mouse → Check keyboard access**.
 
+## Keys, the mouse or windows do nothing (Linux)
+
+Look at **Settings → Diagnostics**: the line with your system says which session you are in.
+
+- **Wayland session**: Wayland does not let one program press keys in another, move or click the pointer, or move other programs' windows. Lunchpad leaves those actions out of the menu, greys out push-to-talk, and fades such actions that came with a profile from another computer. To use them, log in to an X11 session if your desktop offers one (for example **Plasma (X11)** on the login screen, or Xfce, Cinnamon or MATE).
+- **X11 session**: keys, the mouse and push-to-talk work. The window actions ([Get window](/actions/window/get-window/), [Set window](/actions/window/set-window/), [Get screen](/actions/window/get-screen/)) are not built for Linux.
+
+See [Platforms](/getting-started/platforms/) for everything that differs between systems.
+
 ## Soft presses are missed, or pads trigger too easily
 
 On velocity-sensitive Launchpads, presses below a threshold are ignored. Open **Settings → Launchpad**, turn on **Custom press threshold** and move the slider: lower if soft presses are missed, higher if pads fire when you brush them. The default is 25.
@@ -113,6 +122,9 @@ Open **Settings → Diagnostics**:
   </TabItem>
   <TabItem label="macOS">
     The logs are in `~/Library/Logs/com.lunchpad.app`.
+  </TabItem>
+  <TabItem label="Linux">
+    The logs are in `~/.local/share/com.lunchpad.app/logs`.
   </TabItem>
 </Tabs>
 

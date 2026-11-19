@@ -46,6 +46,10 @@ Your voice app only hears what reaches its microphone input. To send a sound int
 
 On macOS, Lunchpad needs the Accessibility permission to press keys. See [Troubleshooting](/help/troubleshooting/).
 
+<Aside type="caution" title="Not in a Wayland session">
+Wayland does not let one program hold keys in another, so on Linux push-to-talk works in an X11 session only. Under Wayland the menu has no push-to-talk, the key under **Settings → Keyboard & mouse** is greyed out, and sections that came with a profile from another computer are faded and hold nothing; the actions inside them still run. See [Platforms](/getting-started/platforms/).
+</Aside>
+
 ## Example
 
 The announcement from the screenshot:

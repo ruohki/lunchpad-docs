@@ -1,13 +1,13 @@
 ---
 title: Installation
-description: Download Lunchpad for Windows or macOS, give it the permissions it needs, and find where it keeps your data.
+description: Download Lunchpad for Windows, macOS or Linux, give it the permissions it needs, and find where it keeps your data.
 sidebar:
   order: 2
 ---
 
 import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-Lunchpad runs on Windows and macOS (Apple Silicon and Intel). Linux support is coming.
+Lunchpad runs on Windows, macOS (Apple Silicon and Intel) and Linux. A few features depend on the system; [Platforms](/getting-started/platforms/) lists them.
 
 ## Download
 
@@ -42,6 +42,19 @@ Once installed, Lunchpad checks the same releases page when it starts and offers
 
     </Steps>
   </TabItem>
+  <TabItem label="Linux">
+    <Steps>
+
+    1. Install the package for your distribution, or make the AppImage executable (`chmod +x`) and start it.
+
+    2. Plug in your Launchpad. It works through ALSA, which every desktop distribution has; no driver is needed.
+
+    3. Check which session you are in. Hotkeys, the mouse actions and push-to-talk need an X11 session; under Wayland, which most current desktops use by default, Lunchpad leaves them out. The window actions are not available on Linux at all. See [Platforms](/getting-started/platforms/).
+
+    4. On GNOME, install the *AppIndicator and KStatusNotifierItem Support* extension so Lunchpad's tray icon shows up. Most other desktops show it on their own.
+
+    </Steps>
+  </TabItem>
 </Tabs>
 
 <Aside type="tip">
@@ -61,6 +74,10 @@ Lunchpad keeps its settings, your pages and your shared variables in one folder:
     - Settings and pages: `~/Library/Application Support/com.lunchpad.app`
     - Logs: `~/Library/Logs/com.lunchpad.app`
   </TabItem>
+  <TabItem label="Linux">
+    - Settings and pages: `~/.config/com.lunchpad.app`
+    - Logs: `~/.local/share/com.lunchpad.app/logs`
+  </TabItem>
 </Tabs>
 
 Inside the settings folder:
@@ -75,7 +92,7 @@ Sound files, images for buttons and programs you launch are not copied into this
 
 Two things live outside it:
 
-- **Secrets** are not in any file of yours. API keys you store under [Settings → Secrets](/guides/secrets/) go into your system's credential store — the Keychain on macOS, the Credential Manager on Windows — and the settings file keeps only their names.
+- **Secrets** are not in any file of yours. API keys you store under [Settings → Secrets](/guides/secrets/) go into your system's credential store — the Keychain on macOS, the Credential Manager on Windows, the Secret Service (GNOME Keyring, KWallet) on Linux — and the settings file keeps only their names.
 - **Files that [HTTP request](/actions/system/http-request/) actions save** go to a downloads folder of their own. **Settings → Variables → Downloaded files → Show folder** opens it, and macros can read its path as `{{downloadDir}}`.
 
 <Aside>

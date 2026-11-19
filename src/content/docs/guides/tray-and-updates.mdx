@@ -18,13 +18,16 @@ Lunchpad runs its macros in the background. The window is only for editing: clos
   <TabItem label="macOS">
     The Lunchpad icon sits in the menu bar. Click it to open the menu. Clicking Lunchpad in the Dock also brings back a hidden window.
   </TabItem>
+  <TabItem label="Linux">
+    The Lunchpad icon sits in the panel's tray area. Click it to open the menu. GNOME shows tray icons only with the *AppIndicator and KStatusNotifierItem Support* extension; without a tray, keep **Minimize to tray** off so closing the window does not leave Lunchpad running out of reach.
+  </TabItem>
 </Tabs>
 
 | Entry | What it does |
 | --- | --- |
 | **Join the Discord!** | Opens the Lunchpad Discord in your browser. |
 | **Show Lunchpad** | Brings the window back. |
-| **Stay on top** | Keeps the window above other windows. |
+| **Stay on top** | Keeps the window above other windows. Not in the menu in a Linux Wayland session, where the desktop decides which window stays on top. |
 | **Minimize to tray** | Closing the window hides it instead of quitting. |
 | **Run at startup** | Starts Lunchpad when you log in. |
 | **Stop all running macros** | Stops every macro that is running. |

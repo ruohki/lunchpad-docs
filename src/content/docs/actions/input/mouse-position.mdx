@@ -9,12 +9,17 @@ sidebar:
 
 import ActionHeader from '~/components/ActionHeader.astro';
 import ActionShot from '~/components/ActionShot.astro';
+import { Aside } from '@astrojs/starlight/components';
 
 <ActionHeader types={['mousePosition']} />
 
 <ActionShot type="mousePosition" alt="Get mouse position remembering the pointer as the variable before, with the scope This run." />
 
 Get mouse position reads where the pointer is and stores it in a variable. A macro that moves the mouse around can put it back afterwards, and a script can compute a target from it.
+
+<Aside type="caution" title="Not in a Wayland session">
+Wayland does not let one program read where the pointer is, so on Linux this action works in an X11 session only. Under Wayland it is left out of the menu, and one that came with a profile from another computer is faded and does nothing. See [Platforms](/getting-started/platforms/).
+</Aside>
 
 ## Settings
 

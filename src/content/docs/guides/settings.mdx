@@ -50,13 +50,15 @@ See [Push-to-talk](/actions/flow/push-to-talk/) for the action.
 
 **Check keyboard access**: on macOS, Lunchpad needs the Accessibility permission to press keys. This button opens the system prompt if it is missing.
 
+In a Linux Wayland session the tab says that keys cannot reach other programs there, the push-to-talk settings are greyed out and **Check keyboard access** is gone. See [Platforms](/getting-started/platforms/).
+
 ### Interface
 
 <AppShot name="settings-interface" alt="The Interface settings tab." />
 
 **Window** (the same switches are in the tray menu):
 
-- **Keep the window above other windows**.
+- **Keep the window above other windows**. Greyed out in a Linux Wayland session, where the desktop decides which window stays on top; the tray menu has no **Stay on top** there either.
 - **Close to the tray**: closing the window hides it; macros keep running and the tray icon brings it back.
 - **Start Lunchpad with the system**: registers Lunchpad as a login item.
 - **Start hidden in the tray**: Lunchpad opens without a window; the tray icon shows it.
@@ -79,7 +81,7 @@ Connection settings for the two streaming apps: host, port, password or token, *
 
 **Connect to Home Assistant**, the **Home Assistant address**, the **Long-lived access token**, **Accept a self-signed certificate**, the connection status and **Reload entities**. Set-up is explained in [Home Assistant](/guides/home-assistant/).
 
-Passwords and tokens of the integrations are not written into the settings file: installed copies keep them in the system's credential store (the Keychain on macOS, the Credential Manager on Windows).
+Passwords and tokens of the integrations are not written into the settings file: installed copies keep them in the system's credential store (the Keychain on macOS, the Credential Manager on Windows, the Secret Service on Linux).
 
 ## Data
 

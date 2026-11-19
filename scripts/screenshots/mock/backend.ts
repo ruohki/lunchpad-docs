@@ -4,7 +4,7 @@
 //
 // A screenshot scenario tweaks the start state through
 // `window.__LUNCHPAD_SCENARIO__` (set by capture.ts before the page loads).
-import type { Button, DeviceState, Fader, LaunchpadModel, Layout, Page, Profile, Settings } from "@app/lib/api";
+import type { Button, DeviceState, Fader, LaunchpadModel, Layout, Page, PlatformInfo, Profile, Settings } from "@app/lib/api";
 import { AUDIO, C, CONFIG_DIR, DISCOVERED, DOWNLOADS, FILTERS, HUB_BACKUPS, HUB_SHARE_RESULT, INPUTS, MODELS, VOICES, button, demoHomeAssistant, demoHub, demoObs, demoProfile, demoSettings, demoSlobs, launchkeyPage, layoutFor, peaks } from "./fixtures";
 
 /** The app's version, as Vite defines it for the real interface (serve.ts). */
@@ -38,12 +38,20 @@ export interface Scenario {
   model?: LaunchpadModel;
   /** the connected device's real layout (as the app's `get_layout` returns it), instead of the mock one */
   layout?: Layout;
+  /** what the system allows (default: Windows, everything); e.g. a Linux Wayland session */
+  platform?: PlatformInfo;
 }
 
 /** Top-left pad of the grid (column 1, row 8): where scenarios put their button. */
 export const FOCUS_PAD = { x: 0, y: 7 };
 
 export const scenario: Scenario = (globalThis as { __LUNCHPAD_SCENARIO__?: Scenario }).__LUNCHPAD_SCENARIO__ ?? {};
+const PLATFORM: PlatformInfo = scenario.platform ?? { os: "windows", session: null, input: null, windows: null, stayOnTop: null };
+
+/** Length of every sound file the fake backend analyzes. */
+const SOUND_SECS = 3.4;
+/** The sound preview that is "playing", in seconds of the file. */
+let preview: { at: number; from: number; to: number } | null = null;
 
 // ----- events --------------------------------------------------------------------
 
@@ -375,12 +383,15 @@ export function handle(cmd: string, a: Args): unknown {
     case "check_keyboard_access":
     case "set_tray_labels":
       return null;
+    case "platform_info":
+      return PLATFORM;
     case "diagnostics":
       return {
         appVersion: "1.0.0",
         tauriVersion: "2.8.0",
         webviewVersion: "140.0.3485.54",
         os: { name: "Windows", version: "11 (26100)", arch: "x86_64" },
+        platform: PLATFORM,
         configDir: "C:\\Users\\Demo\\AppData\\Roaming\\com.lunchpad.app",
         logDir: "C:\\Users\\Demo\\AppData\\Roaming\\com.lunchpad.app\\logs",
         device: { status: "connected", model: "Launchpad X", input: "LPX MIDI", output: "LPX MIDI", firmware: "0.2.3.8", isVirtual: false, error: null, autoConnect: true, remembered: "Launchpad X on LPX MIDI" },
@@ -403,11 +414,21 @@ export function handle(cmd: string, a: Args): unknown {
     case "list_system_audio_devices":
       return a.target === "input" ? INPUTS : AUDIO.devices;
     case "analyze_audio":
-      return { durationSecs: 3.4, peaks: peaks(a.buckets ?? 160) };
+      return { durationSecs: SOUND_SECS, peaks: peaks(a.buckets ?? 160) };
     case "preview_sound":
+      preview = { at: Date.now(), from: a.request.start * SOUND_SECS, to: a.request.end * SOUND_SECS };
       return 1;
+    case "sound_position": {
+      // Plays in real time from the trim start to the trim end.
+      if (!preview) return null;
+      const secs = preview.from + (Date.now() - preview.at) / 1000;
+      if (secs >= preview.to) preview = null;
+      return preview ? secs : null;
+    }
     case "stop_sound":
     case "stop_all_sounds":
+      preview = null;
+      return null;
     case "preview_speech":
     case "stop_speech":
       return null;

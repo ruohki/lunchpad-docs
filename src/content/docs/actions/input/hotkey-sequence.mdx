@@ -18,6 +18,10 @@ A hotkey sequence is a list of keyboard steps that Lunchpad plays back in order.
 
 The keys go to whichever window has the focus, just like a real keyboard.
 
+<Aside type="caution" title="Not in a Wayland session">
+Wayland does not let one program press keys in another, so on Linux this action works in an X11 session only. Under Wayland it is left out of the menu, and one that came with a profile from another computer is faded and does nothing. See [Platforms](/getting-started/platforms/).
+</Aside>
+
 ## Steps
 
 Add steps with the buttons under the list, drag a step by its handle to reorder it, and remove it with the cross. The dropdown at the start of a row changes what the step does.
