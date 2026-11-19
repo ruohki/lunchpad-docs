@@ -13,6 +13,14 @@ Lunchpad runs on Windows, macOS (Apple Silicon and Intel) and Linux. A few featu
 
 Get the latest build from the [releases page on GitHub](https://github.com/ruohki/lunchpad/releases). Pick the file for your system, install it like any other app, and start it.
 
+On Linux there are three kinds of download, each for x86_64 (`amd64`) and arm64 (`aarch64`). They run on Ubuntu 22.04 and newer, and on other distributions from 2022 on:
+
+| File | For |
+| --- | --- |
+| `Lunchpad_<version>_amd64.deb` | Debian, Ubuntu, Linux Mint, Pop!_OS and their relatives |
+| `Lunchpad-<version>-1.x86_64.rpm` | Fedora, openSUSE and other RPM distributions |
+| `Lunchpad_<version>_linux_x86_64.tar.gz` | Anything else: the plain program, nothing to install |
+
 Once installed, Lunchpad checks the same releases page when it starts and offers new versions inside the app. See [Tray and updates](/guides/tray-and-updates/).
 
 ## Set up your system
@@ -45,7 +53,9 @@ Once installed, Lunchpad checks the same releases page when it starts and offers
   <TabItem label="Linux">
     <Steps>
 
-    1. Install the package for your distribution, or make the AppImage executable (`chmod +x`) and start it.
+    1. Install the package with your package manager, which also installs what Lunchpad needs: `sudo apt install ./Lunchpad_<version>_amd64.deb` or `sudo dnf install ./Lunchpad-<version>-1.x86_64.rpm`. Lunchpad then shows up among your applications.
+
+       The plain program needs no installation: unpack the `.tar.gz` and start `lunchpad` in it. It needs WebKitGTK 4.1, GTK 3, the AppIndicator library, ALSA, D-Bus and Speech Dispatcher's library on the system, which a desktop with a browser mostly has; the `.deb` lists them by name if one is missing.
 
     2. Plug in your Launchpad. It works through ALSA, which every desktop distribution has; no driver is needed.
 

@@ -35,6 +35,7 @@ Lunchpad checks this when it starts. **Settings → Diagnostics** names the sess
 | Keep the window above other windows (and the [Debug window](/actions/system/debug-window/)'s **Keep on top**) | Yes | Yes | Yes | **No** |
 | Tray icon, close to the tray, start with the system | Yes | Yes | Yes ⁵ | Yes ⁵ |
 | [Secrets](/guides/secrets/) in the system's credential store | Yes | Yes | Yes ⁶ | Yes ⁶ |
+| [Updates](/guides/tray-and-updates/#updates) install themselves | Yes | Yes | Yes ⁷ | Yes ⁷ |
 
 1. The output device list shows the names ALSA uses: `default`, `pipewire` or `pulse`, and the sound cards. `default` follows the device chosen in your sound settings.
 2. Through Speech Dispatcher, which most desktop distributions install. The voices are the ones it offers.
@@ -42,6 +43,7 @@ Lunchpad checks this when it starts. **Settings → Diagnostics** names the sess
 4. Needs the Accessibility permission: **System Settings → Privacy & Security → Accessibility**. See [Installation](/getting-started/installation/).
 5. The tray needs a desktop that shows tray icons (StatusNotifier / AppIndicator). KDE Plasma, Xfce, Cinnamon and most others do; on GNOME install the *AppIndicator and KStatusNotifierItem Support* extension.
 6. Through the Secret Service, which GNOME Keyring and KWallet provide. It has to be unlocked, which a desktop login usually does.
+7. For the `.deb` and `.rpm` packages, which ask for your password to install the new version. The plain program from the `.tar.gz` offers **Download** instead and you replace it yourself.
 
 ## What Lunchpad does about a missing feature
 

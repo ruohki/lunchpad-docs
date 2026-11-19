@@ -46,7 +46,7 @@ export interface Scenario {
 export const FOCUS_PAD = { x: 0, y: 7 };
 
 export const scenario: Scenario = (globalThis as { __LUNCHPAD_SCENARIO__?: Scenario }).__LUNCHPAD_SCENARIO__ ?? {};
-const PLATFORM: PlatformInfo = scenario.platform ?? { os: "windows", session: null, input: null, windows: null, stayOnTop: null };
+const PLATFORM: PlatformInfo = scenario.platform ?? { os: "windows", session: null, input: null, windows: null, stayOnTop: null, selfUpdate: true };
 
 /** Length of every sound file the fake backend analyzes. */
 const SOUND_SECS = 3.4;

@@ -58,4 +58,16 @@ Installed copies of Lunchpad look for a new release on GitHub a few seconds afte
 
 **Check for updates** in **Settings → About Lunchpad** looks for a new version right now and tells you if you already have the latest.
 
+<Tabs syncKey="os">
+  <TabItem label="Windows">
+    The installer runs in the background and Lunchpad starts again.
+  </TabItem>
+  <TabItem label="macOS">
+    The app is replaced in place and Lunchpad starts again.
+  </TabItem>
+  <TabItem label="Linux">
+    The `.deb` and `.rpm` packages update themselves like on the other systems; installing the new package asks for your password. The plain program from the `.tar.gz` cannot replace itself: its notice says **Download** instead, which opens the release page. Unpack the new version over the old one.
+  </TabItem>
+</Tabs>
+
 All releases, with their notes, are on the [releases page](https://github.com/ruohki/lunchpad/releases).
